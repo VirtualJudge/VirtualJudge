@@ -77,9 +77,9 @@ WSGI_APPLICATION = 'VirtualJudge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'test_db',
-        'USER': 'test',
-        'PASSWORD': 'test123',
+        'NAME': 'vj_database',
+        'USER': 'vj_admin',
+        'PASSWORD': 'vj_password',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -88,7 +88,7 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
-
+AUTH_USER_MODEL = 'account.User'
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -121,3 +121,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+LOGIN_URL = '/'

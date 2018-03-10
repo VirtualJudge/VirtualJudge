@@ -22,6 +22,7 @@ class Problem(models.Model):
 
     class Meta:
         ordering = ('id',)
+        db_table = 'problem'
 
 
 class ProblemBuilder(object):

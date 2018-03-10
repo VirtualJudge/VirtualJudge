@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from VirtualJudge import views
+from django.contrib.auth import views as auth_view
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', views.check_status),
-    path('oj/', include('problem.urls')),
+    path('problem/', include('problem.urls')),
+    path('account/', include('account.urls')),
 ]
