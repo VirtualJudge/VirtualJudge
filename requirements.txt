@@ -1,4 +1,4 @@
 Django
 djangorestframework
 psycopg2-binary
-jsonfield
+django-cors-headers

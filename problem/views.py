@@ -80,17 +80,16 @@ def get_problem_count(request):
 获取题目列表
 —————————————————————————————————————
 @:param
-    page_number: 页号
-    page_size: 页大小
+    offset: 偏移
+    limit: 限制
 """
 
 
-@require_GET
 def get_problem_list(request):
     form = GetProblemListForm(request.GET)
     if form.is_valid():
-        page_number = form.cleaned_data['page_number']
-        page_size = form.cleaned_data['page_size']
-        problems = Problem.objects.all().order_by('-id')[(page_number - 1) * page_size:page_number * page_size]
+        offset = form.cleaned_data['offset']
+        limit = form.cleaned_data['limit']
+        problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
         return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)
     return HttpResponseNotFound('404')

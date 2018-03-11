@@ -12,5 +12,5 @@ class GetProblemByRemoteInfoForm(forms.Form):
 
 
 class GetProblemListForm(forms.Form):
-    page_number = forms.IntegerField(min_value=1)
-    page_size = forms.IntegerField(min_value=10, max_value=50)
+    offset = forms.IntegerField(min_value=1)
+    limit = forms.IntegerField(min_value=1, max_value=50)
