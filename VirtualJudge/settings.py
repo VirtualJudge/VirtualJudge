@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'problem',
     'account',
     'rest_framework',
-    'tests',
     'corsheaders',
 ]
 
