@@ -45,7 +45,6 @@ def login_user(request):
 
 
 @require_POST
-@login_required
 def logout_user(request):
     auth.logout(request)
     return JsonResponse(custom_dict.info('logout success'))

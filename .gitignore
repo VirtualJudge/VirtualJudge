@@ -15,3 +15,4 @@ db.sqlite3
 */migrations/
 tests/
 !.gitignore
+*.json

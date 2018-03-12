@@ -1,5 +1,5 @@
 """
-WSGI config for PyJudge project.
+WSGI config for VirtualJudge project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
