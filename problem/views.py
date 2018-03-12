@@ -1,8 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 
-from problem.forms import GetProblemByRemoteInfoForm, GetProblemListForm, GetProblemByIdForm
 from problem.models import Problem, ProblemBuilder
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.utils import *
@@ -16,17 +15,13 @@ from problem.utils import *
 
 
 @require_GET
-def get_problem_by_id(request):
-    form = GetProblemByIdForm(request.GET)
-    if form.is_valid():
-        id = form.cleaned_data['id']
-        problem = None
-        try:
-            problem = Problem.objects.get(id=id)
-        except ObjectDoesNotExist:
-            pass
-        return JsonResponse(ProblemSerializer(problem).data)
-    return HttpResponseNotFound('404')
+def get_problem_by_id(request, problem_id):
+    problem = None
+    try:
+        problem = Problem.objects.get(id=problem_id)
+    except ObjectDoesNotExist:
+        pass
+    return JsonResponse(ProblemSerializer(problem).data)
 
 
 """
@@ -39,28 +34,22 @@ def get_problem_by_id(request):
 
 
 @require_GET
-def get_problem_by_roj_and_rid(request):
-    form = GetProblemByRemoteInfoForm(request.GET)
-    if form.is_valid():
-        remote_oj = form.cleaned_data['remote_oj'].strip()
-        remote_id = form.cleaned_data['remote_id'].strip()
-        force_update = form.cleaned_data['force_update']
-        problem = None
-        try:
-            problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-        except ObjectDoesNotExist:
-            pass
+def get_problem_by_roj_and_rid(request, remote_oj, remote_id):
+    force_update = False
+    problem = None
+    try:
+        problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
+    except ObjectDoesNotExist:
+        pass
 
-        if problem is None or force_update:
-            problem_data = get_problem_from_origin_online_judge(remote_oj, remote_id)
-            if problem is None:
-                problem = ProblemBuilder.build_problem(problem_data)
-            else:
-                problem = ProblemBuilder.update_problem(problem, problem_data)
-            problem.save()
-        return JsonResponse(ProblemSerializer(problem).data)
-
-    return HttpResponseNotFound('404')
+    if problem is None or force_update:
+        problem_data = get_problem_from_origin_online_judge(remote_oj, remote_id)
+        if problem is None:
+            problem = ProblemBuilder.build_problem(problem_data)
+        else:
+            problem = ProblemBuilder.update_problem(problem, problem_data)
+        problem.save()
+    return JsonResponse(ProblemSerializer(problem).data)
 
 
 """
@@ -85,11 +74,6 @@ def get_problem_count(request):
 """
 
 
-def get_problem_list(request):
-    form = GetProblemListForm(request.GET)
-    if form.is_valid():
-        offset = form.cleaned_data['offset']
-        limit = form.cleaned_data['limit']
-        problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
-        return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)
-    return HttpResponseNotFound('404')
+def get_problem_list(request, offset=0, limit=10):
+    problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
+    return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)

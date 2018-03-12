@@ -13,15 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
+
 from VirtualJudge import views
-from django.contrib.auth import views as auth_view
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', views.check_status),
     path('login_required', views.login_required_url, name='login_required'),
-    path('problem/', include('problem.urls')),
-    path('account/', include('account.urls')),
+    path('oj/', include('problem.urls')),
+    path('oj/', include('account.urls')),
+    path('oj/', include('submission.urls')),
 ]

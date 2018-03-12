@@ -22,7 +22,7 @@ class Command(BaseCommand):
             remote_oj.oj_status = Control.Controller.check_status(oj_name)
             remote_oj.save()
         try:
-            account_url = '/Users/prefixai/workspace/VirtualJudge/accounts.json'
+            account_url = '/Users/prefixai/workspace/accounts.json'
             with open(account_url, 'r') as fin:
                 data = fin.read().encode('utf-8')
                 oj_accounts = json.loads(data)
@@ -40,8 +40,9 @@ class Command(BaseCommand):
                 if remote_oj_accounts is not None:
                     account = Account(remote_oj_accounts[0].oj_username, remote_oj_accounts[0].oj_password)
                     languages = Control.Controller.find_language(remote_oj.oj_name, account)
-                    for k, v in languages.items():
-                        RemoteLanguage(oj_language=k, oj_language_name=v, oj_name=remote_oj.oj_name).save()
+                    if languages:
+                        for k, v in languages.items():
+                            RemoteLanguage(oj_language=k, oj_language_name=v, oj_name=remote_oj.oj_name).save()
         except Exception as e:
             self.stdout.write(self.style.ERROR('failed create remote language:' + str(e)))
             exit(1)

@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 
-from utils import custom_dict
+from utils import response
 
 
 @require_GET
@@ -11,4 +11,4 @@ def check_status(request):
 
 
 def login_required_url(request):
-    return JsonResponse(custom_dict.error('login required'))
+    return JsonResponse(response.error('login required'))

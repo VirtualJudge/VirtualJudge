@@ -3,51 +3,52 @@ from account.forms import PostRegisterForm, PostLoginForm
 from account.models import User
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.db.utils import IntegrityError
-from utils import custom_dict
+from utils import response
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.views import View
 
 
-@require_POST
-def register_user(request):
-    form = PostRegisterForm(request.POST)
-    if form.is_valid():
-        try:
-            username = form.cleaned_data['username'].strip()
-            password = form.cleaned_data['password'].strip()
-            email = form.cleaned_data['email'].strip()
+class RegisterAPI(View):
+    def post(self, request):
+        form = PostRegisterForm(request.POST)
+        if form.is_valid():
+            try:
+                username = form.cleaned_data['username'].strip()
+                password = form.cleaned_data['password'].strip()
+                email = form.cleaned_data['email'].strip()
 
-            user = User()
-            user.username = username
-            user.set_password(password)
-            user.email = email
-            user.save()
-            return JsonResponse(custom_dict.success('ok'))
-        except IntegrityError:
-            return JsonResponse(custom_dict.error('the username has registered'))
-    return JsonResponse(custom_dict.error('register post data is not valid'))
-
-
-@require_POST
-def login_user(request):
-    form = PostLoginForm(request.POST)
-    if form.is_valid():
-        try:
-            username = form.cleaned_data['username'].strip()
-            password = form.cleaned_data['password'].strip()
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                return JsonResponse(custom_dict.success('yes'))
-            return JsonResponse(custom_dict.error('no'))
-        except EnvironmentError:
-            return JsonResponse(custom_dict.info('exception'))
-    return JsonResponse(custom_dict.error('login post data is not valid'))
+                user = User()
+                user.username = username
+                user.set_password(password)
+                user.email = email
+                user.save()
+                return JsonResponse(response.success('ok'))
+            except IntegrityError:
+                return JsonResponse(response.error('the username has registered'))
+        return JsonResponse(response.error('register post data is not valid'))
 
 
-@require_POST
-def logout_user(request):
-    auth.logout(request)
-    return JsonResponse(custom_dict.info('logout success'))
+class LoginAPI(View):
+    def post(self, request):
+        form = PostLoginForm(request.POST)
+        if form.is_valid():
+            try:
+                username = form.cleaned_data['username'].strip()
+                password = form.cleaned_data['password'].strip()
+                user = auth.authenticate(username=username, password=password)
+                if user:
+                    return JsonResponse(response.success('yes'))
+                return JsonResponse(response.error('no'))
+            except EnvironmentError:
+                return JsonResponse(response.info('exception'))
+        return JsonResponse(response.error('login post data is not valid'))
+
+
+class LogoutAPI(View):
+    def post(self, request):
+        auth.logout(request)
+        return JsonResponse(response.info('logout success'))
 
 
 @require_GET
