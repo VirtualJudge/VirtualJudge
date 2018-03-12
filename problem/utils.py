@@ -1,4 +1,4 @@
-from OnlineJudgeSpider.Control import Controller
+from VirtualJudgeSpider.Control import Controller
 
 
 def get_problem_from_origin_online_judge(remote_oj, remote_id):
