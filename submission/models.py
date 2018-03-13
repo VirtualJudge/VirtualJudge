@@ -28,6 +28,7 @@ class Submission(models.Model):
     """
     源oj返回的结果
     """
+    remote_run_id = models.CharField(max_length=20, null=True)
     # 返回的结果
     verdict = models.CharField(max_length=40, null=True)
     # 程序运行时间

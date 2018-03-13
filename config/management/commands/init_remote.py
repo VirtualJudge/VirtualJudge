@@ -16,11 +16,14 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('failed to clean remote online judge config database'))
             exit(1)
 
+        remote_ojs = []
         for oj_name in Control.support_ojs:
             remote_oj = RemoteOJ()
             remote_oj.oj_name = oj_name
             remote_oj.oj_status = Control.Controller.check_status(oj_name)
-            remote_oj.save()
+            remote_ojs.append(remote_oj)
+        RemoteOJ.objects.bulk_create(remote_ojs)
+
         try:
             account_url = '/Users/prefixai/workspace/accounts.json'
             with open(account_url, 'r') as fin:
@@ -34,15 +37,17 @@ class Command(BaseCommand):
             exit(1)
 
         try:
-            remote_ojs = RemoteOJ.objects.all()
             for remote_oj in remote_ojs:
                 remote_oj_accounts = RemoteAccount.objects.filter(oj_name=remote_oj.oj_name)
                 if remote_oj_accounts is not None:
                     account = Account(remote_oj_accounts[0].oj_username, remote_oj_accounts[0].oj_password)
                     languages = Control.Controller.find_language(remote_oj.oj_name, account)
                     if languages:
+                        remote_languages = []
                         for k, v in languages.items():
-                            RemoteLanguage(oj_language=k, oj_language_name=v, oj_name=remote_oj.oj_name).save()
+                            remote_languages.append(
+                                RemoteLanguage(oj_language=k, oj_language_name=v, oj_name=remote_oj.oj_name))
+                        RemoteLanguage.objects.bulk_create(remote_languages)
         except Exception as e:
             self.stdout.write(self.style.ERROR('failed create remote language:' + str(e)))
             exit(1)

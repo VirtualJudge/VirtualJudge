@@ -6,7 +6,7 @@ from problem.models import Problem
 from django.core.exceptions import ObjectDoesNotExist
 from submission.models import Submission
 from judge.dispatcher import JudgeStatus
-from submission.serializers import SubmissionSerializer
+from submission.serializers import SubmissionSerializer, SubmissionListSerializer
 from judge.tasks import submit_task
 
 
@@ -47,10 +47,22 @@ class SubmissionAPI(View):
 
 
 class SubmissionListAPI(View):
-    def get(self, request):
-        pass
+    def get(self, request, offset=0, limit=10):
+        try:
+            submissions = Submission.objects.all().order_by('-id')[offset:offset + limit]
+            serializers = SubmissionListSerializer(submissions, many=True)
+            return JsonResponse(serializers.data)
+        except:
+            return JsonResponse(response.error('error'))
 
 
 class ReJudgeAPI(View):
-    def get(self, request):
-        pass
+    def get(self, request, submission_id):
+        try:
+            submission = Submission.objects.get(id=submission_id)
+            if submission.status != JudgeStatus.status['SUCCESS']:
+                submit_task.relay(submission_id)
+                return JsonResponse(response.success('rejudge submit'))
+        except:
+            pass
+        return JsonResponse(response.error('rejudge failed'))
