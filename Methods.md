@@ -1,8 +1,16 @@
 ## Methods
 
+### account urls
+
+| url | method | view | params | description |
+| --- | --- | --- | --- | --- |
+| `register` | POST | views.RegisterAPI | `<str: username> <str: password> <str: email>` | 注册 |
+| `login` | POST | views.LoginAPI | `<str: username> <str: password>` | 登录 |
+| `logout` | GET | views.LogoutAPI| | 退出登录 |
+
 ### problem urls
 
-| url | requests method | view | params | description |
+| url | method | view | params | description |
 | --- | --- | --- | --- | --- |
 | `/vj/problem/<int:problem_id>` | GET | Views.ProblemLocalAPI | | 获取服务器上面已经缓存的题目 |  
 | `/vj/problem/<str:remote_oj/<str:remote_id>` | GET | Views.ProblemRemoteAPI | | 从服务器上面获取题目 |

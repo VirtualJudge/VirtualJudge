@@ -17,7 +17,8 @@ class Command(BaseCommand):
             exit(1)
 
         remote_ojs = []
-        for oj_name in Control.support_ojs:
+        print(Control.Controller.get_supports())
+        for oj_name in Control.Controller.get_supports():
             remote_oj = RemoteOJ()
             remote_oj.oj_name = oj_name
             remote_oj.oj_status = Control.Controller.check_status(oj_name)
@@ -42,6 +43,7 @@ class Command(BaseCommand):
                 if remote_oj_accounts is not None:
                     account = Account(remote_oj_accounts[0].oj_username, remote_oj_accounts[0].oj_password)
                     languages = Control.Controller.find_language(remote_oj.oj_name, account)
+                    print(languages)
                     if languages:
                         remote_languages = []
                         for k, v in languages.items():

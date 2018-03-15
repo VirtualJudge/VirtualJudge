@@ -23,9 +23,11 @@ class ProblemDispatchar(object):
         self.problem.request_status = ProblemRequest.status['CRAWLING']
         self.problem.save()
         try:
-            problem_data = Controller.get_problem(self.problem.remote_oj, self.problem.remote_id).get_dict()
-            self.problem = ProblemBuilder.update_problem(self.problem, problem_data)
-            self.problem.request_status = ProblemRequest.status['SUCCESS']
-            self.problem.save()
+            response = Controller.get_problem(self.problem.remote_oj, self.problem.remote_id)
+            if response:
+                problem_data = response.get_dict()
+                self.problem = ProblemBuilder.update_problem(self.problem, problem_data)
+                self.problem.request_status = ProblemRequest.status['SUCCESS']
+                self.problem.save()
         except Exception as e:
             raise ProblemException
