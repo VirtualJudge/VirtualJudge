@@ -77,6 +77,7 @@ def get_problem_count(request):
 """
 
 
-def get_problem_list(request, offset=0, limit=20):
-    problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
-    return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)
+class ProblemListAPI(View):
+    def get(self, offset=0, limit=20):
+        problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
+        return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)
