@@ -1,18 +1,10 @@
-from django.db import transaction
-from submission.models import Submission
-from config.models import RemoteAccount
+from VirtualJudgeSpider.Config import Account
 from VirtualJudgeSpider.Control import Controller
-from VirtualJudgeSpider.Config import Account, Result
+from django.db import transaction
 
-
-class JudgeStatus:
-    status = {
-        "PENDING": 0,
-        "JUDGING": 1,
-        "SUCCESS": 2,
-        "SEND_FOR_JUDGE_ERROR": 3,
-        "RETRY": 4,
-    }
+from config.models import RemoteAccount
+from submission.models import Submission
+from utils.request import JudgeRequest
 
 
 class SubmissionException(Exception):
@@ -44,11 +36,14 @@ class SpiderDispatcher(object):
             remote_account.save()
 
     def submit(self):
-
-        if self.submission.status == JudgeStatus.status['PENDING'] or \
-                self.submission.status == JudgeStatus.status['SEND_FOR_JUDGE_ERROR']:
+        if self.submission.retry_count > 10:
+            return
+        if self.submission.status == JudgeRequest.status['PENDING'] or \
+                self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
             account = self.choose_account(self.submission.remote_oj)
             if not account:
+                self.submission.retry_count = self.submission.retry_count + 1
+                self.submission.save()
                 raise SubmissionException
             success_submit = Controller.submit_code(self.submission.remote_oj,
                                                     Account(username=account.oj_username, password=account.oj_password),
@@ -60,11 +55,13 @@ class SpiderDispatcher(object):
                                                Account(username=account.oj_username, password=account.oj_password),
                                                self.submission.remote_id)
                 if not result:
-                    if self.submission.status == JudgeStatus.status['SEND_FOR_JUDGE_ERROR']:
-                        self.submission.status = JudgeStatus.status['RETRY']
+                    if self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
+                        self.submission.status = JudgeRequest.status['RETRY']
                     else:
-                        self.submission.status = JudgeStatus.status['SEND_FOR_JUDGE_ERROR']
+                        self.submission.status = JudgeRequest.status['SEND_FOR_JUDGE_ERROR']
                     self.release_account(account.id)
+                    self.submission.retry_count = self.submission.retry_count + 1
+                    self.submission.save()
                     raise Submission
 
                 self.submission.remote_run_id = result.origin_run_id
@@ -72,32 +69,33 @@ class SpiderDispatcher(object):
                 self.submission.execute_memory = result.execute_memory
                 self.submission.execute_time = result.execute_time
                 if Controller.is_waiting_for_judge(self.submission.remote_oj, result.verdict):
-                    self.submission.status = JudgeStatus.status['JUDGING']
+                    self.submission.status = JudgeRequest.status['JUDGING']
+                    self.submission.retry_count = self.submission.retry_count + 1
                     self.submission.save()
                     self.release_account(account.id)
                     raise SubmissionException
-                self.submission.status = JudgeStatus.status['SUCCESS']
+                self.submission.status = JudgeRequest.status['SUCCESS']
                 self.submission.save()
-
             else:
-                if self.submission.status == JudgeStatus.status['SEND_FOR_JUDGE_ERROR']:
-                    self.submission.status = JudgeStatus.status['RETRY']
+                if self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
+                    self.submission.status = JudgeRequest.status['RETRY']
                 else:
-                    self.submission.status = JudgeStatus.status['SEND_FOR_JUDGE_ERROR']
+                    self.submission.status = JudgeRequest.status['SEND_FOR_JUDGE_ERROR']
+                self.submission.retry_count = self.submission.retry_count + 1
                 self.submission.save()
                 self.release_account(account.id)
                 raise SubmissionException
-
             self.release_account(account.id)
-        elif self.submission.status == JudgeStatus.status['JUDGING']:
+        elif self.submission.status == JudgeRequest.status['JUDGING']:
             result = Controller.get_result_by_rid(self.submission.remote_oj, self.submission.remote_run_id)
             if Controller.is_waiting_for_judge(self.submission.remote_oj, result.verdict):
-                self.submission.status = JudgeStatus.status['JUDGING']
+                self.submission.status = JudgeRequest.status['JUDGING']
+                self.submission.retry_count = self.submission.retry_count + 1
                 self.submission.save()
                 raise SubmissionException
 
             self.submission.verdict = result.verdict
             self.submission.execute_memory = result.execute_memory
             self.submission.execute_time = result.execute_time
-            self.submission.status = JudgeStatus.status['SUCCESS']
+            self.submission.status = JudgeRequest.status['SUCCESS']
             self.submission.save()

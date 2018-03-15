@@ -8,7 +8,7 @@ class ProblemSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'remote_id', 'remote_oj', 'remote_url', 'update_time', 'title', 'time_limit', 'memory_limit',
             'description',
-            'input', 'output', 'special_judge', 'sample', 'hint', 'author', 'source')
+            'input', 'output', 'special_judge', 'sample', 'hint', 'author', 'source', 'retry_count', 'request_status')
 
 
 class ProblemListSerializer(serializers.ModelSerializer):

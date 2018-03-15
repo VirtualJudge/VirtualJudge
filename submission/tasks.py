@@ -1,6 +1,6 @@
 from celery import shared_task, Task
 
-from judge.dispatcher import SpiderDispatcher, SubmissionException
+from submission.dispatcher import SpiderDispatcher, SubmissionException
 import time
 
 
@@ -12,8 +12,7 @@ class SubmissionTask(Task):
 @shared_task(bind=True, base=SubmissionTask)
 def submit_task(self, submission_id):
     try:
-
         SpiderDispatcher(submission_id).submit()
     except SubmissionException as e:
         time.sleep(2)
-        self.retry(exc=e, max_retries=5)
+        self.retry(exc=e, max_retries=15)

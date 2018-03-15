@@ -21,7 +21,7 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', views.check_status),
     path('login_required', views.login_required_url, name='login_required'),
-    path('oj/', include('problem.urls')),
-    path('oj/', include('account.urls')),
-    path('oj/', include('submission.urls')),
+    path('vj/', include('problem.urls')),
+    path('vj/', include('account.urls')),
+    path('vj/', include('submission.urls')),
 ]

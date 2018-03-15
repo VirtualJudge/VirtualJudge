@@ -1,13 +1,14 @@
-from django.views import View
-from django.http import JsonResponse
-from submission.forms import SubmissionForm
-from utils import response
-from problem.models import Problem
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.views import View
+
+from submission.tasks import submit_task
+from problem.models import Problem
+from submission.forms import SubmissionForm
 from submission.models import Submission
-from judge.dispatcher import JudgeStatus
 from submission.serializers import SubmissionSerializer, SubmissionListSerializer
-from judge.tasks import submit_task
+from utils import response
+from utils.request import JudgeRequest
 
 
 class SubmissionShowAPI(View):
@@ -34,7 +35,7 @@ class SubmissionAPI(View):
                                         code=code,
                                         language=language,
                                         remote_id=problem.remote_id,
-                                        remote_oj=problem.remote_oj, status=JudgeStatus.status['PENDING'])
+                                        remote_oj=problem.remote_oj, status=JudgeRequest.status['PENDING'])
                 submission.save()
                 submit_task.delay(submission.id)
                 return JsonResponse(response.success("submission success"))
@@ -60,7 +61,9 @@ class ReJudgeAPI(View):
     def get(self, request, submission_id):
         try:
             submission = Submission.objects.get(id=submission_id)
-            if submission.status != JudgeStatus.status['SUCCESS']:
+            if submission.status != JudgeRequest.status['SUCCESS']:
+                submission.retry_count = 0
+                submission.save()
                 submit_task.relay(submission_id)
                 return JsonResponse(response.success('rejudge submit'))
         except:
