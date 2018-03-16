@@ -24,4 +24,5 @@ urlpatterns = [
     path('vj/', include('problem.urls')),
     path('vj/', include('account.urls')),
     path('vj/', include('submission.urls')),
+    path('vj/', include('config.urls')),
 ]
