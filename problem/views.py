@@ -16,12 +16,13 @@ from problem.tasks import get_problem_task
 
 
 class ProblemLocalAPI(View):
-    def get(self, problem_id):
+    def get(self, *args, **kwargs):
         try:
-            problem = Problem.objects.get(id=problem_id)
+            problem = Problem.objects.get(id=kwargs['problem_id'])
             return JsonResponse(ProblemSerializer(problem).data)
         except ObjectDoesNotExist:
-            return HttpResponseNotFound('404')
+            pass
+        return HttpResponseNotFound('404')
 
 
 """
@@ -78,6 +79,13 @@ def get_problem_count(request):
 
 
 class ProblemListAPI(View):
-    def get(self, offset=0, limit=20):
+    def get(self, *args, **kwargs):
+        offset = 0
+        limit = 20
+        for k, v in kwargs.items():
+            if k == 'offset':
+                offset = v
+            if k == 'limit':
+                limit = v
         problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
         return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)

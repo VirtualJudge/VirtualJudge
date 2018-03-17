@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from .utils import get_env
 
-if get_env('VJ_ENV', 'develop') != 'production':
+if get_env('VJ_ENV', 'develop') == 'production':
     from .setting_production import *
 else:
     from .setting_develop import *

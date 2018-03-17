@@ -12,8 +12,9 @@ from utils.request import JudgeRequest
 
 
 class SubmissionShowAPI(View):
-    def get(self, request, submission_id):
+    def get(self, request, *args, **kwargs):
         try:
+            submission_id = kwargs['submission_id']
             submission = Submission.objects.get(id=submission_id)
             serializer = SubmissionSerializer(submission)
             return JsonResponse(serializer.data)
@@ -48,12 +49,20 @@ class SubmissionAPI(View):
 
 
 class SubmissionListAPI(View):
-    def get(self, request, offset=0, limit=10):
+    def get(self, request, *args, **kwargs):
         try:
+            offset = 0
+            limit = 20
+            for k, v in kwargs.items():
+                if k == 'offset':
+                    offset = v
+                if k == 'limit':
+                    limit = v
             submissions = Submission.objects.all().order_by('-id')[offset:offset + limit]
             serializers = SubmissionListSerializer(submissions, many=True)
-            return JsonResponse(serializers.data)
-        except:
+            return JsonResponse(serializers.data, safe=False)
+        except Exception as e:
+            print(e)
             return JsonResponse(response.error('error'))
 
 
