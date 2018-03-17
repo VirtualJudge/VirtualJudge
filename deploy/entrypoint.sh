@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 APP=/app
+DATA=/data
+
+mkdir -p $DATA/log $DATA/ssl $DATA/test_case $DATA/public/upload $DATA/public/avatar $DATA/public/website
 n=0
 while [ $n -lt 5 ]
 do
