@@ -2,8 +2,8 @@ from .utils import get_env
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': get_env("POSTGRES_HOST", "127.0.0.1"),
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': get_env("POSTGRES_HOST", "vj-postgres"),
         'PORT': get_env("POSTGRES_PORT", "5432"),
         'NAME': get_env("POSTGRES_DB"),
         'USER': get_env("POSTGRES_USER"),
@@ -12,7 +12,7 @@ DATABASES = {
 }
 
 REDIS_CONF = {
-    "host": get_env("REDIS_HOST", "127.0.0.1"),
+    "host": get_env("REDIS_HOST", "vj-redis"),
     "port": get_env("REDIS_PORT", "6379")
 }
 
