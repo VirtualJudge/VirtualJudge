@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 MAINTAINER xudian.cn@gmail.com
 
-ENV OJ_ENV production
+ENV VJ_ENV production
 
 ADD . /app
 WORKDIR /app
