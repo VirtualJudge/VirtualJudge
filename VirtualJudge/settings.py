@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from .utils import get_env
+
+if get_env('VJ_ENV', 'develop') != 'production':
+    from .setting_production import *
+else:
+    from .setting_develop import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,9 +28,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'g&tgox&hue)x^3c$=%m-e*z$e7w_jr^bu^s@qlcoyl7-5rbh0@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -88,17 +91,6 @@ WSGI_APPLICATION = 'VirtualJudge.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vj_database',
-        'USER': 'vj_admin',
-        'PASSWORD': 'vj_password',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -167,9 +159,13 @@ CORS_ALLOW_HEADERS = (
     'Pragma',
 )
 
-BROKER_URL = 'redis://localhost:6379/2'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/3'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
+REDIS_URL = "redis://%s:%s" % (REDIS_CONF["host"], REDIS_CONF["port"])
+
+CELERY_RESULT_BACKEND = f"{REDIS_URL}/2"
+BROKER_URL = f"{REDIS_URL}/3"
+CELERY_TASK_SOFT_TIME_LIMIT = CELERY_TASK_TIME_LIMIT = 180
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
