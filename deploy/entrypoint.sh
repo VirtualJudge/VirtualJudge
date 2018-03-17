@@ -4,8 +4,8 @@ APP=/app
 n=0
 while [ $n -lt 5 ]
 do
-    python manage.py init_install &&
-    python manage.py migrate --no-input
+    python3 manage.py init_install
+    python3 manage.py migrate
     n=$(($n+1))
     echo "Failed to migrate, going to retry..."
     sleep 8
