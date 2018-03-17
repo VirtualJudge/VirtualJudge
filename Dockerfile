@@ -16,4 +16,4 @@ RUN apt update
 RUN apt install -y python3 python3-dev python3-pip postgresql supervisor
 RUN pip3 install -r /app/requirements.txt
 
-CMD bash /app/deploy/entrypoint.sh
+CMD bash /app/deploy/entrypoint.sh && tail -F /app/deploy/entrypoint.log
