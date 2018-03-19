@@ -13,7 +13,7 @@ from VirtualJudgeSpider.Control import Controller
 
 class InitRemoteAPI(View):
     def post(self, request, **kwargs):
-        form = RemoteAccountForm(request.POST)
+        form = RemoteAccountForm(request.POST, request.FILES)
         if form.is_valid():
             try:
                 RemoteOJ.objects.all().delete()
@@ -21,7 +21,10 @@ class InitRemoteAPI(View):
                 for remote_oj in Controller.get_supports():
                     remote_oj_list.append(RemoteOJ(oj_name=remote_oj))
                 RemoteOJ.objects.bulk_create(remote_oj_list)
-                values = json.loads(form.cleaned_data['remote_account'])
+                json_str = ""
+                for chunk in form.cleaned_data['remote_accounts'].chunks():
+                    json_str += chunk.decode('utf-8')
+                values = json.loads(json_str)
                 remote_s = []
                 RemoteAccount.objects.all().delete()
                 for value in values:
