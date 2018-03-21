@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - VirtualJudge</title>
+    {% include 'default/include.html' %}
+</head>
+<body>
+{% include 'default/header.html' %}
+{% block content %}
+{% endblock %}
+{% include 'default/footer.html' %}
+</body>
+</html>

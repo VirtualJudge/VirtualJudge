@@ -1,11 +1,11 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseNotFound
-from django.views.decorators.http import require_GET
 from django.views import View
-from problem.models import Problem, ProblemBuilder
+
+from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
-from problem.utils import *
 from problem.tasks import get_problem_task
+from utils import request
 
 """
 通过数据库中的id获取题目
@@ -57,19 +57,6 @@ class ProblemRemoteAPI(View):
 
 
 """
-获取数据库中题目总数
-------------------------------------
-@:param
-    None
-"""
-
-
-@require_GET
-def get_problem_count(request):
-    return Problem.objects.all().count()
-
-
-"""
 获取题目列表
 —————————————————————————————————————
 @:param
@@ -87,5 +74,6 @@ class ProblemListAPI(View):
                 offset = v
             if k == 'limit':
                 limit = v
-        problems = Problem.objects.all().order_by('-id')[offset:offset + limit]
+        problems = Problem.objects.filter(request_status=request.ProblemRequest.status['SUCCESS']).order_by('-id')[
+                   offset:offset + limit]
         return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)

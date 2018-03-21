@@ -19,7 +19,7 @@ from VirtualJudge import views
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', views.check_status),
+    path('', include('html_doc.urls')),
     path('login_required', views.login_required_url, name='login_required'),
     path('api/', include('problem.urls')),
     path('api/', include('account.urls')),
