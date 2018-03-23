@@ -4,4 +4,5 @@ psycopg2-binary
 django-cors-headers
 celery
 redis
+gunicorn
 https://github.com/VirtualJudge/VirtualJudgeSpider/releases/download/v0.3/VirtualJudgeSpider-0.3-py36-none-any.whl
