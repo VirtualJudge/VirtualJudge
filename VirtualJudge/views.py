@@ -10,5 +10,3 @@ def check_status(request):
     return HttpResponse('Success')
 
 
-def login_required_url(request):
-    return JsonResponse(response.error('login required'))

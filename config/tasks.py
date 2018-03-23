@@ -1,12 +1,14 @@
-from celery import shared_task
-from config.models import RemoteLanguage
-from config.models import RemoteAccount
 from VirtualJudgeSpider import Control, Config
+from celery import shared_task
+
+from config.models import RemoteAccount
+from config.models import RemoteLanguage
 
 
 @shared_task
 def update_remote_language_task():
-    RemoteLanguage.objects.all().delete()
+    remote_languages = RemoteLanguage.objects.all()
+    remote_languages.delete()
     for remote_oj in Control.Controller.get_supports():
         remote_oj_accounts = RemoteAccount.objects.filter(oj_name=remote_oj)
         if remote_oj_accounts is not None:
@@ -16,6 +18,5 @@ def update_remote_language_task():
             if languages:
                 remote_languages = []
                 for k, v in languages.items():
-                    remote_languages.append(
-                        RemoteLanguage(oj_language=k, oj_language_name=v, oj_name=remote_oj))
+                    remote_languages.append(RemoteLanguage(oj_language=k, oj_language_name=v, oj_name=remote_oj))
                 RemoteLanguage.objects.bulk_create(remote_languages)

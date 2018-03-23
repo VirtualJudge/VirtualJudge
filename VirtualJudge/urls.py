@@ -19,6 +19,7 @@ from django.urls import path, include
 from VirtualJudge import views
 
 urlpatterns = [
+    path('', views.check_status),
     path('admin/', admin.site.urls),
     path('api/', include('problem.urls')),
     path('api/', include('submission.urls')),
