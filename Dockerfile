@@ -13,7 +13,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 #COPY deploy/sources.list /etc/apt/
 
 RUN apt update
-RUN apt install -y python3 python3-dev python3-pip postgresql supervisor
+RUN apt install -y python3 python3-dev python3-pip postgresql supervisor nginx
 RUN pip3 install -r /app/requirements.txt
 
 CMD bash /app/deploy/entrypoint.sh
