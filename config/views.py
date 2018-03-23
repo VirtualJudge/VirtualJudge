@@ -9,10 +9,13 @@ from config.models import RemoteAccount, RemoteOJ
 from config.tasks import update_remote_language_task
 from utils import response
 from VirtualJudgeSpider.Control import Controller
+from account.models import Token
+from utils.decorator import token_required
 
 
 class InitRemoteAPI(View):
-    def post(self, request, **kwargs):
+    @token_required
+    def post(self, request, *args, **kwargs):
         form = RemoteAccountForm(request.POST, request.FILES)
         if form.is_valid():
             try:

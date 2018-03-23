@@ -1,32 +1,21 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
+import uuid
 
 
-class UserManager(models.Manager):
-    use_in_migrations = True
-
-    def get_by_natural_key(self, username):
-        return self.get(**{f"{self.model.USERNAME_FIELD}__iexact": username})
+def get_token():
+    return str(uuid.uuid1()).replace('-', '')
 
 
-class User(AbstractBaseUser):
-    username = models.CharField(max_length=30, unique=True)
-    email = models.EmailField(max_length=254, null=True)
-    password = models.CharField(max_length=200)
-
-    nick_name = models.CharField(max_length=30, null=True)
-    real_name = models.CharField(max_length=30, null=True)
-
-    create_time = models.DateTimeField(auto_now_add=True, null=True)
-
-    reset_password_token = models.CharField(max_length=40, null=True)
-    active_account_token = models.CharField(max_length=40, null=True)
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
-
-    objects = UserManager()
+class Token(models.Model):
+    token = models.CharField(max_length=100, primary_key=True, default=get_token())
+    nickname = models.CharField(max_length=40, null=True, blank=True)
+    privilege = models.IntegerField(default=0)
 
     class Meta:
-        db_table = 'user'
-        ordering = ('id',)
+        db_table = 'Token'
+
+
+"""
+@:param privilege 0 普通用户 1 高级用户 2 管理员
+"""

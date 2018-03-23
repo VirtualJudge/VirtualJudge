@@ -6,6 +6,8 @@ from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
 from utils import request
+from utils.response import *
+from utils.decorator import token_required
 
 """
 通过数据库中的id获取题目
@@ -16,13 +18,14 @@ from utils import request
 
 
 class ProblemLocalAPI(View):
+    @token_required
     def get(self, *args, **kwargs):
         try:
             problem = Problem.objects.get(id=kwargs['problem_id'])
-            return JsonResponse(ProblemSerializer(problem).data)
+            return JsonResponse(success(ProblemSerializer(problem).data))
         except ObjectDoesNotExist:
             pass
-        return HttpResponseNotFound('404')
+        return JsonResponse(error('problem not found'))
 
 
 """
@@ -38,6 +41,7 @@ class ProblemLocalAPI(View):
 class ProblemRemoteAPI(View):
     force_update = False
 
+    @token_required
     def get(self, *args, **kwargs):
         problem = None
         try:
@@ -53,7 +57,7 @@ class ProblemRemoteAPI(View):
             problem = Problem(remote_oj=kwargs['remote_oj'], remote_id=kwargs['remote_id'])
             problem.save()
             get_problem_task.delay(problem.id)
-        return JsonResponse(ProblemSerializer(problem).data)
+        return JsonResponse(success(ProblemSerializer(problem).data))
 
 
 """
@@ -66,6 +70,7 @@ class ProblemRemoteAPI(View):
 
 
 class ProblemListAPI(View):
+    @token_required
     def get(self, *args, **kwargs):
         offset = 0
         limit = 20

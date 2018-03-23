@@ -7,8 +7,8 @@ class Submission(models.Model):
     """
     至少提交的部分
     """
-    # 用户编号
-    account_id = models.IntegerField(null=True)
+    # Token
+    token = models.CharField(max_length=100, null=True)
     # 题目编号
     problem_id = models.IntegerField()
     # 比赛编号，可没有
