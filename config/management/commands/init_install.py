@@ -12,5 +12,9 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR('failed execute:python3 manage.py init_user'))
                 exit(1)
             self.stdout.write(self.style.SUCCESS("Done"))
+            if os.system('python3 manage.py collectstatic') != 0:
+                self.stdout.write(self.style.ERROR('failed execute:python3 manage.py collectstatic'))
+                exit(1)
+            self.stdout.write(self.style.SUCCESS("Done"))
         except Exception as e:
             self.stdout.write(self.style.ERROR('Failed to initialize, error: ' + str(e)))
