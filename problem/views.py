@@ -1,13 +1,13 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse
 from django.views import View
 
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
 from utils import request
-from utils.response import *
 from utils.decorator import token_required
+from utils.response import *
 
 """
 通过数据库中的id获取题目

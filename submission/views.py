@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views import View
-
+from django.views.decorators.csrf import csrf_exempt
 from problem.models import Problem
 from submission.forms import SubmissionForm
 from submission.models import Submission
@@ -27,6 +27,7 @@ class SubmissionShowAPI(View):
 
 class SubmissionAPI(View):
     @token_required
+    @csrf_exempt
     def post(self, request):
         form = SubmissionForm(request.POST)
         if form.is_valid():
