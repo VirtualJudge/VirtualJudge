@@ -11,10 +11,12 @@ from utils import response
 from VirtualJudgeSpider.Control import Controller
 from account.models import Token
 from utils.decorator import token_required
+from django.views.decorators.csrf import csrf_exempt
 
 
 class InitRemoteAPI(View):
     @token_required
+    @csrf_exempt
     def post(self, request, *args, **kwargs):
         form = RemoteAccountForm(request.POST, request.FILES)
         if form.is_valid():
