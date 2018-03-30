@@ -13,5 +13,5 @@ do
     echo "Failed to migrate, going to retry..."
     sleep 8
 done
-
+service nginx stop
 exec supervisord -c /app/deploy/supervisord.conf
