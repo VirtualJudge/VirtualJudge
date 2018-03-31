@@ -1,17 +1,16 @@
 import json
 import traceback
 
+from VirtualJudgeSpider.Control import Controller
 from django.http import JsonResponse
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 from config.forms import RemoteAccountForm
 from config.models import RemoteAccount, RemoteOJ
 from config.tasks import update_remote_language_task
 from utils import response
-from VirtualJudgeSpider.Control import Controller
-from account.models import Token
 from utils.decorator import token_required
-from django.views.decorators.csrf import csrf_exempt
 
 
 class InitRemoteAPI(View):
