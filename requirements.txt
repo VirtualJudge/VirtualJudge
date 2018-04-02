@@ -6,3 +6,4 @@ celery
 redis
 gunicorn
 https://github.com/VirtualJudge/VirtualJudgeSpider/releases/download/v0.4/VirtualJudgeSpider-0.4-py36-none-any.whl
+https://github.com/VirtualJudge/VirtualJudgeStorage/releases/download/v0.1/VirtualJudgeStorage-0.1-py3-none-any.whl
