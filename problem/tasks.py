@@ -1,25 +1,19 @@
 import os
-import time
 
 from VirtualJudgeStorage.Control import LocalStorage
-from celery import shared_task, Task
+from celery import shared_task
 
-from problem.dispatcher import ProblemDispatchar, ProblemException
-
-
-class ProblemTask(Task):
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        print('on_failure execute')
+from problem.dispatcher import ProblemDispatchar
 
 
-@shared_task(bind=Task, base=ProblemTask)
-def get_problem_task(self, problem_id):
-    try:
-        ProblemDispatchar(problem_id).submit()
-    except ProblemException as e:
-        time.sleep(2)
-        self.retry(exc=e)
-
+@shared_task
+def get_problem_task( problem):
+    max_tries = 3
+    now = 0
+    while now < max_tries:
+        if ProblemDispatchar(problem).submit():
+            break
+        now += 1
 
 @shared_task
 def save_files(oj_name, pid, storage_files):

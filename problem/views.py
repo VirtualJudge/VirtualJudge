@@ -8,6 +8,7 @@ from problem.tasks import get_problem_task
 from utils import request
 from utils.decorator import token_required
 from utils.response import *
+from VirtualJudgeSpider import Config
 
 """
 通过数据库中的id获取题目
@@ -46,18 +47,16 @@ class ProblemRemoteAPI(View):
         problem = None
         try:
             problem = Problem.objects.get(remote_oj=kwargs['remote_oj'], remote_id=kwargs['remote_id'])
-            if self.force_update:
-                problem.retry_count = 0
-                problem.save()
-                get_problem_task.delay(problem.id)
+            return JsonResponse(ProblemSerializer(problem).data)
         except ObjectDoesNotExist:
             pass
-
-        if problem is None:
-            problem = Problem(remote_oj=kwargs['remote_oj'], remote_id=kwargs['remote_id'])
-            problem.save()
-            get_problem_task.delay(problem.id)
-        return JsonResponse(success(ProblemSerializer(problem).data))
+        if not problem or self.force_update:
+            problem = Config.Problem()
+            problem.remote_oj = kwargs['remote_oj']
+            problem.remote_id = kwargs['remote_id']
+            get_problem_task.delay(problem.__dict__)
+            return JsonResponse(success('crawling from remote'))
+        return JsonResponse(error('get remote problem error'))
 
 
 """

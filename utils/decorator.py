@@ -8,11 +8,11 @@ def super_token_required(func):
     @wraps(func)
     def wrapper(self, request, *args, **kwargs):
         try:
-            token = request.POST.get('token')
+            token = request.GET.get('token')
             if token and Token.objects.get(token=token).privilege < 2:
                 return func(self, request, *args, **kwargs)
         except:
-            pass
+            traceback.print_exc()
         return token_not_valid(request, *args, **kwargs)
 
     return wrapper
@@ -26,7 +26,7 @@ def token_required(func):
             if token and Token.objects.get(token=token):
                 return func(self, request, *args, **kwargs)
         except:
-            pass
+            traceback.print_exc()
         return token_not_valid(request, *args, **kwargs)
 
     return wrapper
