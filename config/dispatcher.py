@@ -28,7 +28,7 @@ class ConfigDispatcher(object):
             print('release config')
 
     @staticmethod
-    def choose_account(remote_oj, use):
+    def choose_account(remote_oj):
         with transaction.atomic():
             remote_accounts = RemoteAccount.objects.filter(oj_name=remote_oj, oj_account_status=True)
             if remote_accounts:
