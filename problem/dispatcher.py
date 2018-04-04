@@ -12,6 +12,7 @@ class ProblemDispatchar(object):
     def submit(self):
         account = ConfigDispatcher.choose_account(self.problem['remote_oj'])
         if not account:
+            print('account all locked')
             return False
         try:
             response = Controller.get_problem(self.problem['remote_oj'], self.problem['remote_id'], account=account)
@@ -22,6 +23,8 @@ class ProblemDispatchar(object):
                 self.problem.save()
                 ConfigDispatcher.release_account(account.id)
                 return True
+            ConfigDispatcher.release_account(account.id)
+            return False
         except:
             ConfigDispatcher.release_account(account.id)
             return False

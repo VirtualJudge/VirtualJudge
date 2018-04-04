@@ -28,13 +28,14 @@ class ConfigDispatcher(object):
             print('release config')
 
     @staticmethod
-    def choose_account(remote_oj):
+    def choose_account(remote_oj, use):
         with transaction.atomic():
             remote_accounts = RemoteAccount.objects.filter(oj_name=remote_oj, oj_account_status=True)
             if remote_accounts:
                 remote_account = remote_accounts[0]
                 remote_account.oj_account_status = False
                 remote_account.save()
+                print('LOCK account:' + str(remote_account.oj_name) + ':' + remote_account.oj_username)
                 return remote_account
         return None
 
@@ -44,3 +45,4 @@ class ConfigDispatcher(object):
             remote_account = RemoteAccount.objects.get(id=remote_account_id)
             remote_account.oj_account_status = True
             remote_account.save()
+            print('RELEASE account:' + str(remote_account.oj_name) + ':' + remote_account.oj_username)
