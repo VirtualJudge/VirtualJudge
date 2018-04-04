@@ -14,4 +14,5 @@ do
     sleep 8
 done
 service nginx stop
+nginx -c /app/deploy/nginx/nginx.conf
 exec supervisord -c /app/deploy/supervisord.conf
