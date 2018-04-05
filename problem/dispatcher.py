@@ -5,7 +5,7 @@ from problem.models import ProblemBuilder, Problem
 from utils.request import ProblemRequest
 import traceback
 from django.core.exceptions import ObjectDoesNotExist
-
+from utils.tasks import save_files
 
 class ProblemDispatchar(object):
     def __init__(self, problem):
@@ -30,10 +30,12 @@ class ProblemDispatchar(object):
                     problem_obj = ProblemBuilder.update_problem(ret, problem_data)
                     problem_obj.request_status = ProblemRequest.status['SUCCESS']
                     problem_obj.save()
+                    save_files.delay(problem_obj.id)
                 else:
                     problem_obj = ProblemBuilder.build_problem(problem_data)
                     problem_obj.request_status = ProblemRequest.status['SUCCESS']
                     problem_obj.save()
+                    save_files.delay(problem_obj.id)
                 ConfigDispatcher.release_account(account.id)
                 return True
             ConfigDispatcher.release_account(account.id)

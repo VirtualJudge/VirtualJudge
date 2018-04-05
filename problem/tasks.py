@@ -1,8 +1,7 @@
-import os
-
-from VirtualJudgeStorage.Control import LocalStorage
-from celery import shared_task
 import time
+
+from celery import shared_task
+
 from problem.dispatcher import ProblemDispatchar
 
 
@@ -17,13 +16,4 @@ def get_problem_task(problem):
         time.sleep(2)
 
 
-@shared_task
-def save_files(oj_name, pid, storage_files):
-    try:
-        base_path = '/public'
-        dir_path = os.path.join(base_path, oj_name, pid)
-        os.mkdir(dir_path)
-        for storage_file in storage_files:
-            LocalStorage.save_file(dir_path, storage_file.url, storage_file.file_name)
-    except:
-        pass
+

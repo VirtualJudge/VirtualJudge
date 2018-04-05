@@ -1,3 +1,5 @@
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -18,3 +20,5 @@ REDIS_CONF = {
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
+PUBLIC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')

@@ -19,3 +19,5 @@ REDIS_CONF = {
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+
+PUBLIC = '/public'
