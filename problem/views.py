@@ -9,7 +9,6 @@ from utils import request
 from utils.decorator import token_required
 from utils.response import *
 from VirtualJudgeSpider import Config
-
 """
 通过数据库中的id获取题目
 -----------------------------
@@ -45,7 +44,8 @@ class ProblemRemoteAPI(View):
         problem = None
         try:
             problem = Problem.objects.get(remote_oj=kwargs['remote_oj'], remote_id=kwargs['remote_id'])
-            return JsonResponse(ProblemSerializer(problem).data)
+            if not self.force_update:
+                return JsonResponse(ProblemSerializer(problem).data)
         except ObjectDoesNotExist:
             pass
         if not problem or self.force_update:

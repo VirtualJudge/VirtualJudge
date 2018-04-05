@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-
+import json
 
 class Problem(models.Model):
     remote_oj = models.CharField(max_length=20, null=True)
@@ -9,18 +9,18 @@ class Problem(models.Model):
     request_status = models.IntegerField(default=0)
     retry_count = models.IntegerField(default=0)
 
+    special_judge = models.BooleanField(default=False)
     update_time = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=128, null=True)
     time_limit = models.CharField(max_length=20, null=True)
     memory_limit = models.CharField(max_length=20, null=True)
-    description = models.TextField(blank=True, null=True)
-    input = models.TextField(blank=True, null=True)
-    output = models.TextField(blank=True, null=True)
-    special_judge = models.BooleanField(default=False)
+    description = JSONField(blank=True, null=True)
+    input = JSONField(blank=True, null=True)
+    output = JSONField(blank=True, null=True)
     sample = JSONField(null=True, blank=True)
-    hint = models.TextField(blank=True, null=True)
-    author = models.CharField(max_length=200, blank=True, null=True)
-    source = models.CharField(max_length=200, blank=True, null=True)
+    hint = JSONField(blank=True, null=True)
+    author = JSONField(blank=True, null=True)
+    source = JSONField(blank=True, null=True)
 
     class Meta:
         ordering = ('id',)

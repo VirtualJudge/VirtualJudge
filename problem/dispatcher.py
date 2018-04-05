@@ -1,8 +1,9 @@
 from VirtualJudgeSpider.Control import Controller
 
 from config.dispatcher import ConfigDispatcher
-from problem.models import ProblemBuilder
+from problem.models import ProblemBuilder, Problem
 from utils.request import ProblemRequest
+import traceback
 
 
 class ProblemDispatchar(object):
@@ -18,13 +19,23 @@ class ProblemDispatchar(object):
             response = Controller.get_problem(self.problem['remote_oj'], self.problem['remote_id'], account=account)
             if response:
                 problem_data = response.get_dict()
-                self.problem = ProblemBuilder.build_problem(problem_data)
-                self.problem.request_status = ProblemRequest.status['SUCCESS']
-                self.problem.save()
+                try:
+                    ret = Problem.objects.get(remote_oj=self.problem['remote_oj'], remote_id=self.problem['remote_id'])
+                except:
+                    ret = None
+                if ret:
+                    problem_obj = ProblemBuilder.update_problem(ret, problem_data)
+                    problem_obj.request_status = ProblemRequest.status['SUCCESS']
+                    problem_obj.save()
+                else:
+                    problem_obj = ProblemBuilder.build_problem(problem_data)
+                    problem_obj.request_status = ProblemRequest.status['SUCCESS']
+                    problem_obj.save()
                 ConfigDispatcher.release_account(account.id)
                 return True
             ConfigDispatcher.release_account(account.id)
             return False
         except:
+            traceback.print_exc()
             ConfigDispatcher.release_account(account.id)
             return False
