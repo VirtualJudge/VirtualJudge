@@ -19,7 +19,6 @@ from VirtualJudgeSpider import Config
 
 
 class ProblemLocalAPI(View):
-    @token_required
     def get(self, *args, **kwargs):
         try:
             problem = Problem.objects.get(id=kwargs['problem_id'])
@@ -42,7 +41,6 @@ class ProblemLocalAPI(View):
 class ProblemRemoteAPI(View):
     force_update = False
 
-    @token_required
     def get(self, *args, **kwargs):
         problem = None
         try:
@@ -69,7 +67,6 @@ class ProblemRemoteAPI(View):
 
 
 class ProblemListAPI(View):
-    @token_required
     def get(self, *args, **kwargs):
         offset = 0
         limit = 20
