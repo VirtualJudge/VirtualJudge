@@ -10,11 +10,11 @@ from config.forms import RemoteAccountForm
 from config.models import RemoteAccount, RemoteOJ
 from config.tasks import update_remote_language_task
 from utils import response
-from utils.decorator import token_required
+from utils.decorator import token_required,super_token_required
 
 
 class InitRemoteAPI(View):
-    @token_required
+    @super_token_required
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         form = RemoteAccountForm(request.POST, request.FILES)
