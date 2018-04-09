@@ -8,7 +8,7 @@
 
 <script language="JavaScript">
     setTimeout(function () {
-        window.location.href = "/{{ remote_oj }}/{{ remote_id }}"
+        window.location.href = "{% url 'show_problem' remote_oj remote_id %}"
     }, 1000);
 </script>
 </body>

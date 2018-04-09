@@ -24,7 +24,7 @@ urlpatterns = [
     path('api/', include('problem.urls')),
     path('api/', include('submission.urls')),
     path('api/', include('config.urls')),
-    path('test/<str:remote_oj>/<str:remote_id>', views.get_problem),
-    path('test/<str:remote_oj>/<str:remote_id>/html', views.get_problem_html),
+    path('problem/<str:remote_oj>/<str:remote_id>', views.get_problem, name='show_problem'),
+    path('problem/<str:remote_oj>/<str:remote_id>/html', views.get_problem_html, name='show_problem_html'),
 
 ]
