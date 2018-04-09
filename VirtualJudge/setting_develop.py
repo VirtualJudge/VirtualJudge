@@ -23,3 +23,4 @@ ALLOWED_HOSTS = ["*"]
 PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
 PUBLIC = '/public/'
 
+
