@@ -1,6 +1,7 @@
 from django.db import transaction
 from config.models import SettingOJ, RemoteAccount
 from django.core.exceptions import ObjectDoesNotExist
+from VirtualJudgeSpider.Control import Controller
 
 
 class ConfigDispatcher(object):
@@ -30,7 +31,9 @@ class ConfigDispatcher(object):
     @staticmethod
     def choose_account(remote_oj):
         with transaction.atomic():
-            remote_accounts = RemoteAccount.objects.filter(oj_name=remote_oj, oj_account_status=True)
+            remote_accounts = RemoteAccount.objects.filter(oj_name=Controller.get_real_remote_oj(remote_oj),
+                                                           oj_account_status=True)
+            print(remote_accounts)
             if remote_accounts:
                 remote_account = remote_accounts[0]
                 remote_account.oj_account_status = False

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 import json
 
+
 class Problem(models.Model):
     remote_oj = models.CharField(max_length=20, null=True)
     remote_id = models.CharField(max_length=20, null=True)
@@ -14,13 +15,8 @@ class Problem(models.Model):
     title = models.CharField(max_length=128, null=True)
     time_limit = models.CharField(max_length=20, null=True)
     memory_limit = models.CharField(max_length=20, null=True)
-    description = JSONField(blank=True, null=True)
-    input = JSONField(blank=True, null=True)
-    output = JSONField(blank=True, null=True)
-    sample = JSONField(null=True, blank=True)
-    hint = JSONField(blank=True, null=True)
-    author = JSONField(blank=True, null=True)
-    source = JSONField(blank=True, null=True)
+
+    html = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ('id',)
@@ -43,22 +39,8 @@ class ProblemBuilder(object):
             ret.time_limit = problem_data['time_limit']
         if problem_data.get('memory_limit'):
             ret.memory_limit = problem_data['memory_limit']
-        if problem_data.get('description'):
-            ret.description = problem_data['description']
-        if problem_data.get('input'):
-            ret.input = problem_data['input']
-        if problem_data.get('output'):
-            ret.output = problem_data['output']
-        if problem_data.get('special_judge'):
-            ret.special_judge = problem_data['special_judge']
-        if problem_data.get('sample'):
-            ret.sample = problem_data['sample']
-        if problem_data.get('hint'):
-            ret.hint = problem_data['hint']
-        if problem_data.get('author'):
-            ret.author = problem_data['author']
-        if problem_data.get('source'):
-            ret.source = problem_data['source']
+        if problem_data.get('html'):
+            ret.html = problem_data['html']
         return ret
 
     @staticmethod
@@ -75,20 +57,6 @@ class ProblemBuilder(object):
             ret.time_limit = problem_data['time_limit']
         if problem_data.get('memory_limit'):
             ret.memory_limit = problem_data['memory_limit']
-        if problem_data.get('description'):
-            ret.description = problem_data['description']
-        if problem_data.get('input'):
-            ret.input = problem_data['input']
-        if problem_data.get('output'):
-            ret.output = problem_data['output']
-        if problem_data.get('special_judge'):
-            ret.special_judge = problem_data['special_judge']
-        if problem_data.get('sample'):
-            ret.sample = problem_data['sample']
-        if problem_data.get('hint'):
-            ret.hint = problem_data['hint']
-        if problem_data.get('author'):
-            ret.author = problem_data['author']
-        if problem_data.get('source'):
-            ret.source = problem_data['source']
+        if problem_data.get('html'):
+            ret.html = problem_data['html']
         return ret

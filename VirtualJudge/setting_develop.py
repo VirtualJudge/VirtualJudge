@@ -9,7 +9,6 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
-
 }
 
 REDIS_CONF = {
@@ -21,4 +20,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-PUBLIC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
+PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
+PUBLIC = '/public/'
+

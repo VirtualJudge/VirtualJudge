@@ -7,40 +7,41 @@ from celery import shared_task
 
 from VirtualJudge import settings
 from problem.models import Problem
-import json
+from bs4 import BeautifulSoup
 
 
-def check_json(remote_oj, remote_id, json_obj):
-    if not json_obj:
-        return
-    for val in json_obj:
-        if val['type'] in [Desc.Type.IMG, Desc.Type.PDF] and val.get('origin', None) and val.get('file_name', None):
-            path = settings.PUBLIC
-            path = os.path.join(path, remote_oj)
-            path = os.path.join(path, remote_id)
-            res = requests.get(str(val['origin']).replace('../', ''))
-            if res.status_code != 200:
-                continue
-            try:
-                os.makedirs(path)
-            except:
-                pass
-            with open(os.path.join(os.path.abspath(path), val['file_name']), 'wb') as fout:
-                fout.write(res.content)
-            val['link'] = os.path.join(path, val['file_name'])
+def update_static(remote_oj, remote_id, website_data):
+    soup = BeautifulSoup(website_data, 'lxml')
+    for img in soup.find_all('img'):
+        url = img['src']
+        file_name = str(url).split('/')[-1]
+        path = settings.PUBLIC_DIR
+        path = os.path.join(path, remote_oj)
+        path = os.path.join(path, remote_id)
+        url_path = settings.PUBLIC
+        url_path = os.path.join(url_path, remote_oj)
+        url_path = os.path.join(url_path, remote_id)
+
+        res = requests.get(url)
+        if res.status_code != 200:
+            continue
+        try:
+            os.makedirs(path)
+        except:
+            pass
+        img['src'] = os.path.join(url_path, file_name)
+        with open(os.path.join(path, file_name), 'wb') as fout:
+            fout.write(res.content)
+    return str(soup)
 
 
 @shared_task
 def save_files(local_pid):
     try:
         problem = Problem.objects.get(id=local_pid)
-        check_json(problem.remote_oj, problem.remote_id, problem.description)
-        check_json(problem.remote_oj, problem.remote_id, problem.input)
-        check_json(problem.remote_oj, problem.remote_id, problem.output)
-        check_json(problem.remote_oj, problem.remote_id, problem.author)
-        check_json(problem.remote_oj, problem.remote_id, problem.source)
-        check_json(problem.remote_oj, problem.remote_id, problem.hint)
-        problem.save()
+        if problem.html:
+            problem.html = update_static(problem.remote_oj, problem.remote_id, problem.html)
+            problem.save()
     except:
         traceback.print_exc()
         pass

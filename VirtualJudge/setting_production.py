@@ -21,3 +21,4 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 PUBLIC = '/public'
+PUBLIC_DIR = '/public'

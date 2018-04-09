@@ -26,15 +26,15 @@ class SubmissionDispatcher(object):
                 self.submission.retry_count = self.submission.retry_count + 1
                 self.submission.save()
                 raise SubmissionException
-            success_submit = Controller.submit_code(self.submission.remote_oj,
-                                                    Account(username=account.oj_username, password=account.oj_password),
-                                                    self.submission.code,
-                                                    self.submission.language,
-                                                    self.submission.remote_id)
+            success_submit = Controller(self.submission.remote_oj).submit_code(
+                account=Account(username=account.oj_username, password=account.oj_password),
+                code=self.submission.code,
+                language=self.submission.language,
+                pid=self.submission.remote_id)
             if success_submit:
-                result = Controller.get_result(self.submission.remote_oj,
-                                               Account(username=account.oj_username, password=account.oj_password),
-                                               self.submission.remote_id)
+                result = Controller(self.submission.remote_oj, ).get_result(
+                    account=Account(username=account.oj_username, password=account.oj_password),
+                    pid=self.submission.remote_id)
                 if not result:
                     if self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
                         self.submission.status = JudgeRequest.status['RETRY']
@@ -49,7 +49,7 @@ class SubmissionDispatcher(object):
                 self.submission.verdict = result.verdict
                 self.submission.execute_memory = result.execute_memory
                 self.submission.execute_time = result.execute_time
-                if Controller.is_waiting_for_judge(self.submission.remote_oj, result.verdict):
+                if Controller(self.submission.remote_oj).is_waiting_for_judge(result.verdict):
                     self.submission.status = JudgeRequest.status['JUDGING']
                     self.submission.retry_count = self.submission.retry_count + 1
                     self.submission.save()
@@ -68,8 +68,9 @@ class SubmissionDispatcher(object):
                 raise SubmissionException
             ConfigDispatcher.release_account(account.id)
         elif self.submission.status == JudgeRequest.status['JUDGING']:
-            result = Controller.get_result_by_rid(self.submission.remote_oj, self.submission.remote_run_id)
-            if Controller.is_waiting_for_judge(self.submission.remote_oj, result.verdict):
+            result = Controller(self.submission.remote_oj).get_result_by_rid_and_pid(self.submission.remote_run_id,
+                                                                                     self.submission.remote_id)
+            if Controller(self.submission.remote_oj).is_waiting_for_judge(result.verdict):
                 self.submission.status = JudgeRequest.status['JUDGING']
                 self.submission.retry_count = self.submission.retry_count + 1
                 self.submission.save()

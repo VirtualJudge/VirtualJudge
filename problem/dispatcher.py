@@ -7,23 +7,25 @@ import traceback
 from django.core.exceptions import ObjectDoesNotExist
 from utils.tasks import save_files
 
+
 class ProblemDispatchar(object):
     def __init__(self, problem):
         self.problem = problem
 
     def submit(self):
         account = ConfigDispatcher.choose_account(self.problem['remote_oj'])
+        print(self.problem['remote_oj'])
         if not account:
             print('account all locked')
             return False
         try:
-            ret = None
             try:
                 ret = Problem.objects.get(remote_oj=self.problem['remote_oj'], remote_id=self.problem['remote_id'])
             except ObjectDoesNotExist:
-                ret = Problem(remote_oj=self.problem['remote_oj'], remote_id=self.problem['remote_id'],request_status=ProblemRequest.status['ERROR'])
+                ret = Problem(remote_oj=self.problem['remote_oj'], remote_id=self.problem['remote_id'],
+                              request_status=ProblemRequest.status['ERROR'])
                 ret.save()
-            response = Controller.get_problem(self.problem['remote_oj'], self.problem['remote_id'], account=account)
+            response = Controller(self.problem['remote_oj']).get_problem(self.problem['remote_id'], account=account)
             if response:
                 problem_data = response.get_dict()
                 if ret:
@@ -42,6 +44,5 @@ class ProblemDispatchar(object):
             return False
         except:
             traceback.print_exc()
-
             ConfigDispatcher.release_account(account.id)
             return False
