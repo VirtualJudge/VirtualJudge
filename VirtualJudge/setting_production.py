@@ -23,4 +23,3 @@ ALLOWED_HOSTS = ['*']
 PUBLIC = '/public'
 PUBLIC_DIR = '/public'
 
-STATIC_URL = '/static/'
