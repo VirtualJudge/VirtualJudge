@@ -6,6 +6,7 @@ from problem.tasks import get_problem_task
 from django.http import JsonResponse
 from VirtualJudgeSpider import Config, Control
 from utils.response import *
+from django.shortcuts import render
 
 
 @require_GET
@@ -17,7 +18,26 @@ def get_problem(request, remote_oj, remote_id):
     problem = None
 
     remote_oj = Control.Controller.get_real_remote_oj(remote_oj)
-    print(remote_oj, remote_id, type(remote_oj), type(remote_id))
+    try:
+        problem_obj = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
+        return render(request, 'problem.html', {'problem': problem_obj.__dict__})
+    except ObjectDoesNotExist:
+        pass
+    except ValueError:
+        pass
+    if not problem:
+        problem = Config.Problem()
+        problem.remote_oj = remote_oj
+        problem.remote_id = remote_id
+        get_problem_task.delay(problem.__dict__)
+        return render(request, 'problem-error.html', {'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'crawling'})
+    return render(request, 'problem-error.html', {'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'error'})
+
+
+def get_problem_html(request, remote_oj, remote_id):
+    problem = None
+
+    remote_oj = Control.Controller.get_real_remote_oj(remote_oj)
     try:
         problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
         return HttpResponse(problem.html)
@@ -31,5 +51,5 @@ def get_problem(request, remote_oj, remote_id):
         problem.remote_id = remote_id
         print('get problem:', problem.remote_oj, problem.remote_id)
         get_problem_task.delay(problem.__dict__)
-        return JsonResponse(success('crawling from remote'))
-    return JsonResponse(error('get remote problem error'))
+        return HttpResponse(success('Crawling From Remote....'))
+    return HttpResponse(error('get remote problem error'))

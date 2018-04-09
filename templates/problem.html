@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ problem.remote_oj }}-{{ problem.remote_id }} {{ problem.title }}</title>
+</head>
+<body>
+
+<iframe id="frame" src="/{{ problem.remote_oj }}/{{ problem.remote_id }}/html" width="100%" frameborder="0"
+        scrolling="no">
+
+</iframe>
+<script>
+    function reinitIframe() {
+        var iframe = document.getElementById("frame");
+        try {
+            var bHeight = iframe.contentWindow.document.body.scrollHeight;
+            var dHeight = iframe.contentWindow.document.documentElement.scrollHeight;
+            var height = Math.min(bHeight, dHeight);
+            iframe.height = height;
+        } catch (ex) {
+        }
+    }
+
+    window.setInterval("reinitIframe()", 200);
+</script>
+</body>
+</html>
