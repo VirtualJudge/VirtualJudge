@@ -1,48 +1,35 @@
+import traceback
+
 from VirtualJudgeSpider.Control import Controller
 
 from config.dispatcher import ConfigDispatcher
 from problem.models import ProblemBuilder, Problem
-from utils.request import ProblemRequest
-import traceback
-from django.core.exceptions import ObjectDoesNotExist
+from utils.request import ProblemStatus
 from utils.tasks import save_files
 
 
 class ProblemDispatchar(object):
-    def __init__(self, problem):
-        self.problem = problem
-
-    def submit(self):
-        account = ConfigDispatcher.choose_account(self.problem['remote_oj'])
-        print(self.problem['remote_oj'])
-        if not account:
-            print('account all locked')
-            return False
+    def __init__(self, problem_id):
         try:
-            try:
-                ret = Problem.objects.get(remote_oj=self.problem['remote_oj'], remote_id=self.problem['remote_id'])
-            except ObjectDoesNotExist:
-                ret = Problem(remote_oj=self.problem['remote_oj'], remote_id=self.problem['remote_id'],
-                              request_status=ProblemRequest.status['ERROR'])
-                ret.save()
-            response = Controller(self.problem['remote_oj']).get_problem(self.problem['remote_id'], account=account)
-            if response:
-                problem_data = response.get_dict()
-                if ret:
-                    problem_obj = ProblemBuilder.update_problem(ret, problem_data)
-                    problem_obj.request_status = ProblemRequest.status['SUCCESS']
-                    problem_obj.save()
-                    save_files.delay(problem_obj.id)
-                else:
-                    problem_obj = ProblemBuilder.build_problem(problem_data)
-                    problem_obj.request_status = ProblemRequest.status['SUCCESS']
-                    problem_obj.save()
-                    save_files.delay(problem_obj.id)
-                ConfigDispatcher.release_account(account.id)
-                return True
-            ConfigDispatcher.release_account(account.id)
-            return False
+            self.problem = Problem.objects.get(id=problem_id)
         except:
             traceback.print_exc()
-            ConfigDispatcher.release_account(account.id)
-            return False
+            self.problem = None
+
+    def submit(self):
+        account = ConfigDispatcher.choose_account(self.problem.remote_oj)
+        if account and self.problem:
+            try:
+                response = Controller(self.problem.remote_oj).get_problem(self.problem.remote_id, account=account)
+                if response:
+                    problem_data = response.get_dict()
+                    self.problem = ProblemBuilder.update_problem(self.problem, problem_data)
+                    self.problem.request_status = ProblemStatus.STATUS_CRAWLING_SUCCESS.value
+                    save_files.delay(self.problem.id)
+                else:
+                    self.problem.request_status = ProblemStatus.STATUS_NETWORK_ERROR.value
+                self.problem.save()
+            except:
+                traceback.print_exc()
+            finally:
+                ConfigDispatcher.release_account(account.id)

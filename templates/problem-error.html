@@ -5,11 +5,15 @@
     <title>{{ remote_oj }}-{{ remote_id }} {{ status }}</title>
 </head>
 <body>
-
+<p>
+    {{ status }}
+</p>
 <script language="JavaScript">
-    setTimeout(function () {
-        window.location.href = "{% url 'show_problem' remote_oj remote_id %}"
-    }, 1000);
+    if ("{{ status }}" === "CRAWLING") {
+        setTimeout(function () {
+            window.location.href = "{% url 'show_problem' remote_oj remote_id %}"
+        }, 500);
+    }
 </script>
 </body>
 </html>

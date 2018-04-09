@@ -1,14 +1,13 @@
 from django.db import models
-from django.contrib.postgres.fields import JSONField
-import json
+
+from utils.request import ProblemStatus
 
 
 class Problem(models.Model):
     remote_oj = models.CharField(max_length=20, null=True)
     remote_id = models.CharField(max_length=20, null=True)
     remote_url = models.CharField(max_length=200, null=True)
-    request_status = models.IntegerField(default=0)
-    retry_count = models.IntegerField(default=0)
+    request_status = models.IntegerField(default=ProblemStatus.STATUS_PENDING.value)
 
     special_judge = models.BooleanField(default=False)
     update_time = models.DateTimeField(auto_now=True)

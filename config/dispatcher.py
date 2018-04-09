@@ -33,7 +33,6 @@ class ConfigDispatcher(object):
         with transaction.atomic():
             remote_accounts = RemoteAccount.objects.filter(oj_name=Controller.get_real_remote_oj(remote_oj),
                                                            oj_account_status=True)
-            print(remote_accounts)
             if remote_accounts:
                 remote_account = remote_accounts[0]
                 remote_account.oj_account_status = False
