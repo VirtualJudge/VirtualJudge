@@ -1,4 +1,5 @@
 from django.db import models
+from VirtualJudgeSpider import Config
 
 
 class Submission(models.Model):
@@ -40,11 +41,9 @@ class Submission(models.Model):
     """
         即时修改爬虫状态
     """
-    # 重试次数
-    retry_count = models.IntegerField(default=0)
 
     # 当前爬虫状态
-    status = models.IntegerField(null=True)
+    status = models.IntegerField(default=Config.Result.Status.STATUS_PENDING.value)
 
     class Meta:
         db_table = 'submission'

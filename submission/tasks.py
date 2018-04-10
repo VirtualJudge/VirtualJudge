@@ -1,18 +1,17 @@
-from celery import shared_task, Task
+import traceback
 
-from submission.dispatcher import SubmissionDispatcher, SubmissionException
-import time
+from celery import shared_task
 
-
-class SubmissionTask(Task):
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        print('on_failure execute')
+from submission.dispatcher import SubmissionDispatcher
+from submission.models import Submission
 
 
-@shared_task(bind=True, base=SubmissionTask)
-def submit_task(self, submission_id):
+@shared_task
+def submit_task(submission_id):
     try:
-        SubmissionDispatcher(submission_id).submit()
-    except SubmissionException as e:
-        time.sleep(2)
-        self.retry(exc=e, max_retries=15)
+        submission = Submission.objects.get(id=submission_id)
+        tries = 3
+        while tries > 0 and SubmissionDispatcher(submission.id).submit() is False:
+            tries -= 1
+    except:
+        traceback.print_exc()

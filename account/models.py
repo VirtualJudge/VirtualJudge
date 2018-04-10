@@ -4,7 +4,7 @@ import uuid
 
 
 def get_token():
-    return str(uuid.uuid1()).replace('-', '')
+    return str(uuid.uuid4()).replace('-', '')
 
 
 class Token(models.Model):

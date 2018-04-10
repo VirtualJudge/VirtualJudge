@@ -7,6 +7,9 @@ from celery import shared_task
 
 from VirtualJudge import settings
 from problem.models import Problem
+from submission.models import Submission
+from VirtualJudgeSpider import Control, Config
+import time
 
 
 def load_static(remote_oj, remote_id, website_data):
@@ -35,12 +38,33 @@ def load_static(remote_oj, remote_id, website_data):
 
 
 @shared_task
-def save_files_task(local_pid):
+def save_files_task(problem_id):
     try:
-        problem = Problem.objects.get(id=local_pid)
+        problem = Problem.objects.get(id=problem_id)
         if problem.html:
             problem.html = load_static(problem.remote_oj, problem.remote_id, problem.html)
             problem.save()
+    except:
+        traceback.print_exc()
+        pass
+
+
+@shared_task
+def reload_result_task(submission_id):
+    try:
+        submission = Submission.objects.get(id=submission_id)
+        tries = 5
+        max_wait_times = 5
+        while tries > 0 and Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict):
+            result = Control.Controller(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.remote_run_id,
+                                                                                        pid=submission.remote_id)
+            if result.status == Config.Result.Status.STATUS_RESULT_GET:
+                submission.verdict = result.verdict
+                submission.execute_time = result.execute_time
+                submission.execute_memory = result.execute_memory
+                submission.save()
+            tries -= 1
+            time.sleep(max_wait_times - tries)
     except:
         traceback.print_exc()
         pass

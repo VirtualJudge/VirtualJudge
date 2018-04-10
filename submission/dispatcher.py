@@ -1,83 +1,54 @@
-from VirtualJudgeSpider.Config import Account
-from VirtualJudgeSpider.Control import Controller
-
 from config.dispatcher import ConfigDispatcher
 from submission.models import Submission
-from utils.request import JudgeRequest
-
-
-class SubmissionException(Exception):
-    def __init__(self, err='Submission Error'):
-        Exception.__init__(self, err)
+from VirtualJudgeSpider import Control, Config
+from utils.tasks import reload_result_task
 
 
 class SubmissionDispatcher(object):
     def __init__(self, submission_id):
-        self.submission = Submission.objects.get(id=submission_id)
+        try:
+            self._submission = Submission.objects.get(id=submission_id)
+        except:
+            self._submission = None
         self.remote_account = None
 
     def submit(self):
-        if self.submission.retry_count > 10:
-            return
-        if self.submission.status == JudgeRequest.status['PENDING'] or \
-                self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
-            account = ConfigDispatcher.choose_account(self.submission.remote_oj)
-            if not account:
-                self.submission.retry_count = self.submission.retry_count + 1
-                self.submission.save()
-                raise SubmissionException
-            success_submit = Controller(self.submission.remote_oj).submit_code(
-                account=Account(username=account.oj_username, password=account.oj_password),
-                code=self.submission.code,
-                language=self.submission.language,
-                pid=self.submission.remote_id)
-            if success_submit:
-                result = Controller(self.submission.remote_oj, ).get_result(
-                    account=Account(username=account.oj_username, password=account.oj_password),
-                    pid=self.submission.remote_id)
-                if not result:
-                    if self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
-                        self.submission.status = JudgeRequest.status['RETRY']
-                    else:
-                        self.submission.status = JudgeRequest.status['SEND_FOR_JUDGE_ERROR']
-                    ConfigDispatcher.release_account(account.id)
-                    self.submission.retry_count = self.submission.retry_count + 1
-                    self.submission.save()
-                    raise Submission
+        if self._submission is None:
+            return False
+        account = ConfigDispatcher.choose_account(self._submission.remote_oj)
+        if account is None:
+            self._submission.status = Config.Result.Status.STATUS_NO_ACCOUNT
+            self._submission.save()
+            return False
 
-                self.submission.remote_run_id = result.origin_run_id
-                self.submission.verdict = result.verdict
-                self.submission.execute_memory = result.execute_memory
-                self.submission.execute_time = result.execute_time
-                if Controller(self.submission.remote_oj).is_waiting_for_judge(result.verdict):
-                    self.submission.status = JudgeRequest.status['JUDGING']
-                    self.submission.retry_count = self.submission.retry_count + 1
-                    self.submission.save()
-                    ConfigDispatcher.release_account(account.id)
-                    raise SubmissionException
-                self.submission.status = JudgeRequest.status['SUCCESS']
-                self.submission.save()
-            else:
-                if self.submission.status == JudgeRequest.status['SEND_FOR_JUDGE_ERROR']:
-                    self.submission.status = JudgeRequest.status['RETRY']
-                else:
-                    self.submission.status = JudgeRequest.status['SEND_FOR_JUDGE_ERROR']
-                self.submission.retry_count = self.submission.retry_count + 1
-                self.submission.save()
-                ConfigDispatcher.release_account(account.id)
-                raise SubmissionException
+        tries = 3
+        submit_code = False
+        while tries > 0 and submit_code is False:
+            submit_code = Control.Controller(self._submission.remote_oj).submit_code(self._submission.remote_id,
+                                                                                     account,
+                                                                                     self._submission.code,
+                                                                                     self._submission.language)
+
+            tries -= 1
+        if submit_code is False:
+            self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
+            self._submission.save()
             ConfigDispatcher.release_account(account.id)
-        elif self.submission.status == JudgeRequest.status['JUDGING']:
-            result = Controller(self.submission.remote_oj).get_result_by_rid_and_pid(self.submission.remote_run_id,
-                                                                                     self.submission.remote_id)
-            if Controller(self.submission.remote_oj).is_waiting_for_judge(result.verdict):
-                self.submission.status = JudgeRequest.status['JUDGING']
-                self.submission.retry_count = self.submission.retry_count + 1
-                self.submission.save()
-                raise SubmissionException
-
-            self.submission.verdict = result.verdict
-            self.submission.execute_memory = result.execute_memory
-            self.submission.execute_time = result.execute_time
-            self.submission.status = JudgeRequest.status['SUCCESS']
-            self.submission.save()
+            return False
+        result = Control.Controller(self._submission.remote_oj).get_result(pid=self._submission.remote_id,
+                                                                           account=account)
+        if result.status == Config.Result.Status.STATUS_RESULT_GET:
+            self._submission.status = result.status.value
+            self._submission.remote_run_id = result.origin_run_id
+            self._submission.execute_time = result.execute_time
+            self._submission.execute_memory = result.execute_memory
+            self._submission.verdict = result.verdict
+            self._submission.save()
+            reload_result_task.delay(self._submission.id)
+            ConfigDispatcher.release_account(account.id)
+            return True
+        else:
+            self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
+            self._submission.save()
+            ConfigDispatcher.release_account(account.id)
+            return False
