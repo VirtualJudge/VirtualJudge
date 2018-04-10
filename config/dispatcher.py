@@ -13,10 +13,12 @@ class ConfigDispatcher(object):
                 if setting.oj_value != value:
                     setting.oj_value = value
                     setting.save()
+                    print('LOCK config')
                     return True
             except ObjectDoesNotExist:
                 setting = SettingOJ.objects.create(oj_key=key, oj_value=value)
                 setting.save()
+                print('LOCK config')
                 return True
         return False
 
@@ -26,7 +28,7 @@ class ConfigDispatcher(object):
             setting = SettingOJ.objects.get(oj_key=key)
             setting.oj_value = value
             setting.save()
-            print('release config')
+            print('RELEASE config')
 
     @staticmethod
     def choose_account(remote_oj):

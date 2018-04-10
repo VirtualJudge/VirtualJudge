@@ -1,11 +1,9 @@
 import traceback
 
-from VirtualJudgeSpider.Control import Controller
-
 from config.dispatcher import ConfigDispatcher
 from problem.models import ProblemBuilder, Problem
-from utils.request import ProblemStatus
-from utils.tasks import save_files
+from utils.tasks import save_files_task
+from VirtualJudgeSpider import Config, Control
 
 
 class ProblemDispatchar(object):
@@ -18,18 +16,24 @@ class ProblemDispatchar(object):
 
     def submit(self):
         account = ConfigDispatcher.choose_account(self.problem.remote_oj)
-        if account and self.problem:
-            try:
-                response = Controller(self.problem.remote_oj).get_problem(self.problem.remote_id, account=account)
-                if response:
-                    problem_data = response.get_dict()
-                    self.problem = ProblemBuilder.update_problem(self.problem, problem_data)
-                    self.problem.request_status = ProblemStatus.STATUS_CRAWLING_SUCCESS.value
-                    save_files.delay(self.problem.id)
-                else:
-                    self.problem.request_status = ProblemStatus.STATUS_NETWORK_ERROR.value
+        if type(self.problem) == Problem:
+            if account:
+                try:
+                    response = Control.Controller(self.problem.remote_oj).get_problem(self.problem.remote_id,
+                                                                                      account=account)
+                    if response.status == Config.Problem.Status.STATUS_CRAWLING_SUCCESS:
+                        problem_data = response.__dict__
+                        self.problem = ProblemBuilder.update_problem(self.problem, problem_data)
+                        self.problem.request_status = Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value
+                        self.problem.save()
+                        save_files_task.delay(self.problem.id)
+                    else:
+                        self.problem.request_status = response.status.value
+                        self.problem.save()
+                except:
+                    traceback.print_exc()
+                finally:
+                    ConfigDispatcher.release_account(account.id)
+            else:
+                self.problem.request_status = Config.Problem.Status.STATUS_NO_ACCOUNT.value
                 self.problem.save()
-            except:
-                traceback.print_exc()
-            finally:
-                ConfigDispatcher.release_account(account.id)

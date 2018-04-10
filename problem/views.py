@@ -1,4 +1,4 @@
-from VirtualJudgeSpider import Control
+from VirtualJudgeSpider import Control, Config
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponse
 from django.views import View
@@ -6,7 +6,6 @@ from django.views import View
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
-from utils.request import ProblemStatus
 from utils.response import *
 
 """
@@ -46,23 +45,35 @@ class ProblemRemoteAPI(View):
         remote_id = kwargs['remote_id']
         if not Control.Controller.is_support(remote_oj) or not remote_id.isalnum():
             return HttpResponse('remote_oj or remote_id not valid')
-
         try:
             problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-            if problem.request_status == ProblemStatus.STATUS_NETWORK_ERROR.value:
+            if problem.request_status == Config.Problem.Status.STATUS_NETWORK_ERROR.value or (
+                    self.force_update and problem.request_status in [Config.Problem.Status.STATUS_PENDING.value,
+                                                                     Config.Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
+                                                                     Config.Problem.Status.STATUS_NO_ACCOUNT.value,
+                                                                     Config.Problem.Status.STATUS_PARSE_ERROR.value]):
                 get_problem_task.delay(problem.id)
+
         except ObjectDoesNotExist:
             problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
-                              request_status=ProblemStatus.STATUS_PENDING.value)
+                              request_status=Config.Problem.Status.STATUS_PENDING.value)
             problem.save()
             get_problem_task.delay(problem.id)
         except ValueError:
             return HttpResponse('ValueError')
 
-        if problem.request_status == ProblemStatus.STATUS_CRAWLING_SUCCESS.value:
+        if problem.request_status == Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value:
             return JsonResponse(success(ProblemSerializer(problem).data))
-        elif problem.request_status == ProblemStatus.STATUS_PROBLEM_NOT_EXIST.value:
-            return JsonResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'NOT FOUND'}))
+        elif problem.request_status == Config.Problem.Status.STATUS_PARSE_ERROR.value:
+            return JsonResponse(
+                info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'PROBLEM PARSER ERROR'}))
+        elif problem.request_status == Config.Problem.Status.STATUS_PROBLEM_NOT_EXIST.value:
+            return JsonResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'PROBLEM NOT FOUND'}))
+        elif problem.request_status == Config.Problem.Status.STATUS_OJ_NOT_EXIST.value:
+            return JsonResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'OJ NOT SUPPORT'}))
+        elif problem.request_status == Config.Problem.Status.STATUS_NO_ACCOUNT.value:
+            return JsonResponse(
+                info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'NO ACCOUNT'}))
         else:
             return JsonResponse(error({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'CRAWLING'}))
 
@@ -85,6 +96,6 @@ class ProblemListAPI(View):
                 offset = v
             if k == 'limit':
                 limit = v
-        problems = Problem.objects.filter(request_status=ProblemStatus.STATUS_CRAWLING_SUCCESS.value).order_by('-id')[
-                   offset:offset + limit]
+        problems = Problem.objects.filter(request_status=Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value).order_by(
+            '-id')[offset:offset + limit]
         return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)

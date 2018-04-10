@@ -7,4 +7,4 @@ redis
 gunicorn
 BeautifulSoup4
 lxml
-https://github.com/VirtualJudge/VirtualJudgeSpider/releases/download/v0.6.1/VirtualJudgeSpider-0.6.1-py36-none-any.whl
+https://github.com/VirtualJudge/VirtualJudgeSpider/releases/download/v0.7.1/VirtualJudgeSpider-0.7.1-py36-none-any.whl
