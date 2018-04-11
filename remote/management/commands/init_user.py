@@ -6,12 +6,18 @@ from account.models import UserProfile
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        username = 'root'
+        email = 'root@vj.com'
+        password = 'rootroot'
         try:
-            try:
-                UserProfile.objects.get(username='root')
-            except ObjectDoesNotExist:
-                user = UserProfile.objects.create_superuser('root', 'root@vj.com', 'rootroot')
-                user.save()
-        except Exception as e:
-            self.stdout.write(self.style.ERROR('Failed to create user, error: ' + str(e)))
+            user = UserProfile.objects.create_superuser(username=username, email=email, password=password)
+            user.save()
+        except:
+            print(dir(self.style))
+            self.stdout.write(self.style.WARNING('we did not create new root account, maybe account exist.'))
+            pass
+        try:
+            UserProfile.objects.get(username=username)
+        except ObjectDoesNotExist:
+            self.stdout.write(self.style.ERROR('Failed to create user'))
             exit(1)

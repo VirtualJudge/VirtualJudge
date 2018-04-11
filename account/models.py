@@ -3,7 +3,7 @@ from django.db import models
 
 
 class UserProfileManager(BaseUserManager):
-    def create_user(self, email, username, password):
+    def create_user(self, username, email, password):
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -13,8 +13,8 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, password):
-        user = self.create_user(email, password=password, username=username)
+    def create_superuser(self, username, email, password):
+        user = self.create_user(username, email, password)
         user.is_admin = True
         user.save(using=self._db)
         return user
@@ -50,4 +50,3 @@ class UserProfile(AbstractBaseUser):
 
     class Meta:
         db_table = 'user'
-
