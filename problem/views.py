@@ -51,6 +51,7 @@ class ProblemRemoteAPI(View):
                     self.force_update and problem.request_status in [Config.Problem.Status.STATUS_PENDING.value,
                                                                      Config.Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
                                                                      Config.Problem.Status.STATUS_NO_ACCOUNT.value,
+                                                                     Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value,
                                                                      Config.Problem.Status.STATUS_PARSE_ERROR.value]):
                 get_problem_task.delay(problem.id)
 

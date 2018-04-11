@@ -14,10 +14,11 @@ import time
 
 def load_static(remote_oj, remote_id, website_data):
     soup = BeautifulSoup(website_data, 'lxml')
+    id = 1
     for img in soup.find_all('img'):
         url = img['src']
 
-        file_name = str(url).split('/')[-1]
+        suffix = str(url).split('/')[-1].split('.')[-1]
         path = settings.PUBLIC_DIR
         path = os.path.join(path, remote_oj)
         path = os.path.join(path, remote_id)
@@ -29,10 +30,13 @@ def load_static(remote_oj, remote_id, website_data):
         if res.status_code != 200:
             continue
         try:
-            os.makedirs(path)
+            if os.path.exists(path) is False:
+                os.makedirs(path)
+            file_name = str(id) + '.' + suffix
             with open(os.path.join(path, file_name), 'wb') as fout:
                 fout.write(res.content)
             img['src'] = os.path.join(url_path, file_name)
+            id += 1
             print(url, img['src'])
         except:
             traceback.print_exc()
