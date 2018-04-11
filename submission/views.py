@@ -46,11 +46,11 @@ class SubmissionAPI(View):
         if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
             return HttpResponse(error("五秒内不能再次提交"))
         request.session['last_submit_time'] = datetime.now().timestamp()
-        remote_oj = request.POST['remote_oj']
-        remote_id = request.POST['remote_id']
-        code_file = request.FILES['source_code']
-        language = request.POST['language']
         try:
+            remote_oj = request.POST['remote_oj']
+            remote_id = request.POST['remote_id']
+            code_file = request.FILES['source_code']
+            language = request.POST['language']
             source_code = ''
             for chunk in code_file.chunks():
                 source_code += chunk.decode('utf-8')
@@ -67,8 +67,7 @@ class SubmissionAPI(View):
         except ObjectDoesNotExist:
             return HttpResponse(error('problem is not exist'))
         except Exception as e:
-            traceback.print_exc()
-            return HttpResponse(error('system error'))
+            return HttpResponse(error('submit error'))
 
 
 class SubmissionListAPI(View):
