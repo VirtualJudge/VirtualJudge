@@ -2,6 +2,7 @@ from django.db import transaction
 from config.models import SettingOJ, RemoteAccount
 from django.core.exceptions import ObjectDoesNotExist
 from VirtualJudgeSpider.Control import Controller
+from django.utils import timezone
 
 
 class ConfigDispatcher(object):
@@ -34,8 +35,8 @@ class ConfigDispatcher(object):
     def choose_account(remote_oj):
         with transaction.atomic():
             remote_accounts = RemoteAccount.objects.filter(oj_name=Controller.get_real_remote_oj(remote_oj),
-                                                           oj_account_status=True)
-            if remote_accounts:
+                                                           oj_account_status=True).order_by('update_time')
+            if remote_accounts and (timezone.now() - remote_accounts[0].update_time).seconds >= 5:
                 remote_account = remote_accounts[0]
                 remote_account.oj_account_status = False
                 remote_account.save()

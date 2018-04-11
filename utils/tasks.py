@@ -60,6 +60,8 @@ def reload_result_task(submission_id):
                                                                                         pid=submission.remote_id)
             if result.status == Config.Result.Status.STATUS_RESULT_GET:
                 submission.verdict = result.verdict
+                if not Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict):
+                    submission.verdict_status = True
                 submission.execute_time = result.execute_time
                 submission.execute_memory = result.execute_memory
                 submission.save()

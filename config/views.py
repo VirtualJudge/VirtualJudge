@@ -1,16 +1,30 @@
 import json
 import traceback
 
+from VirtualJudgeSpider import Control
 from VirtualJudgeSpider.Control import Controller
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from config.forms import RemoteAccountForm
-from config.models import RemoteAccount, RemoteOJ
+from config.models import RemoteAccount, RemoteOJ, RemoteLanguage
+from config.serializers import RemoteLanguageSerializer
 from config.tasks import update_remote_language_task
 from utils import response
-from utils.decorator import token_required,super_token_required
+from utils.decorator import super_token_required
+from utils.response import *
+
+
+class RemoteLanguageAPI(View):
+
+    def get(self, request, *args, **kwargs):
+        oj_name = kwargs['remote_oj']
+        if Control.Controller.is_support(kwargs['remote_oj']):
+            remote_oj = Controller.get_real_remote_oj(oj_name)
+            remote_languages = RemoteLanguage.objects.filter(oj_name=remote_oj)
+            return HttpResponse(success(RemoteLanguageSerializer(remote_languages, many=True).data))
+        return HttpResponse(error("find language error"))
 
 
 class InitRemoteAPI(View):
@@ -37,7 +51,7 @@ class InitRemoteAPI(View):
                                                       oj_password=value['password']))
                 RemoteAccount.objects.bulk_create(remote_s)
                 update_remote_language_task.delay()
-                return JsonResponse(response.success('success update account'))
+                return HttpResponse(response.success('success update account'))
             except:
                 traceback.print_exc()
-        return JsonResponse(response.error("error update account"))
+        return HttpResponse(response.error("error update account"))

@@ -31,6 +31,7 @@ class RemoteAccount(models.Model):
     oj_username = models.CharField(max_length=20, null=True)
     oj_password = models.CharField(max_length=100, null=True)
     oj_account_status = models.BooleanField(default=True)
+    update_time = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'remote_account'

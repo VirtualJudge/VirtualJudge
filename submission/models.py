@@ -32,6 +32,8 @@ class Submission(models.Model):
     remote_run_id = models.CharField(max_length=20, null=True)
     # 返回的结果
     verdict = models.CharField(max_length=40, null=True)
+    # 返回结果是否已经结束
+    verdict_status = models.BooleanField(default=False)
     # 程序运行时间
     execute_time = models.CharField(max_length=20, null=True)
     # 程序运行内存

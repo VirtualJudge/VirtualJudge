@@ -15,12 +15,12 @@ class SubmissionDispatcher(object):
     def submit(self):
         if self._submission is None:
             return False
-        account = ConfigDispatcher.choose_account(self._submission.remote_oj)
-        if account is None:
-            self._submission.status = Config.Result.Status.STATUS_NO_ACCOUNT
+        remote_account = ConfigDispatcher.choose_account(self._submission.remote_oj)
+        if remote_account is None:
+            self._submission.status = Config.Result.Status.STATUS_NO_ACCOUNT.value
             self._submission.save()
             return False
-
+        account = Config.Account(remote_account.oj_username, remote_account.oj_password)
         tries = 3
         submit_code = False
         while tries > 0 and submit_code is False:
@@ -33,7 +33,7 @@ class SubmissionDispatcher(object):
         if submit_code is False:
             self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
             self._submission.save()
-            ConfigDispatcher.release_account(account.id)
+            ConfigDispatcher.release_account(remote_account.id)
             return False
         result = Control.Controller(self._submission.remote_oj).get_result(pid=self._submission.remote_id,
                                                                            account=account)
@@ -45,10 +45,10 @@ class SubmissionDispatcher(object):
             self._submission.verdict = result.verdict
             self._submission.save()
             reload_result_task.delay(self._submission.id)
-            ConfigDispatcher.release_account(account.id)
+            ConfigDispatcher.release_account(remote_account.id)
             return True
         else:
             self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
             self._submission.save()
-            ConfigDispatcher.release_account(account.id)
+            ConfigDispatcher.release_account(remote_account.id)
             return False

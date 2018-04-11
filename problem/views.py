@@ -1,6 +1,6 @@
 from VirtualJudgeSpider import Control, Config
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.views import View
 
 from problem.models import Problem
@@ -20,10 +20,10 @@ class ProblemLocalAPI(View):
     def get(self, *args, **kwargs):
         try:
             problem = Problem.objects.get(id=kwargs['problem_id'])
-            return JsonResponse(success(ProblemSerializer(problem).data))
+            return HttpResponse(success(ProblemSerializer(problem).data))
         except ObjectDoesNotExist:
             pass
-        return JsonResponse(error('problem not found'))
+        return HttpResponse(error('problem not found'))
 
 
 """
@@ -63,19 +63,19 @@ class ProblemRemoteAPI(View):
             return HttpResponse('ValueError')
 
         if problem.request_status == Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value:
-            return JsonResponse(success(ProblemSerializer(problem).data))
+            return HttpResponse(success(ProblemSerializer(problem).data))
         elif problem.request_status == Config.Problem.Status.STATUS_PARSE_ERROR.value:
-            return JsonResponse(
+            return HttpResponse(
                 info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'PROBLEM PARSER ERROR'}))
         elif problem.request_status == Config.Problem.Status.STATUS_PROBLEM_NOT_EXIST.value:
-            return JsonResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'PROBLEM NOT FOUND'}))
+            return HttpResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'PROBLEM NOT FOUND'}))
         elif problem.request_status == Config.Problem.Status.STATUS_OJ_NOT_EXIST.value:
-            return JsonResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'OJ NOT SUPPORT'}))
+            return HttpResponse(info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'OJ NOT SUPPORT'}))
         elif problem.request_status == Config.Problem.Status.STATUS_NO_ACCOUNT.value:
-            return JsonResponse(
+            return HttpResponse(
                 info({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'NO ACCOUNT'}))
         else:
-            return JsonResponse(error({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'CRAWLING'}))
+            return HttpResponse(error({'remote_oj': remote_oj, 'remote_id': remote_id, 'status': 'CRAWLING'}))
 
 
 """
@@ -98,4 +98,4 @@ class ProblemListAPI(View):
                 limit = v
         problems = Problem.objects.filter(request_status=Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value).order_by(
             '-id')[offset:offset + limit]
-        return JsonResponse(ProblemListSerializer(problems, many=True).data, safe=False)
+        return HttpResponse(ProblemListSerializer(problems, many=True).data)

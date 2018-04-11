@@ -1,16 +1,29 @@
+import traceback
+
+from VirtualJudgeSpider import Config
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+
 from problem.models import Problem
-from submission.forms import SubmissionForm
 from submission.models import Submission
-from submission.serializers import SubmissionSerializer, SubmissionListSerializer
+from submission.serializers import SubmissionSerializer, SubmissionListSerializer, VerdictSerializer
 from submission.tasks import submit_task
-from utils.decorator import token_required, super_token_required
-from utils.request import JudgeRequest
+from utils.decorator import token_required
 from utils.response import *
-from VirtualJudgeSpider import Config
+from datetime import datetime
+
+
+class VerdictAPI(View):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            submission_id = kwargs['submission_id']
+            submission = Submission.objects.get(id=submission_id)
+            return HttpResponse(success(VerdictSerializer(submission).data))
+        except:
+            return HttpResponse(error("some error occurred"))
 
 
 class SubmissionShowAPI(View):
@@ -20,38 +33,42 @@ class SubmissionShowAPI(View):
             submission_id = kwargs['submission_id']
             submission = Submission.objects.get(id=submission_id)
             serializer = SubmissionSerializer(submission)
-            return JsonResponse(success(serializer.data))
+            return HttpResponse(success(serializer.data))
         except Exception as e:
-            print(e)
-            return JsonResponse(error("get submission error"))
+            return HttpResponse(error("get submission error"))
 
 
 class SubmissionAPI(View):
     @token_required
     @csrf_exempt
     def post(self, request):
-        form = SubmissionForm(request.POST)
-        if form.is_valid():
-            remote_oj = form.cleaned_data['remote_oj']
-            remote_id = form.cleaned_data['remote_id']
-            code = form.cleaned_data['code']
-            language = form.cleaned_data['language']
-            try:
-                problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-                submission = Submission(problem_id=problem.id,
-                                        token=request.GET.get('token'),
-                                        code=code,
-                                        language=language,
-                                        remote_id=problem.remote_id,
-                                        remote_oj=problem.remote_oj)
-                submission.save()
-                submit_task.delay(submission.id)
-                return JsonResponse(success("submission success:" + str(submission.id)))
-            except ObjectDoesNotExist:
-                return JsonResponse(error('problem is not exist'))
-            except Exception as e:
-                return JsonResponse(error('system error'))
-        return JsonResponse(error('form is not valid'))
+        last_submit_time = request.session.get('last_submit_time', None)
+        if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
+            return HttpResponse(error("五秒内不能再次提交"))
+        request.session['last_submit_time'] = datetime.now().timestamp()
+        remote_oj = request.POST['remote_oj']
+        remote_id = request.POST['remote_id']
+        code_file = request.FILES['source_code']
+        language = request.POST['language']
+        try:
+            source_code = ''
+            for chunk in code_file.chunks():
+                source_code += chunk.decode('utf-8')
+            problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
+            submission = Submission(problem_id=problem.id,
+                                    token=request.GET.get('token'),
+                                    code=source_code,
+                                    language=language,
+                                    remote_id=problem.remote_id,
+                                    remote_oj=problem.remote_oj)
+            submission.save()
+            submit_task.delay(submission.id)
+            return HttpResponse(success({'submission_id': submission.id}))
+        except ObjectDoesNotExist:
+            return HttpResponse(error('problem is not exist'))
+        except Exception as e:
+            traceback.print_exc()
+            return HttpResponse(error('system error'))
 
 
 class SubmissionListAPI(View):
@@ -67,22 +84,23 @@ class SubmissionListAPI(View):
                     limit = v
             submissions = Submission.objects.filter(token=request.GET.get('token')).order_by('-id')[
                           offset:offset + limit]
-            serializers = SubmissionListSerializer(submissions, many=True)
-            return JsonResponse(success(serializers.data))
+            return HttpResponse(success(SubmissionListSerializer(submissions, many=True).data))
         except Exception as e:
             print(e)
-            return JsonResponse(error('error'))
+            return HttpResponse(error('error'))
 
 
 class ReJudgeAPI(View):
-    @super_token_required
+    @token_required
     def get(self, request, submission_id):
         try:
             submission = Submission.objects.get(id=submission_id)
-            if submission.status != Config.Result.Status.STATUS_RESULT_GET.value:
+            if submission.status in {Config.Result.Status.STATUS_NO_ACCOUNT.value,
+                                     Config.Result.Status.STATUS_NETWORK_ERROR.value}:
+                submission.status = Config.Result.Status.STATUS_PENDING.value
                 submission.save()
-                submit_task.relay(submission_id)
-                return JsonResponse(success('rejudge submit success'))
+                submit_task.delay(submission_id)
+                return HttpResponse(success('rejudge submit success'))
         except:
             pass
-        return JsonResponse(error('rejudge failed'))
+        return HttpResponse(error('rejudge failed'))

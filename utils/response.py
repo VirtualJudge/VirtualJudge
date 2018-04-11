@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 
 
 class Message(Enum):
@@ -9,36 +10,36 @@ class Message(Enum):
     INFO = 4
 
 
-def success(information):
-    return {
+def success(data):
+    return json.dumps({
         'status': Message.SUCCESS.value,
-        'message': information
-    }
+        'data': data
+    }, indent=4)
 
 
-def warning(information):
-    return {
+def warning(data):
+    return json.dumps({
         'status': Message.WARNING.value,
-        'message': information
-    }
+        'data': data
+    }, indent=4)
 
 
-def error(information):
-    return {
+def error(data):
+    return json.dumps({
         'status': Message.ERROR.value,
-        'message': information
-    }
+        'data': data
+    }, indent=4)
 
 
-def info(information):
-    return {
+def info(data):
+    return json.dumps({
         'status': Message.INFO.value,
-        'message': information
-    }
+        'data': data
+    }, indent=4)
 
 
-def default(information):
-    return {
+def default(data):
+    return json.dumps({
         'status': Message.DEFAULT.value,
-        'message': information
-    }
+        'message': data
+    }, indent=4)
