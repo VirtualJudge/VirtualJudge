@@ -16,6 +16,7 @@ def load_static(remote_oj, remote_id, website_data):
     soup = BeautifulSoup(website_data, 'lxml')
     for img in soup.find_all('img'):
         url = img['src']
+
         file_name = str(url).split('/')[-1]
         path = settings.PUBLIC_DIR
         path = os.path.join(path, remote_oj)
@@ -29,11 +30,12 @@ def load_static(remote_oj, remote_id, website_data):
             continue
         try:
             os.makedirs(path)
+            with open(os.path.join(path, file_name), 'wb') as fout:
+                fout.write(res.content)
+            img['src'] = os.path.join(url_path, file_name)
+            print(url, img['src'])
         except:
-            pass
-        img['src'] = os.path.join(url_path, file_name)
-        with open(os.path.join(path, file_name), 'wb') as fout:
-            fout.write(res.content)
+            traceback.print_exc()
     return str(soup)
 
 

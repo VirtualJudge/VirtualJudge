@@ -4,13 +4,17 @@ MAINTAINER xudian.cn@gmail.com
 
 ENV VJ_ENV production
 
-ADD . /app
-WORKDIR /app
+
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #COPY deploy/sources.list /etc/apt/
+
+RUN mkdir -p /public
+
+ADD . /app
+WORKDIR /app
 
 RUN apt update
 RUN apt install -y python3 python3-dev python3-pip supervisor nginx git

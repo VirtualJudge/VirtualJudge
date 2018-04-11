@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 APP=/app
-DATA=/data
 
-mkdir -p $DATA/log $DATA/ssl $DATA/test_case $DATA/public/upload $DATA/public/avatar $DATA/public/website /public
+
+mkdir -p /data/log
+
 n=0
 while [ $n -lt 5 ]
 do
-    python3 manage.py init_install &&
-    python3 manage.py migrate && break
+    python3 manage.py init_install && break
     n=$(($n+1))
     echo "Failed to migrate, going to retry..."
     sleep 8
