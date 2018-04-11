@@ -1,4 +1,4 @@
-import json
+from json import JSONDecoder, JSONEncoder
 from json import JSONDecodeError
 
 
@@ -19,7 +19,7 @@ class Body(object):
         self._errors = None
         self._text = bytes.decode(value)
         try:
-            self._json = json.loads(self._text)
+            self._json = JSONDecoder().decode(self._text)
         except JSONDecodeError:
             self._json = None
         print(self._json)
@@ -32,15 +32,14 @@ class Body(object):
                 obj = self.__getattribute__(name)
                 if isinstance(obj, BaseField):
                     if self._json.get(name):
-                        obj.validate(str(self._json[name]))
+                        obj.validate(JSONEncoder().encode(self._json[name]))
                     else:
                         raise JsonValidationError(name + ' field required, but not exist')
         except JsonValidationError as err:
             self._errors = str(err)
 
-    @property
-    def cleaned_data(self):
-        return self._json
+    def cleaned_data(self, name):
+        return JSONEncoder().encode(self._json[name])
 
     def is_valid(self):
         self._validate()

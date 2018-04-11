@@ -47,10 +47,10 @@ class SubmissionAPI(View):
         request.session['last_submit_time'] = datetime.now().timestamp()
         body = SubmissionBody(request.body)
         if body.is_valid():
-            remote_oj = body.cleaned_data['remote_oj']
-            remote_id = body.cleaned_data['remote_id']
-            source_code = body.cleaned_data['source_code']
-            language = body.cleaned_data['language']
+            remote_oj = body.cleaned_data('remote_oj')
+            remote_id = body.cleaned_data('remote_id')
+            source_code = body.cleaned_data('source_code')
+            language = body.cleaned_data('language')
             try:
                 problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
                 language = Language.objects.get(remote_oj=remote_oj, oj_language=language)

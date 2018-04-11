@@ -17,8 +17,8 @@ class LoginAPI(View):
     def post(self, request, *args, **kwargs):
         body = LoginBody(request.body)
         if body.is_valid():
-            username = body.cleaned_data['username']
-            password = body.cleaned_data['password']
+            username = body.cleaned_data('username')
+            password = body.cleaned_data('password')
             user = auth.authenticate(username=username, password=password)
             if user is not None and user.is_active:
                 auth.login(request, user)
@@ -39,9 +39,9 @@ class RegisterAPI(View):
     def post(self, request, *args, **kwargs):
         body = RegisterBody(request.body)
         if body.is_valid():
-            username = body.cleaned_data['username']
-            password = body.cleaned_data['password']
-            email = body.cleaned_data['email']
+            username = body.cleaned_data('username')
+            password = body.cleaned_data('password')
+            email = body.cleaned_data('email')
             try:
                 username = UserProfile.objects.create_user(email=email, username=username, password=password)
                 username.save()

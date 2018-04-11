@@ -34,7 +34,7 @@ class RemoteAPI(View):
             return HttpResponse(response.error("admin required"))
         body = AccountBody(request.body)
         if body.is_valid():
-            account = body.cleaned_data['account']
+            account = body.cleaned_data('account')
             try:
                 OJ.objects.all().delete()
                 OJ.objects.bulk_create([OJ(oj_name) for oj_name in Control.Controller.get_supports()])
@@ -47,4 +47,6 @@ class RemoteAPI(View):
                 return HttpResponse(response.success('success update account'))
             except:
                 traceback.print_exc()
-        return HttpResponse(response.error("error update account"))
+                return HttpResponse(response.error("error update account"))
+        else:
+            return HttpResponse(response.error(body.errors))
