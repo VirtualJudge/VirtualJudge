@@ -12,8 +12,8 @@ class UsernameField(bodys.BaseField):
 
 class PasswordField(bodys.BaseField):
     def validate(self, value):
-        if not re.match(r'^[a-zA-Z0-9\-_]{6,30}$', value):
-            raise JsonValidationError('Password only contains number,letter,_,- and length between 6 and 30.')
+        if not re.match(r'^[a-zA-Z0-9\-_.]{6,30}$', value):
+            raise JsonValidationError('Password only contains number,letter,_,-,. and length between 6 and 30.')
 
 
 class EmailField(bodys.BaseField):
