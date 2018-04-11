@@ -1,6 +1,7 @@
-import traceback
+from datetime import datetime
 
 from VirtualJudgeSpider import Config
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views import View
@@ -10,13 +11,11 @@ from problem.models import Problem
 from submission.models import Submission
 from submission.serializers import SubmissionSerializer, SubmissionListSerializer, VerdictSerializer
 from submission.tasks import submit_task
-from utils.decorator import token_required
 from utils.response import *
-from datetime import datetime
+from django.utils.decorators import method_decorator
 
 
 class VerdictAPI(View):
-
     def get(self, request, *args, **kwargs):
         try:
             submission_id = kwargs['submission_id']
@@ -27,7 +26,6 @@ class VerdictAPI(View):
 
 
 class SubmissionShowAPI(View):
-    @token_required
     def get(self, request, *args, **kwargs):
         try:
             submission_id = kwargs['submission_id']
@@ -39,7 +37,7 @@ class SubmissionShowAPI(View):
 
 
 class SubmissionAPI(View):
-    @token_required
+    @method_decorator(login_required)
     @csrf_exempt
     def post(self, request):
         last_submit_time = request.session.get('last_submit_time', None)
@@ -56,7 +54,7 @@ class SubmissionAPI(View):
                 source_code += chunk.decode('utf-8')
             problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
             submission = Submission(problem_id=problem.id,
-                                    token=request.GET.get('token'),
+                                    user=request.user,
                                     code=source_code,
                                     language=language,
                                     remote_id=problem.remote_id,
@@ -71,7 +69,7 @@ class SubmissionAPI(View):
 
 
 class SubmissionListAPI(View):
-    @token_required
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         try:
             offset = 0
@@ -81,8 +79,7 @@ class SubmissionListAPI(View):
                     offset = v
                 if k == 'limit':
                     limit = v
-            submissions = Submission.objects.filter(token=request.GET.get('token')).order_by('-id')[
-                          offset:offset + limit]
+            submissions = Submission.objects.order_by('-id')[offset:offset + limit]
             return HttpResponse(success(SubmissionListSerializer(submissions, many=True).data))
         except Exception as e:
             print(e)
@@ -90,7 +87,7 @@ class SubmissionListAPI(View):
 
 
 class ReJudgeAPI(View):
-    @token_required
+    @method_decorator(login_required)
     def get(self, request, submission_id):
         try:
             submission = Submission.objects.get(id=submission_id)

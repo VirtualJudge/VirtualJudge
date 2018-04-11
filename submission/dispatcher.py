@@ -1,4 +1,4 @@
-from config.dispatcher import ConfigDispatcher
+from remote.dispatcher import ConfigDispatcher
 from submission.models import Submission
 from VirtualJudgeSpider import Control, Config
 from utils.tasks import reload_result_task

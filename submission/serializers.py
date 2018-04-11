@@ -12,10 +12,10 @@ class VerdictSerializer(serializers.ModelSerializer):
 class SubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ('id', 'problem_id', 'token', 'contest_id', 'code', 'language', 'remote_oj', 'remote_id', 'status')
+        fields = ('id', 'problem_id', 'user', 'contest_id', 'code', 'language', 'remote_oj', 'remote_id', 'status')
 
 
 class SubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ('id', 'remote_oj', 'token', 'remote_id', 'verdict', 'execute_time', 'execute_memory', 'status')
+        fields = ('id', 'remote_oj', 'user', 'remote_id', 'verdict', 'execute_time', 'execute_memory', 'status')

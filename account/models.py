@@ -1,21 +1,53 @@
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-import uuid
 
 
-def get_token():
-    return str(uuid.uuid4()).replace('-', '')
+class UserProfileManager(BaseUserManager):
+    def create_user(self, email, username, password):
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(email=self.normalize_email(email), username=username, )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, username, password):
+        user = self.create_user(email, password=password, username=username)
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
 
 
-class Token(models.Model):
-    token = models.CharField(max_length=100, primary_key=True, default=get_token())
-    nickname = models.CharField(max_length=40, null=True, blank=True)
-    privilege = models.IntegerField(default=0)
+class UserProfile(AbstractBaseUser):
+    username = models.CharField(max_length=40, unique=True)
+    email = models.EmailField(max_length=256, unique=True)
+
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    def get_full_name(self):
+        return self.email
+
+    def get_short_name(self):
+        return self.email
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
+        return True
+
+    @property
+    def is_staff(self):
+        return self.is_admin
+
+    objects = UserProfileManager()
 
     class Meta:
-        db_table = 'Token'
+        db_table = 'user'
 
-
-"""
-@:param privilege 0 普通用户 1 高级用户 2 管理员
-"""

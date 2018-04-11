@@ -22,9 +22,7 @@ urlpatterns = [
     path('', views.check_status),
     path('admin/', admin.site.urls),
     path('api/', include('problem.urls')),
+    path('api/', include('account.urls')),
     path('api/', include('submission.urls')),
-    path('api/', include('config.urls')),
-    path('problem/<str:remote_oj>/<str:remote_id>', views.get_problem, name='show_problem'),
-    path('problem/<str:remote_oj>/<str:remote_id>/html', views.get_problem_html, name='show_problem_html'),
-
+    path('api/', include('remote.urls')),
 ]

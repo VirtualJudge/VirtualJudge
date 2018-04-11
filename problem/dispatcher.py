@@ -1,6 +1,6 @@
 import traceback
 
-from config.dispatcher import ConfigDispatcher
+from remote.dispatcher import ConfigDispatcher
 from problem.models import ProblemBuilder, Problem
 from utils.tasks import save_files_task
 from VirtualJudgeSpider import Config, Control

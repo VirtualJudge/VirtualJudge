@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from config.models import RemoteLanguage
+from remote.models import Language
 
 
 class RemoteLanguageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = RemoteLanguage
+        model = Language
         fields = ('oj_language', 'oj_language_name')
 

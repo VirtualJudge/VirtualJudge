@@ -1,7 +1,7 @@
 from django.urls import path
-from config.views import InitRemoteAPI, RemoteLanguageAPI
+from remote.views import RemoteAPI, RemoteLanguageAPI
 
 urlpatterns = [
-    path("init_remote", InitRemoteAPI.as_view(), name="init_remote"),
+    path("remote", RemoteAPI.as_view(), name="remote"),
     path("languages/<str:remote_oj>", RemoteLanguageAPI.as_view(), name="remote_languages"),
 ]

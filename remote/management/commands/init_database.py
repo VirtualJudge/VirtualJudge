@@ -11,8 +11,8 @@ class Command(BaseCommand):
             if os.system('python3 manage.py makemigrations account') != 0:
                 self.stdout.write(self.style.ERROR('python3 manage.py makemigrations account'))
                 exit(1)
-            if os.system('python3 manage.py makemigrations config') != 0:
-                self.stdout.write(self.style.ERROR('python3 manage.py makemigrations config'))
+            if os.system('python3 manage.py makemigrations remote') != 0:
+                self.stdout.write(self.style.ERROR('python3 manage.py makemigrations remote'))
                 exit(1)
             if os.system('python3 manage.py makemigrations problem') != 0:
                 self.stdout.write(self.style.ERROR('python3 manage.py makemigrations problem'))

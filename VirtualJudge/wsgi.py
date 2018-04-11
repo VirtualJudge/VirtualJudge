@@ -1,5 +1,5 @@
 """
-WSGI config for VirtualJudge project.
+WSGI remote for VirtualJudge project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

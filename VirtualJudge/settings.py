@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'problem',
     'rest_framework',
     'corsheaders',
-    'config',
+    'remote',
     'submission',
     'account',
 ]
@@ -125,7 +125,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-LOGIN_URL = '/login_required'
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -180,3 +179,6 @@ else:
         "django.contrib.staticfiles.finders.FileSystemFinder",
         "django.contrib.staticfiles.finders.AppDirectoriesFinder"
     )
+
+LOGIN_URL = '/api/login'
+AUTH_USER_MODEL = 'account.UserProfile'
