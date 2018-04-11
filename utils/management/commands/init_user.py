@@ -13,7 +13,6 @@ class Command(BaseCommand):
             user = UserProfile.objects.create_superuser(username=username, email=email, password=password)
             user.save()
         except:
-            print(dir(self.style))
             self.stdout.write(self.style.WARNING('we did not create new root account, maybe account exist.'))
             pass
         try:

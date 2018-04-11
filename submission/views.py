@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-
+from contest.models import Contest
 from problem.models import Problem
 from remote.models import Language
 from submission.bodys import SubmissionBody
@@ -49,17 +49,27 @@ class SubmissionAPI(View):
         if body.is_valid():
             remote_oj = body.cleaned_data('remote_oj')
             remote_id = body.cleaned_data('remote_id')
+            contest_id = body.cleaned_data('contest_id')
             source_code = body.cleaned_data('source_code')
             language = body.cleaned_data('language')
             try:
                 problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
                 language = Language.objects.get(remote_oj=remote_oj, oj_language=language)
-                submission = Submission(problem_id=problem.id,
-                                        user=request.user,
-                                        code=source_code,
-                                        language=language,
-                                        remote_id=problem.remote_id,
-                                        remote_oj=problem.remote_oj)
+                if contest_id is not None:
+                    submission = Submission(problem_id=problem.id,
+                                            user=request.user,
+                                            code=source_code,
+                                            contest_id=contest_id,  # 找不同
+                                            language=language,
+                                            remote_id=problem.remote_id,
+                                            remote_oj=problem.remote_oj)
+                else:
+                    submission = Submission(problem_id=problem.id,
+                                            user=request.user,
+                                            code=source_code,
+                                            language=language,
+                                            remote_id=problem.remote_id,
+                                            remote_oj=problem.remote_oj)
                 submission.save()
                 submit_task.delay(submission.id)
                 return HttpResponse(success({'submission_id': submission.id}))
@@ -80,7 +90,7 @@ class SubmissionListAPI(View):
                     offset = v
                 if k == 'limit':
                     limit = v
-            submissions = Submission.objects.order_by('-id')[offset:offset + limit]
+            submissions = Submission.objects.filter(contest_id=None).order_by('-id')[offset:offset + limit]
             return HttpResponse(success(SubmissionListSerializer(submissions, many=True).data))
         except Exception as e:
             print(e)

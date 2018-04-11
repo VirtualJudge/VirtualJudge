@@ -20,9 +20,11 @@ class Command(BaseCommand):
             if os.system('python3 manage.py makemigrations submission') != 0:
                 self.stdout.write(self.style.ERROR('python3 manage.py makemigrations submission'))
                 exit(1)
+            if os.system('python3 manage.py makemigrations contest') != 0:
+                self.stdout.write(self.style.ERROR('python3 manage.py makemigrations contest'))
+                exit(1)
             if os.system('python3 manage.py migrate') != 0:
                 self.stdout.write(self.style.ERROR('python3 manage.py migrate'))
                 exit(1)
-            self.stdout.write(self.style.SUCCESS("Done"))
         except Exception as e:
             self.stdout.write(self.style.ERROR('Failed to initialize, error: ' + str(e)))

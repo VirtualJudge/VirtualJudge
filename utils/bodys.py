@@ -1,5 +1,6 @@
 from json import JSONDecoder, JSONEncoder
 from json import JSONDecodeError
+import json
 
 
 class JsonValidationError(Exception):
@@ -22,23 +23,35 @@ class Body(object):
             self._json = JSONDecoder().decode(self._text)
         except JSONDecodeError:
             self._json = None
-        print(self._json)
+
+    def _is_not_decode_type(self, value):
+        if value in [int, str, float, complex, bool]:
+            return True
+        return False
 
     def _validate(self):
         try:
             if self._json is None:
                 raise JsonValidationError("Parse Request Data Error")
+
             for name in dir(self):
                 obj = self.__getattribute__(name)
                 if isinstance(obj, BaseField):
                     if self._json.get(name):
-                        obj.validate(JSONEncoder().encode(self._json[name]))
+                        print(self._json.get(name), type(self._json.get(name)))
+                        if self._is_not_decode_type(type(self._json.get(name))):
+                            obj.validate(self._json[name])
+                        else:
+                            obj.validate(JSONEncoder().encode(self._json[name]))
                     else:
                         raise JsonValidationError(name + ' field required, but not exist')
+
         except JsonValidationError as err:
             self._errors = str(err)
 
     def cleaned_data(self, name):
+        if self._is_not_decode_type(type(self._json.get(name))):
+            return self._json[name]
         return JSONEncoder().encode(self._json[name])
 
     def is_valid(self):

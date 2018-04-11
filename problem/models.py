@@ -22,8 +22,6 @@ class Problem(models.Model):
         unique_together = ('remote_oj', 'remote_id')
         db_table = 'problem'
 
-    primary = ('remote_oj', 'remote_id')
-
 
 class ProblemBuilder(object):
     @staticmethod

@@ -4,6 +4,7 @@ from VirtualJudgeSpider.Control import Controller
 
 from remote.models import Language
 from utils.bodys import BaseField, Body, JsonValidationError
+from contest.models import Contest
 
 
 class RemoteOJField(BaseField):
@@ -29,8 +30,19 @@ class LanguageField(BaseField):
         try:
             if Language.objects.filter(oj_language=value) is None:
                 raise JsonValidationError('Language not support')
-        finally:
+        except:
             raise JsonValidationError('Language not support')
+
+
+class ContestIdField(BaseField):
+    def validate(self, value):
+        try:
+            if type(value) != int:
+                raise JsonValidationError('Integer contest id required')
+            if value is not None:
+                Contest.objects.get(id=value)
+        except:
+            raise JsonValidationError('Contest not exist')
 
 
 class SubmissionBody(Body):
