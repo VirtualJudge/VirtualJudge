@@ -2,17 +2,18 @@ from datetime import datetime
 
 from VirtualJudgeSpider import Config
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from problem.models import Problem
+from remote.models import Language
+from submission.bodys import SubmissionBody
 from submission.models import Submission
 from submission.serializers import SubmissionSerializer, SubmissionListSerializer, VerdictSerializer
 from submission.tasks import submit_task
 from utils.response import *
-from django.utils.decorators import method_decorator
 
 
 class VerdictAPI(View):
@@ -44,28 +45,28 @@ class SubmissionAPI(View):
         if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
             return HttpResponse(error("五秒内不能再次提交"))
         request.session['last_submit_time'] = datetime.now().timestamp()
-        try:
-            remote_oj = request.POST['remote_oj']
-            remote_id = request.POST['remote_id']
-            code_file = request.FILES['source_code']
-            language = request.POST['language']
-            source_code = ''
-            for chunk in code_file.chunks():
-                source_code += chunk.decode('utf-8')
-            problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-            submission = Submission(problem_id=problem.id,
-                                    user=request.user,
-                                    code=source_code,
-                                    language=language,
-                                    remote_id=problem.remote_id,
-                                    remote_oj=problem.remote_oj)
-            submission.save()
-            submit_task.delay(submission.id)
-            return HttpResponse(success({'submission_id': submission.id}))
-        except ObjectDoesNotExist:
-            return HttpResponse(error('problem is not exist'))
-        except Exception as e:
-            return HttpResponse(error('submit error'))
+        body = SubmissionBody(request.body)
+        if body.is_valid():
+            remote_oj = body.cleaned_data['remote_oj']
+            remote_id = body.cleaned_data['remote_id']
+            source_code = body.cleaned_data['source_code']
+            language = body.cleaned_data['language']
+            try:
+                problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
+                language = Language.objects.get(remote_oj=remote_oj, oj_language=language)
+                submission = Submission(problem_id=problem.id,
+                                        user=request.user,
+                                        code=source_code,
+                                        language=language,
+                                        remote_id=problem.remote_id,
+                                        remote_oj=problem.remote_oj)
+                submission.save()
+                submit_task.delay(submission.id)
+                return HttpResponse(success({'submission_id': submission.id}))
+            except:
+                return HttpResponse(error('submission error'))
+        else:
+            return HttpResponse(error(body.errors))
 
 
 class SubmissionListAPI(View):

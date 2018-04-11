@@ -3,8 +3,8 @@ from VirtualJudgeSpider import Config
 
 
 class Problem(models.Model):
-    remote_oj = models.CharField(max_length=20, null=True)
-    remote_id = models.CharField(max_length=20, null=True)
+    remote_oj = models.CharField(max_length=20)
+    remote_id = models.CharField(max_length=20)
     remote_url = models.CharField(max_length=200, null=True)
 
     update_time = models.DateTimeField(auto_now=True)
@@ -18,8 +18,11 @@ class Problem(models.Model):
     html = models.TextField(blank=True, null=True)
 
     class Meta:
-        ordering = ('id',)
+        ordering = ('update_time',)
+        unique_together = ('remote_oj', 'remote_id')
         db_table = 'problem'
+
+    primary = ('remote_oj', 'remote_id')
 
 
 class ProblemBuilder(object):

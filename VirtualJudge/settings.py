@@ -167,9 +167,10 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+
 if get_env('VJ_ENV', 'develop') == 'production':
     STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 else:
     STATIC_URL = '/public/'
     STATICFILES_DIRS = (
