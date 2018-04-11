@@ -19,10 +19,10 @@ class Body(object):
         self._errors = None
         self._text = bytes.decode(value)
         try:
-            print(self._text)
             self._json = json.loads(self._text)
         except JSONDecodeError:
             self._json = None
+        print(self._json)
 
     def _validate(self):
         try:
@@ -34,7 +34,7 @@ class Body(object):
                     if self._json.get(name):
                         obj.validate(str(self._json[name]))
                     else:
-                        raise JsonValidationError(name + ' field not exist')
+                        raise JsonValidationError(name + ' field required, but not exist')
         except JsonValidationError as err:
             self._errors = str(err)
 

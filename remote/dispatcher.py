@@ -17,10 +17,14 @@ class ConfigDispatcher(object):
                     print('LOCK remote')
                     return True
             except ObjectDoesNotExist:
-                setting = Setting.objects.create(oj_key=key, oj_value=value)
-                setting.save()
-                print('LOCK remote')
-                return True
+                try:
+                    setting = Setting.objects.create(oj_key=key, oj_value=value)
+                    setting.save()
+                    print('LOCK remote')
+                    return True
+                except:
+                    return False
+
         return False
 
     @staticmethod

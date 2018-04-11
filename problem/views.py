@@ -38,9 +38,7 @@ class ProblemLocalAPI(View):
 
 class ProblemRemoteAPI(View):
     force_update = False
-
     def get(self, *args, **kwargs):
-
         remote_oj = Control.Controller.get_real_remote_oj(kwargs['remote_oj'])
         remote_id = kwargs['remote_id']
         if not Control.Controller.is_support(remote_oj) or not remote_id.isalnum():

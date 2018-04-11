@@ -47,6 +47,8 @@ class RegisterAPI(View):
                 username.save()
                 return HttpResponse(success('register success'))
             except IntegrityError as e:
+                print(e, dir(e))
+                print(e.args)
                 return HttpResponse(error('User or Email Exist'))
             except DatabaseError:
                 return HttpResponse(error('database error'))
