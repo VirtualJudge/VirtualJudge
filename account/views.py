@@ -1,56 +1,45 @@
 from django.contrib import auth
-from django.db import DatabaseError, IntegrityError
-from django.http import HttpResponse
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.views import Response
 
-from account.bodys import LoginBody, RegisterBody
-from account.models import UserProfile
+from account.serializers import *
 from utils.response import *
 
 
-class LoginAPI(View):
-    def get(self, request, *args, **kwargs):
-        return HttpResponse('login required')
+class LoginAPI(APIView):
+    def get(self, request, format=None):
+        return Response(res_format('login required', Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        body = LoginBody(request.body)
-        if body.is_valid():
-            username = body.cleaned_data('username')
-            password = body.cleaned_data('password')
-            user = auth.authenticate(username=username, password=password)
-            if user is not None and user.is_active:
+    def post(self, request, format=None):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = auth.authenticate(username=serializer.validated_data['username'],
+                                     password=serializer.validated_data['password'])
+            if user is not None:
                 auth.login(request, user)
-                return HttpResponse(success('login success'))
+                return Response(res_format(UserProfileSerializer(user).data, Message.SUCCESS),
+                                status=status.HTTP_200_OK)
             else:
-                return HttpResponse(error('username or password error'))
-        return HttpResponse(error(body.errors))
+                return Response(res_format('password not correct', Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+        return Response(res_format(serializer.errors, Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
 
-class LogoutAPI(View):
-    def get(self, request, *args, **kwargs):
+class LogoutAPI(APIView):
+
+    def delete(self, request, format=None):
         auth.logout(request)
-        return HttpResponse(success('logout success'))
+        return Response(res_format('logout success'), status=status.HTTP_200_OK)
 
 
-class RegisterAPI(View):
+class RegisterAPI(APIView):
     @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        body = RegisterBody(request.body)
-        if body.is_valid():
-            username = body.cleaned_data('username')
-            password = body.cleaned_data('password')
-            email = body.cleaned_data('email')
-            try:
-                username = UserProfile.objects.create_user(email=email, username=username, password=password)
-                username.save()
-                return HttpResponse(success('register success'))
-            except IntegrityError as e:
-                print(e, dir(e))
-                print(e.args)
-                return HttpResponse(error('User or Email Exist'))
-            except DatabaseError:
-                return HttpResponse(error('database error'))
-        else:
-            return HttpResponse(error(body.errors))
+    def post(self, request, format=None):
+        print(dir(request))
+        print(request.data)
+        register = RegisterSerializer(data=request.data)
+        if register.is_valid():
+            register.save()
+            return Response(res_format('register success'), status=status.HTTP_200_OK)
+        return Response(res_format(register.errors), status=status.HTTP_400_BAD_REQUEST)

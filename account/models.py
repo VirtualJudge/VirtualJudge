@@ -34,7 +34,7 @@ class UserProfile(AbstractBaseUser):
         return self.email
 
     def get_short_name(self):
-        return self.email
+        return self.username
 
     def has_perm(self, perm, obj=None):
         return True
@@ -44,6 +44,7 @@ class UserProfile(AbstractBaseUser):
 
     @property
     def is_staff(self):
+        print(self.is_admin)
         return self.is_admin
 
     objects = UserProfileManager()

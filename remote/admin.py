@@ -1,9 +1,6 @@
 from django.contrib import admin
-from remote.models import OJ, Account, Language
 
-
-class OJAdmin(admin.ModelAdmin):
-    list_display = ('oj_name', 'oj_status')
+from remote.models import Account, Language
 
 
 class LanguageAdmin(admin.ModelAdmin):
@@ -16,4 +13,3 @@ class AccountAdmin(admin.ModelAdmin):
 
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(Account, AccountAdmin)
-admin.site.register(OJ, OJAdmin)
