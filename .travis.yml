@@ -2,7 +2,6 @@ language: python
 python:
   - "3.6"
 services:
-  - redis-server
   - docker
 before_install:
   - pip install docker-compose
