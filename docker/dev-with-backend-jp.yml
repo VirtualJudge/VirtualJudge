@@ -7,8 +7,6 @@ services:
     restart: always
     volumes:
       - ~/data/redis:/data
-    ports:
-      - '127.0.0.1:6379:6379'
 
   vj-postgres-dev:
     image: postgres:10
@@ -20,5 +18,20 @@ services:
       - POSTGRES_DB=vj_database
       - POSTGRES_USER=vj_username
       - POSTGRES_PASSWORD=vj_password
+
+  vj-backend-dev:
+    image:  registry.ap-northeast-1.aliyuncs.com/virtual-judge/virtual-judge:dev
+    container_name: vj-backend-dev
+    restart: always
+    depends_on:
+      - vj-redis-dev
+      - vj-postgres-dev
+    environment:
+      - POSTGRES_DB=vj_database
+      - POSTGRES_USER=vj_username
+      - POSTGRES_PASSWORD=vj_password
+    volumes:
+      - ~/data/public:/public
+      - ~/data/log:/data/log
     ports:
-      - '127.0.0.1:5432:5432'
+      - "127.0.0.1:3000:80"
