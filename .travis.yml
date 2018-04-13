@@ -1,9 +1,6 @@
 language: python
 python:
   - "3.6"
-services:
-  - docker
-  - redis-server
 env:
   - DOCKER_COMPOSE_VERSION=1.21.0
   - POSTGRES_DB=vj_database
@@ -11,14 +8,22 @@ env:
   - POSTGRES_PASSWORD=vj_password
   - POSTGRES_PORT=5433
 before_install:
+  # 安装docker
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce
+  - docker version
+  # 安装 docker-compose
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - echo `lsof -i:5432` && echo `lsof -i:6379`
-  - docker version
+  - docker-compose version
+  # 运行docker-compose
   - docker-compose -f docker-env/dev-ci.yml up -d
 install:
+  - echo `lsof -i:5432` && echo `lsof -i:6379`
   - pip install -r requirements.txt
   - pip install coveralls
   - docker ps -a
