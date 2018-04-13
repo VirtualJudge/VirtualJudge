@@ -2,8 +2,9 @@ language: python
 python:
   - "3.6"
 env:
-  - DOCKER_COMPOSE_VERSION=1.21.0
-  - POSTGRES_PORT=5433
+  global:
+    - DOCKER_COMPOSE_VERSION=1.21.0
+    - POSTGRES_PORT=5433
 before_install:
   # 安装docker
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
