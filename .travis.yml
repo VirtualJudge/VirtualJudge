@@ -3,9 +3,6 @@ python:
   - "3.6"
 env:
   - DOCKER_COMPOSE_VERSION=1.21.0
-  - POSTGRES_DB=vj_database
-  - POSTGRES_USER=vj_username
-  - POSTGRES_PASSWORD=vj_password
   - POSTGRES_PORT=5433
 before_install:
   # 安装docker
@@ -23,7 +20,7 @@ before_install:
   # 运行docker-compose
   - docker-compose -f docker-env/dev-ci.yml up -d
 install:
-  - echo `lsof -i:5432` && echo `lsof -i:6379`
+  - echo `lsof -i:5433` && echo `lsof -i:6379`
   - pip install -r requirements.txt
   - pip install coveralls
   - docker ps -a
