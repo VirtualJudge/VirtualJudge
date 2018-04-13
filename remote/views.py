@@ -1,16 +1,14 @@
 from VirtualJudgeSpider import Control
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView, Response
 
-from remote.models import Account, Language
+from remote.models import Language
 from remote.serializers import AccountSerializer
 from remote.serializers import LanguagesSerializer
 from remote.tasks import update_language_task
 from utils.response import res_format, Message
-from django.db import DatabaseError
 
 
 class LanguagesAPI(APIView):

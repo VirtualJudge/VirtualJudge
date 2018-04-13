@@ -2,7 +2,7 @@ from datetime import datetime
 
 from VirtualJudgeSpider import Config
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
@@ -11,7 +11,6 @@ from submission.models import Submission
 from submission.serializers import SubmissionListSerializer, VerdictSerializer, SubmissionSerializer
 from submission.tasks import submit_task
 from utils.response import res_format, Message
-from django.db import DatabaseError
 
 
 class VerdictAPI(APIView):

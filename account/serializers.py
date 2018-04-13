@@ -1,11 +1,12 @@
-from rest_framework import serializers
-from account.models import UserProfile
-from rest_framework.serializers import CharField, ValidationError, EmailField
 import re
-from account.models import UserProfile
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.contrib import auth
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
+from rest_framework import serializers
+from rest_framework.serializers import CharField, ValidationError, EmailField
+
+from account.models import UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -21,13 +22,17 @@ class LoginSerializer(serializers.Serializer):
     @staticmethod
     def validate_username(value):
         if re.match(r'^[a-zA-Z0-9\-_]{4,20}$', value) is None:
-            raise ValidationError('Username only contains number,letter,_,- and length between 4 and 20.')
+            raise ValidationError(
+                'Username only contains number,letter,_,- '
+                'and length between 4 and 20.')
         return value
 
     @staticmethod
     def validate_password(value):
         if re.match(r'^[a-zA-Z0-9\-_.]{8,30}$', value) is None:
-            raise ValidationError('Password only contains number,letter,_,-,. and length between 8 and 30.')
+            raise ValidationError(
+                'Password only contains number,letter,_,-,. '
+                'and length between 8 and 30.')
         return value
 
     def login(self, request):
@@ -48,7 +53,9 @@ class RegisterSerializer(serializers.Serializer):
         password = self.validated_data['password']
         username = self.validated_data['username']
         try:
-            user = UserProfile.objects.create_user(username=username, password=password, email=email)
+            user = UserProfile.objects.create_user(username=username,
+                                                   password=password,
+                                                   email=email)
             user.save()
             return True
         except DatabaseError:
@@ -57,7 +64,9 @@ class RegisterSerializer(serializers.Serializer):
     @staticmethod
     def validate_username(value):
         if re.match(r'^[a-zA-Z0-9\-_]{4,20}$', value) is None:
-            raise ValidationError('Username only contains number,letter,_,- and length between 4 and 20.')
+            raise ValidationError(
+                'Username only contains number,letter,_,- '
+                'and length between 4 and 20.')
         try:
             UserProfile.objects.get(username=value)
             raise ValidationError('Username exist')
@@ -68,7 +77,9 @@ class RegisterSerializer(serializers.Serializer):
     @staticmethod
     def validate_password(value):
         if re.match(r'^[a-zA-Z0-9\-_.]{6,30}$', value) is None:
-            raise ValidationError('Password only contains number,letter,_,-,. and length between 6 and 30.')
+            raise ValidationError(
+                'Password only contains number,letter,_,-,. '
+                'and length between 6 and 30.')
         return value
 
     @staticmethod

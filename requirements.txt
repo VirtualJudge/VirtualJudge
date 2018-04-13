@@ -7,4 +7,5 @@ redis
 gunicorn
 BeautifulSoup4
 lxml
+flake8
 git+https://github.com/VirtualJudge/VirtualJudgeSpider

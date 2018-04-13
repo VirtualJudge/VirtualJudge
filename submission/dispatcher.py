@@ -1,6 +1,8 @@
+from VirtualJudgeSpider import Control, Config
+from django.core.exceptions import ObjectDoesNotExist
+
 from remote.dispatcher import ConfigDispatcher
 from submission.models import Submission
-from VirtualJudgeSpider import Control, Config
 from utils.tasks import reload_result_task
 
 
@@ -8,7 +10,7 @@ class SubmissionDispatcher(object):
     def __init__(self, submission_id):
         try:
             self._submission = Submission.objects.get(id=submission_id)
-        except:
+        except ObjectDoesNotExist:
             self._submission = None
         self.remote_account = None
 

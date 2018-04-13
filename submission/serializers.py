@@ -1,14 +1,13 @@
+from django.db import DatabaseError
 from rest_framework import serializers
-from submission.models import Submission
-
 from rest_framework.serializers import CharField
 from rest_framework.serializers import IntegerField
 from rest_framework.validators import ValidationError
-from django.db import DatabaseError
+
 from contest.models import Contest
 from problem.models import Problem
-from VirtualJudgeSpider import Control
 from remote.models import Language
+from submission.models import Submission
 
 
 class VerdictSerializer(serializers.ModelSerializer):

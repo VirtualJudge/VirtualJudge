@@ -6,7 +6,9 @@ from django.test import TestCase
 # Create your tests here.
 from account.serializers import LoginSerializer, RegisterSerializer
 
-random_string = lambda length: ''.join(str(random.choice(string.ascii_lowercase)) for x in range(length))
+
+def random_string(length):
+    return ''.join(str(random.choice(string.ascii_lowercase)) for x in range(length))
 
 
 class SerializerTests(TestCase):

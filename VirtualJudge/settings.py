@@ -14,9 +14,38 @@ import os
 from .utils import get_env
 
 if get_env('VJ_ENV', 'develop') == 'production':
-    from .setting_production import *
+    DEBUG = False
+
+    PUBLIC = '/public'
+    PUBLIC_DIR = '/public'
+
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        ), 'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.AllowAny',
+        ), 'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
+        )
+    }
 else:
-    from .setting_develop import *
+    DEBUG = True
+
+    PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
+    PUBLIC = '/public/'
+
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+            'rest_framework.renderers.BrowsableAPIRenderer',
+        ), 'DEFAULT_PERMISSION_CLASSES': (
+            'rest_framework.permissions.AllowAny',
+        ), 'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
+        )
+    }
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

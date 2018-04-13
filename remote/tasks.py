@@ -35,7 +35,7 @@ def update_language_task():
                         language.save()
                     except DatabaseError:
                         pass
-        except:
+        except DatabaseError:
             import traceback
             traceback.print_exc()
         ConfigDispatcher.release_config('UPDATE_CONFIG', 'FALSE')

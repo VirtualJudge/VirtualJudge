@@ -18,15 +18,19 @@ class ProblemDispatcher(object):
 
             account = ConfigDispatcher.choose_account(self.problem.remote_oj)
             if account is None:
-                self.problem.request_status = Config.Problem.Status.STATUS_NO_ACCOUNT.value
+                self.problem.request_status = Config.Problem. \
+                    Status.STATUS_NO_ACCOUNT.value
                 self.problem.save()
                 return False
-            response = Control.Controller(self.problem.remote_oj).get_problem(self.problem.remote_id, account=account)
+            response = Control.Controller(self.problem.remote_oj).get_problem(
+                self.problem.remote_id, account=account)
             ConfigDispatcher.release_account(account.id)
 
             self.problem.request_status = response.status.value
-            if response.status == Config.Problem.Status.STATUS_CRAWLING_SUCCESS:
-                self.problem = ProblemBuilder.update_problem(self.problem, response.__dict__)
+            if response.status == Config.Problem. \
+                    Status.STATUS_CRAWLING_SUCCESS:
+                self.problem = ProblemBuilder.update_problem(self.problem,
+                                                             response.__dict__)
                 save_files_task.delay(self.problem.id)
                 self.problem.save()
                 ConfigDispatcher.release_account(account.id)

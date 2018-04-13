@@ -17,7 +17,7 @@ class SerializerTest(TestCase):
     def test_account_1(self):
         request_data = {'remote_oj': '', 'username': '', 'password': ''}
         serializer = AccountSerializer(data=request_data)
-        self.assertFalse(serializer.is_valid(),serializer.errors)
+        self.assertFalse(serializer.is_valid(), serializer.errors)
 
     def test_account_2(self):
         request_data = {'remote_oj1': '', 'username2': '', 'password': ''}

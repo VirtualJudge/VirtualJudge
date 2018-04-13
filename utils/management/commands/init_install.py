@@ -1,5 +1,7 @@
-from django.core.management.base import BaseCommand, CommandError
 import os
+
+from django.core.management.base import BaseCommand
+
 from VirtualJudge.utils import get_env
 
 

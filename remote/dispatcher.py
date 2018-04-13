@@ -3,6 +3,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from remote.models import Setting, Account
+from django.db import DatabaseError
 
 
 class ConfigDispatcher(object):
@@ -20,7 +21,7 @@ class ConfigDispatcher(object):
                     setting = Setting.objects.create(oj_key=key, oj_value=value)
                     setting.save()
                     return True
-                except:
+                except DatabaseError:
                     return False
 
         return False

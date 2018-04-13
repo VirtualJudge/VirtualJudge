@@ -1,6 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
 import os
-from VirtualJudge.settings import DATABASES
+
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

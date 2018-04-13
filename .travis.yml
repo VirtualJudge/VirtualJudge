@@ -22,10 +22,10 @@ before_install:
   - docker-compose -f docker-env/dev-ci.yml up -d
 install:
   - pip install -r requirements.txt
-  - pip install coveralls flake8
+  - pip install coveralls
   - sleep 10 && python ./manage.py init_install
 script:
-  - flake8 .
+  - flake8 --exclude=venv,migrations,__pycache__ --max-line-length=120 .
   - coverage run --include="$PWD/*" manage.py test unittest
   - coverage report
 after_success:

@@ -10,6 +10,7 @@ from problem.models import Problem
 from submission.models import Submission
 from VirtualJudgeSpider import Control, Config
 import time
+from django.db import DatabaseError
 
 
 def load_static(remote_oj, remote_id, website_data):
@@ -37,8 +38,8 @@ def load_static(remote_oj, remote_id, website_data):
                 fout.write(res.content)
             img['src'] = os.path.join(url_path, file_name)
             id += 1
-        except:
-            traceback.print_exc()
+        except OSError:
+            pass
     return str(soup)
 
 
@@ -49,7 +50,7 @@ def save_files_task(problem_id):
         if problem.html:
             problem.html = load_static(problem.remote_oj, problem.remote_id, problem.html)
             problem.save()
-    except:
+    except DatabaseError:
         traceback.print_exc()
         pass
 
@@ -72,6 +73,5 @@ def reload_result_task(submission_id):
                 submission.save()
             tries -= 1
             time.sleep(max_wait_times - tries)
-    except:
-        traceback.print_exc()
+    except DatabaseError:
         pass
