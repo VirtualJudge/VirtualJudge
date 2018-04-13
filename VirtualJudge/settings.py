@@ -83,6 +83,22 @@ WSGI_APPLICATION = 'VirtualJudge.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': get_env("POSTGRES_HOST", "127.0.0.1"),
+        'PORT': get_env("POSTGRES_PORT", "5432"),
+        'NAME': get_env("POSTGRES_DB", "vj_database"),
+        'USER': get_env("POSTGRES_USER", "vj_username"),
+        'PASSWORD': get_env("POSTGRES_PASSWORD", "vj_password")
+    }
+}
+
+REDIS_CONF = {
+    "host": get_env("REDIS_HOST", "127.0.0.1"),
+    "port": get_env("REDIS_PORT", "6379")
+}
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
