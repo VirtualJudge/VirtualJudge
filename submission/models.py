@@ -9,7 +9,7 @@ class Submission(models.Model):
     至少提交的部分
     """
     # User
-    user = models.CharField(max_length=100, null=True)
+    user = models.CharField(max_length=20)
     # 题目编号
     problem_id = models.IntegerField()
     # 比赛编号，可没有

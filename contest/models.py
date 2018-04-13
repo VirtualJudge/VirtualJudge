@@ -20,7 +20,7 @@ def time_delta_validate(value):
 
 class Contest(models.Model):
     title = models.CharField(max_length=50)
-    username = models.CharField(max_length=20)
+    user = models.CharField(max_length=20)
     problems = ArrayField(models.IntegerField(), blank=True, null=True, max_length=30)
     start_time = models.DateTimeField(validators=[start_time_validate])
     time_delta = models.DateTimeField(default=timezone.timedelta(hours=5), validators=[time_delta_validate])
