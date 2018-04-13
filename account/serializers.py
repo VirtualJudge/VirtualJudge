@@ -23,16 +23,14 @@ class LoginSerializer(serializers.Serializer):
     def validate_username(value):
         if re.match(r'^[a-zA-Z0-9\-_]{4,20}$', value) is None:
             raise ValidationError(
-                'Username only contains number,letter,_,- '
-                'and length between 4 and 20.')
+                'Username can only contain letters, numbers, -, _ and no shorter than 4 and no longer than 20')
         return value
 
     @staticmethod
     def validate_password(value):
         if re.match(r'^[a-zA-Z0-9\-_.]{8,30}$', value) is None:
             raise ValidationError(
-                'Password only contains number,letter,_,-,. '
-                'and length between 8 and 30.')
+                'Password can only contain letters, numbers, -, _ and no shorter than 8 and no longer than 30')
         return value
 
     def login(self, request):
@@ -65,8 +63,7 @@ class RegisterSerializer(serializers.Serializer):
     def validate_username(value):
         if re.match(r'^[a-zA-Z0-9\-_]{4,20}$', value) is None:
             raise ValidationError(
-                'Username only contains number,letter,_,- '
-                'and length between 4 and 20.')
+                'Username can only contain letters, numbers, -, _ and no shorter than 4 and no longer than 20')
         try:
             UserProfile.objects.get(username=value)
             raise ValidationError('Username exist')
@@ -76,19 +73,18 @@ class RegisterSerializer(serializers.Serializer):
 
     @staticmethod
     def validate_password(value):
-        if re.match(r'^[a-zA-Z0-9\-_.]{6,30}$', value) is None:
+        if re.match(r'^[a-zA-Z0-9\-_.]{8,30}$', value) is None:
             raise ValidationError(
-                'Password only contains number,letter,_,-,. '
-                'and length between 6 and 30.')
+                'Password can only contain letters, numbers, -, _ and no shorter than 8 and no longer than 30')
         return value
 
     @staticmethod
     def validate_email(value):
         if len(value) > 256:
-            raise ValidationError('Email too long')
+            raise ValidationError('Email address is too long')
         try:
             UserProfile.objects.get(email=value)
-            raise ValidationError('Email exist')
+            raise ValidationError('Email address has been registered')
         except ObjectDoesNotExist:
             pass
         return value

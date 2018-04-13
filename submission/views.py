@@ -30,15 +30,16 @@ class SubmissionAPI(APIView):
 
         last_submit_time = request.session.get('last_submit_time', None)
         if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
-            return Response(res_format("五秒内不能再次提交", status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format("Cannot be resubmitted within five seconds", status=Message.ERROR),
+                            status=status.HTTP_400_BAD_REQUEST)
         request.session['last_submit_time'] = datetime.now().timestamp()
 
         serializer = SubmissionSerializer(request.data)
         if serializer.is_valid():
-            submission_id = serializer.save(request.user)
-            if submission_id is not None:
-                submit_task.delay(submission_id)
-                return Response(res_format(submission_id), status=status.HTTP_400_BAD_REQUEST)
+            submission = serializer.save(request.user)
+            if submission is not None:
+                submit_task.delay(submission.id)
+                return Response(res_format(submission.id), status=status.HTTP_200_OK)
             return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)

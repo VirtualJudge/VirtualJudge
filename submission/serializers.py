@@ -29,14 +29,14 @@ class SubmissionSerializer(serializers.Serializer):
             submission = Submission(contest_id=self.contest_id, code=self.code, user=user, language=self.language,
                                     remote_id=self.remote_id, remote_oj=self.remote_oj)
             submission.save()
-            return submission.id
+            return submission
         except DatabaseError:
             return None
 
     def validate_contest_id(self, contest_id):
         try:
             if Contest.objects.filter(id=contest_id).exists() is False:
-                raise ValidationError('contest is not exist')
+                raise ValidationError('The contest does not exist')
         except DatabaseError:
             raise ValidationError('system error')
         return contest_id

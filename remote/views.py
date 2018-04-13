@@ -30,7 +30,7 @@ class FreshLanguageAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         update_language_task.delay()
-        return Response(res_format('request update remote language'), status=status.HTTP_200_OK)
+        return Response(res_format('Refreshed successfully'), status=status.HTTP_200_OK)
 
 
 class RemoteAPI(APIView):

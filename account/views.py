@@ -13,13 +13,13 @@ class ProfileAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, **kwargs):
-        return Response(res_format('login required', Message.ERROR),
+        return Response(res_format('Login required', Message.ERROR),
                         status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPI(APIView):
     def get(self, request, **kwargs):
-        return Response(res_format('login required', Message.ERROR),
+        return Response(res_format('Login required', Message.ERROR),
                         status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, **kwargs):
@@ -31,7 +31,7 @@ class LoginAPI(APIView):
                                            Message.SUCCESS),
                                 status=status.HTTP_200_OK)
             else:
-                return Response(res_format('username or password not correct',
+                return Response(res_format('Incorrect username or password',
                                            Message.ERROR),
                                 status=status.HTTP_400_BAD_REQUEST)
         return Response(res_format(serializer.errors, Message.ERROR),
@@ -41,7 +41,7 @@ class LoginAPI(APIView):
 class LogoutAPI(APIView):
     def delete(self, request, **kwargs):
         auth.logout(request)
-        return Response(res_format('logout success'),
+        return Response(res_format('Logout success'),
                         status=status.HTTP_200_OK)
 
 
@@ -51,10 +51,10 @@ class RegisterAPI(APIView):
         register = RegisterSerializer(data=request.data)
         if register.is_valid():
             if register.save():
-                return Response(res_format('register success'),
+                return Response(res_format('Register success'),
                                 status=status.HTTP_200_OK)
             else:
-                return Response(res_format('system error'),
+                return Response(res_format('System error'),
                                 status=status.HTTP_400_BAD_REQUEST)
         return Response(res_format(register.errors),
                         status=status.HTTP_400_BAD_REQUEST)
