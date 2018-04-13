@@ -44,7 +44,6 @@ class UserProfile(AbstractBaseUser):
 
     @property
     def is_staff(self):
-        print(self.is_admin)
         return self.is_admin
 
     objects = UserProfileManager()

@@ -12,8 +12,7 @@ from utils.response import res_format, Message
 
 
 class ProblemLocalAPI(APIView):
-    def get(self, request, **kwargs):
-        problem_id = kwargs['problem_id']
+    def get(self, request, problem_id, **kwargs):
         try:
             problem = Problem.objects.get(id=problem_id)
             return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_400_BAD_REQUEST)
@@ -22,28 +21,26 @@ class ProblemLocalAPI(APIView):
 
 
 class ProblemAPI(APIView):
-    def get(self, request, **kwargs):
-        remote_oj = Control.Controller.get_real_remote_oj(kwargs['remote_oj'])
-        remote_id = kwargs['remote_id']
-        if not Control.Controller.is_support(remote_oj) or not remote_id.isalnum():
-            return Response(res_format('remote_oj or remote_id not valid', status=Message.ERROR),
-                            status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, remote_oj, remote_id, **kwargs):
+        remote_oj = Control.Controller.get_real_remote_oj(remote_oj)
+        if not Control.Controller.is_support(remote_oj):
+            return Response(res_format('remote_oj not valid', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+        if not remote_id.isalnum():
+            return Response(res_format('remote_id not valid', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
         try:
             problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-            if problem.request_status == Config.Problem.Status.STATUS_NETWORK_ERROR.value or \
-                    problem.request_status in [Config.Problem.Status.STATUS_PENDING.value,
-                                               Config.Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
-                                               Config.Problem.Status.STATUS_NO_ACCOUNT.value,
-                                               Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value,
-                                               Config.Problem.Status.STATUS_PARSE_ERROR.value]:
+            if problem.request_status in [Config.Problem.Status.STATUS_NETWORK_ERROR.value,
+                                          Config.Problem.Status.STATUS_PENDING.value,
+                                          Config.Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
+                                          Config.Problem.Status.STATUS_NO_ACCOUNT.value,
+                                          Config.Problem.Status.STATUS_CRAWLING_SUCCESS.value,
+                                          Config.Problem.Status.STATUS_PARSE_ERROR.value]:
                 get_problem_task.delay(problem.id)
         except ObjectDoesNotExist:
             problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
                               request_status=Config.Problem.Status.STATUS_PENDING.value)
             problem.save()
             get_problem_task.delay(problem.id)
-        except ValueError:
-            return Response(res_format('ValueError', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
         return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
 
 

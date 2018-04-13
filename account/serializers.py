@@ -4,6 +4,8 @@ from rest_framework.serializers import CharField, ValidationError, EmailField
 import re
 from account.models import UserProfile
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import auth
+from django.db import DatabaseError
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -28,20 +30,32 @@ class LoginSerializer(serializers.Serializer):
             raise ValidationError('Password only contains number,letter,_,-,. and length between 8 and 30.')
         return value
 
+    def login(self, request):
+        user = auth.authenticate(username=self.validated_data['username'],
+                                 password=self.validated_data['password'])
+        if user:
+            auth.login(request, user)
+            return user
 
-class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ('username', 'password', 'email')
+
+class RegisterSerializer(serializers.Serializer):
+    username = CharField()
+    password = CharField()
+    email = EmailField()
 
     def save(self, **kwargs):
         email = self.validated_data['email']
         password = self.validated_data['password']
         username = self.validated_data['username']
-        user = UserProfile.objects.create_user(username=username, password=password, email=email)
-        user.save()
+        try:
+            user = UserProfile.objects.create_user(username=username, password=password, email=email)
+            user.save()
+            return True
+        except DatabaseError:
+            return False
 
-    def validate_username(self, value):
+    @staticmethod
+    def validate_username(value):
         if re.match(r'^[a-zA-Z0-9\-_]{4,20}$', value) is None:
             raise ValidationError('Username only contains number,letter,_,- and length between 4 and 20.')
         try:
@@ -51,14 +65,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             pass
         return value
 
-    def validate_password(self, value):
+    @staticmethod
+    def validate_password(value):
         if re.match(r'^[a-zA-Z0-9\-_.]{6,30}$', value) is None:
             raise ValidationError('Password only contains number,letter,_,-,. and length between 6 and 30.')
         return value
 
-    def validate_email(self, value):
-        if re.match(r'^[-_\w.]{0,64}@([-\w]{1,63}\.)*[-\w]{1,63}$', value) is None:
-            raise ValidationError('Email is not valid')
+    @staticmethod
+    def validate_email(value):
         if len(value) > 256:
             raise ValidationError('Email too long')
         try:

@@ -37,7 +37,6 @@ def load_static(remote_oj, remote_id, website_data):
                 fout.write(res.content)
             img['src'] = os.path.join(url_path, file_name)
             id += 1
-            print(url, img['src'])
         except:
             traceback.print_exc()
     return str(soup)

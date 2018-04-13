@@ -9,16 +9,14 @@ from utils.response import *
 
 
 class LoginAPI(APIView):
-    def get(self, request, format=None):
+    def get(self, request, **kwargs):
         return Response(res_format('login required', Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
+    def post(self, request, **kwargs):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = auth.authenticate(username=serializer.validated_data['username'],
-                                     password=serializer.validated_data['password'])
-            if user is not None:
-                auth.login(request, user)
+            user = serializer.login(request)
+            if user:
                 return Response(res_format(UserProfileSerializer(user).data, Message.SUCCESS),
                                 status=status.HTTP_200_OK)
             else:
@@ -28,19 +26,18 @@ class LoginAPI(APIView):
 
 
 class LogoutAPI(APIView):
-
-    def delete(self, request, format=None):
+    def delete(self, request, **kwargs):
         auth.logout(request)
         return Response(res_format('logout success'), status=status.HTTP_200_OK)
 
 
 class RegisterAPI(APIView):
     @csrf_exempt
-    def post(self, request, format=None):
-        print(dir(request))
-        print(request.data)
+    def post(self, request, **kwargs):
         register = RegisterSerializer(data=request.data)
         if register.is_valid():
-            register.save()
-            return Response(res_format('register success'), status=status.HTTP_200_OK)
+            if register.save():
+                return Response(res_format('register success'), status=status.HTTP_200_OK)
+            else:
+                return Response(res_format('system error'), status=status.HTTP_400_BAD_REQUEST)
         return Response(res_format(register.errors), status=status.HTTP_400_BAD_REQUEST)

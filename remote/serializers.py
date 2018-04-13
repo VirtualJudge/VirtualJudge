@@ -3,6 +3,8 @@ from rest_framework import serializers
 from rest_framework.serializers import ValidationError, CharField
 
 from remote.models import Language
+from django.db import DatabaseError
+from remote.models import Account
 
 
 class LanguagesSerializer(serializers.ModelSerializer):
@@ -16,7 +18,8 @@ class AccountSerializer(serializers.Serializer):
     username = CharField()
     password = CharField()
 
-    def validated_remote_oj(self, value):
+    @staticmethod
+    def validated_remote_oj(value):
         if Control.Controller.is_support(value) is False:
             raise ValidationError(str(value) + ' is not support')
         return Control.Controller.get_real_remote_oj(value)
@@ -24,3 +27,16 @@ class AccountSerializer(serializers.Serializer):
     def validate(self, value):
         self.validated_remote_oj(value['remote_oj'])
         return value
+
+    def save(self, **kwargs):
+        try:
+            account = Account.objects.filter(oj_name=self.validated_data['remote_oj'],
+                                             oj_username=self.validated_data['username'])
+            if account:
+                account.update(oj_password=self.validated_data['password'])
+            else:
+                Account(oj_name=self.validated_data['remote_oj'], oj_password=self.validated_data['password'],
+                        oj_username=self.validated_data['username']).save()
+            return True
+        except DatabaseError:
+            return False
