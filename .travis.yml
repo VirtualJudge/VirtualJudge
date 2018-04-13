@@ -1,5 +1,3 @@
-dist: trusty
-sudo: required
 language: python
 python:
   - "3.6"
@@ -7,13 +5,19 @@ services:
   - docker
   - redis-server
 env:
+  - DOCKER_COMPOSE_VERSION=1.21.0
   - POSTGRES_DB=vj_database
   - POSTGRES_USER=vj_username
   - POSTGRES_PASSWORD=vj_password
   - POSTGRES_PORT=5433
 before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - echo `lsof -i:5432` && echo `lsof -i:6379`
   - docker version
-  - docker run -it -d -e POSTGRES_DB=${POSTGRES_DB} -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -p 127.0.0.1:${POSTGRES_PORT}:5432 postgres:10
+  - docker-compose -f docker-env/dev-ci.yml
 install:
   - pip install -r requirements.txt
   - pip install coveralls
