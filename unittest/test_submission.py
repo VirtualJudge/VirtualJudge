@@ -1,12 +1,9 @@
 from django.test import TestCase
-from remote.models import Language
+
 from contest.models import Contest
 from problem.models import Problem
-
-from .serializers import SubmissionSerializer
-import time
-import datetime
-from django.utils import timezone
+from remote.models import Language
+from submission.serializers import SubmissionSerializer
 
 
 # Create your tests here.
