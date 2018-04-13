@@ -16,16 +16,14 @@ class LoginSerializer(serializers.Serializer):
     username = CharField()
     password = CharField()
 
-    def validate_username(self, value):
+    @staticmethod
+    def validate_username(value):
         if re.match(r'^[a-zA-Z0-9\-_]{4,20}$', value) is None:
             raise ValidationError('Username only contains number,letter,_,- and length between 4 and 20.')
-        try:
-            UserProfile.objects.get(username=value)
-        except ObjectDoesNotExist:
-            raise ValidationError('Username not exist')
         return value
 
-    def validate_password(self, value):
+    @staticmethod
+    def validate_password(value):
         if re.match(r'^[a-zA-Z0-9\-_.]{8,30}$', value) is None:
             raise ValidationError('Password only contains number,letter,_,-,. and length between 8 and 30.')
         return value

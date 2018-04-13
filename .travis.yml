@@ -1,8 +1,16 @@
 language: python
 python:
   - "3.6"
+services:
+  - redis-server
+  - docker
+before_install:
+  - docker pull postgres:10
+  - docker run -it -d -e POSTGRES_DB=vj_database -e POSTGRES_USER=vj_admin -e POSTGRES_PASSWORD=vj_password -p 127.0.0.1:5433:5432 postgres:10
 install:
   - pip install -r requirements.txt
   - pip install coveralls
+  - sleep 10 && python ./manage.py init_install
 script:
-  - python3 -m unittest test.test_account
+  - coverage run --include="$PWD/*" manage.py test
+  - coverage report

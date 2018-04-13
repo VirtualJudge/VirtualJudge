@@ -22,7 +22,8 @@ class LoginAPI(APIView):
                 return Response(res_format(UserProfileSerializer(user).data, Message.SUCCESS),
                                 status=status.HTTP_200_OK)
             else:
-                return Response(res_format('password not correct', Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+                return Response(res_format('username or password not correct', Message.ERROR),
+                                status=status.HTTP_400_BAD_REQUEST)
         return Response(res_format(serializer.errors, Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
 
