@@ -6,7 +6,6 @@ celery
 redis
 gunicorn
 BeautifulSoup4
-lxml
 flake8
 requests
 requests[socks]

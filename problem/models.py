@@ -16,7 +16,6 @@ class Problem(models.Model):
 
     html = models.TextField(blank=True, null=True)
 
-
     class Meta:
         ordering = ('update_time',)
         unique_together = ('remote_oj', 'remote_id')
