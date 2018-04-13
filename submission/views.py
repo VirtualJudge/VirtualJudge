@@ -1,105 +1,64 @@
 from datetime import datetime
 
 from VirtualJudgeSpider import Config
-from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView, Response
 
-from problem.models import Problem
-from remote.models import Language
-from submission.bodys import SubmissionBody
 from submission.models import Submission
-from submission.serializers import SubmissionSerializer, SubmissionListSerializer, VerdictSerializer
+from submission.serializers import SubmissionListSerializer, VerdictSerializer, SubmissionSerializer
 from submission.tasks import submit_task
-from utils.response import *
+from utils.response import res_format, Message
+from django.db import DatabaseError
 
 
-class VerdictAPI(View):
-    def get(self, request, *args, **kwargs):
+class VerdictAPI(APIView):
+    def get(self, request, submission_id, *args, **kwargs):
         try:
-            submission_id = kwargs['submission_id']
             submission = Submission.objects.get(id=submission_id)
-            return HttpResponse(success(VerdictSerializer(submission).data))
-        except:
-            return HttpResponse(error("some error occurred"))
+            return Response(res_format(VerdictSerializer(submission).data), status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response(res_format('submission not exist', status=Message.ERROR),
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubmissionShowAPI(View):
-    def get(self, request, *args, **kwargs):
-        try:
-            submission_id = kwargs['submission_id']
-            submission = Submission.objects.get(id=submission_id)
-            serializer = SubmissionSerializer(submission)
-            return HttpResponse(success(serializer.data))
-        except Exception as e:
-            return HttpResponse(error("get submission error"))
+class SubmissionAPI(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request, *args, **kwargs):
 
-class SubmissionAPI(View):
-    @method_decorator(login_required)
-    @csrf_exempt
-    def post(self, request):
         last_submit_time = request.session.get('last_submit_time', None)
         if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
-            return HttpResponse(error("五秒内不能再次提交"))
+            return Response(res_format("五秒内不能再次提交", status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
         request.session['last_submit_time'] = datetime.now().timestamp()
-        body = SubmissionBody(request.body)
-        if body.is_valid():
-            remote_oj = body.cleaned_data('remote_oj')
-            remote_id = body.cleaned_data('remote_id')
-            contest_id = body.cleaned_data('contest_id')
-            source_code = body.cleaned_data('source_code')
-            language = body.cleaned_data('language')
-            try:
-                problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-                language = Language.objects.get(remote_oj=remote_oj, oj_language=language)
-                if contest_id is not None:
-                    submission = Submission(problem_id=problem.id,
-                                            user=request.user,
-                                            code=source_code,
-                                            contest_id=contest_id,  # 找不同
-                                            language=language,
-                                            remote_id=problem.remote_id,
-                                            remote_oj=problem.remote_oj)
-                else:
-                    submission = Submission(problem_id=problem.id,
-                                            user=request.user,
-                                            code=source_code,
-                                            language=language,
-                                            remote_id=problem.remote_id,
-                                            remote_oj=problem.remote_oj)
-                submission.save()
-                submit_task.delay(submission.id)
-                return HttpResponse(success({'submission_id': submission.id}))
-            except:
-                return HttpResponse(error('submission error'))
+
+        serializer = SubmissionSerializer(request.data)
+        if serializer.is_valid():
+            submission_id = serializer.save(request.user)
+            if submission_id is not None:
+                submit_task.delay(submission_id)
+                return Response(res_format(submission_id), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
         else:
-            return HttpResponse(error(body.errors))
+            return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubmissionListAPI(View):
-    @method_decorator(login_required)
+class SubmissionListAPI(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            offset = 0
-            limit = 20
-            for k, v in kwargs.items():
-                if k == 'offset':
-                    offset = v
-                if k == 'limit':
-                    limit = v
-            submissions = Submission.objects.filter(contest_id=None).order_by('-id')[offset:offset + limit]
-            return HttpResponse(success(SubmissionListSerializer(submissions, many=True).data))
-        except Exception as e:
-            print(e)
-            return HttpResponse(error('error'))
+            submissions = Submission.objects.filter(contest_id=None).order_by('-update_time')[:100]
+            return Response(res_format(SubmissionListSerializer(submissions, many=True).data),
+                            status=status.HTTP_200_OK)
+        except DatabaseError:
+            return Response(res_format('request failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReJudgeAPI(View):
-    @method_decorator(login_required)
-    def get(self, request, submission_id):
+class ReJudgeAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, submission_id, *args, **kwargs):
         try:
             submission = Submission.objects.get(id=submission_id)
             if submission.status in {Config.Result.Status.STATUS_NO_ACCOUNT.value,
@@ -107,7 +66,8 @@ class ReJudgeAPI(View):
                 submission.status = Config.Result.Status.STATUS_PENDING.value
                 submission.save()
                 submit_task.delay(submission_id)
-                return HttpResponse(success('rejudge submit success'))
-        except:
-            pass
-        return HttpResponse(error('rejudge failed'))
+                return Response(res_format('rejudge submit success'), status=status.HTTP_400_BAD_REQUEST)
+        except ObjectDoesNotExist:
+            return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+        except DatabaseError:
+            return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
