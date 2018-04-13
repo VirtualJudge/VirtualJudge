@@ -7,8 +7,8 @@
 基于Python爬虫的虚拟评测系统  
 
 ### 部署方法
-[https://github.com/VirtualJudge/VirtualJudgeDeploy](https://github.com/VirtualJudge/VirtualJudgeDeploy)
+[https://github.com/VirtualJudge/Deploy](https://github.com/VirtualJudge/Deploy)
 
 ### 爬虫地址
-[https://github.com/VirtualJudge/VirtualJudgeSpider](https://github.com/VirtualJudge/VirtualJudgeSpider)
+[https://github.com/VirtualJudge/Spider](https://github.com/VirtualJudge/Spider)
 
