@@ -17,7 +17,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - echo `lsof -i:5432` && echo `lsof -i:6379`
   - docker version
-  - docker-compose -f docker-env/dev-ci.yml
+  - docker-compose -f docker-env/dev-ci.yml up -d
 install:
   - pip install -r requirements.txt
   - pip install coveralls
