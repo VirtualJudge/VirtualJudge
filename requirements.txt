@@ -8,4 +8,8 @@ gunicorn
 BeautifulSoup4
 lxml
 flake8
+requests
+requests[socks]
+lxml
+google-cloud-translate
 git+https://github.com/VirtualJudge/VirtualJudgeSpider

@@ -1,8 +1,6 @@
-from rest_framework import serializers
-from django.db import DatabaseError
-from rest_framework.exceptions import ValidationError
-from account.models import UserProfile
 from django.utils import timezone
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 
 class ContestSerializer(serializers.Serializer):

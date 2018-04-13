@@ -10,14 +10,18 @@ from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
 from utils.response import res_format, Message
+from django.http import HttpResponse
 
 
 class ProblemLocalAPI(APIView):
-    def get(self, request, problem_id, **kwargs):
+    def get(self, request, problem_id, param=None, **kwargs):
         try:
             problem = Problem.objects.get(id=problem_id)
+            if param == 'html':
+                return HttpResponse(problem.html)
             return Response(res_format(ProblemSerializer(problem).data),
                             status=status.HTTP_400_BAD_REQUEST)
+
         except ObjectDoesNotExist:
             return Response(
                 res_format('problem not exist', status=Message.ERROR),
@@ -25,7 +29,7 @@ class ProblemLocalAPI(APIView):
 
 
 class ProblemAPI(APIView):
-    def get(self, request, remote_oj, remote_id, **kwargs):
+    def get(self, request, remote_oj, remote_id, lang=0, param=None, **kwargs):
         remote_oj = Controller.get_real_remote_oj(remote_oj)
         if not Controller.is_support(remote_oj):
             return Response(
@@ -50,6 +54,8 @@ class ProblemAPI(APIView):
                               request_status=Spider_Problem.Status.STATUS_PENDING.value)
             problem.save()
             get_problem_task.delay(problem.id)
+        if param == 'html':
+            return HttpResponse(problem.html)
         return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
 
 

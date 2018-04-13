@@ -1,5 +1,5 @@
-from django.db import models
 from VirtualJudgeSpider import Config
+from django.db import models
 
 
 class Problem(models.Model):
@@ -9,13 +9,13 @@ class Problem(models.Model):
 
     update_time = models.DateTimeField(auto_now=True)
     request_status = models.IntegerField(default=Config.Problem.Status.STATUS_PENDING.value)
-
     title = models.CharField(max_length=128, null=True)
     time_limit = models.CharField(max_length=20, null=True)
     memory_limit = models.CharField(max_length=20, null=True)
     special_judge = models.BooleanField(default=False)
 
     html = models.TextField(blank=True, null=True)
+
 
     class Meta:
         ordering = ('update_time',)

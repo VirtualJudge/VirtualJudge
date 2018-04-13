@@ -13,6 +13,16 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from .utils import get_env
 
+PROXIES_CONF = {
+    'http': get_env('HTTP_PROXY', 'socks5://127.0.0.1:1086'),
+    'https': get_env('HTTPS_PROXY', 'socks5://127.0.0.1:1086')
+}
+TRANSLATE_CONF = {
+    'GOOGLE': {
+        'key': get_env('GOOGLE_TRANSLATE_KEY'),
+        'target': get_env('GOOGLE_TRANSLATE_TARGET', 'zh-CN')
+    }
+}
 if get_env('VJ_ENV', 'develop') == 'production':
     DEBUG = False
 
@@ -170,10 +180,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 
-REDIS_URL = "redis://%s:%s" % (REDIS_CONF["host"], REDIS_CONF["port"])
+REDIS_URL = f"redis://{REDIS_CONF['host']}:{REDIS_CONF['port']}"
 
-CELERY_RESULT_BACKEND = f"{REDIS_URL}/2"
-BROKER_URL = f"{REDIS_URL}/3"
+CELERY_RESULT_BACKEND = f'{REDIS_URL}/2'
+BROKER_URL = f'{REDIS_URL}/3'
 CELERY_TASK_SOFT_TIME_LIMIT = CELERY_TASK_TIME_LIMIT = 180
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
