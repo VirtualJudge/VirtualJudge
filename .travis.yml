@@ -21,11 +21,11 @@ before_install:
   # 运行docker-compose
   - docker-compose -f docker-env/dev-ci.yml up -d
 install:
-  - echo `lsof -i:5433` && echo `lsof -i:6379`
   - pip install -r requirements.txt
   - pip install coveralls
-  - docker ps -a
   - sleep 10 && python ./manage.py init_install
 script:
   - coverage run --include="$PWD/*" manage.py test account
   - coverage report
+after_success:
+  coveralls

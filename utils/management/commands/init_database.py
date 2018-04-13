@@ -6,7 +6,6 @@ from VirtualJudge.settings import DATABASES
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
-            self.stdout.write(self.style.WARNING(DATABASES.get('default')))
             if os.system('python3 manage.py makemigrations') != 0:
                 self.stdout.write(self.style.ERROR('python3 manage.py makemigrations'))
                 exit(1)
