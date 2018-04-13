@@ -25,7 +25,7 @@ install:
   - pip install coveralls
   - sleep 10 && python ./manage.py init_install
 script:
-  - coverage run --include="$PWD/*" manage.py test account
+  - coverage run --include="$PWD/*" manage.py test account contest problem remote submission
   - coverage report
 after_success:
   coveralls

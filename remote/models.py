@@ -11,8 +11,8 @@ class Setting(models.Model):
 
 class Language(models.Model):
     oj_name = models.CharField(max_length=20)
-    oj_language = models.CharField(max_length=30)
-    oj_language_name = models.CharField(max_length=30)
+    oj_language = models.CharField(max_length=40)
+    oj_language_name = models.CharField(max_length=40)
 
     class Meta:
         db_table = 'remote_language'

@@ -24,26 +24,6 @@ class Problem(models.Model):
 
 
 class ProblemBuilder(object):
-    @staticmethod
-    def build_problem(problem_data):
-        ret = Problem()
-        if problem_data.get('remote_id'):
-            ret.remote_id = problem_data['remote_id']
-        if problem_data.get('remote_oj'):
-            ret.remote_oj = problem_data['remote_oj']
-        if problem_data.get('remote_url'):
-            ret.remote_url = problem_data['remote_url']
-        if problem_data.get('title'):
-            ret.title = problem_data['title']
-        if problem_data.get('time_limit'):
-            ret.time_limit = problem_data['time_limit']
-        if problem_data.get('memory_limit'):
-            ret.memory_limit = problem_data['memory_limit']
-        if problem_data.get('special_judge'):
-            ret.special_judge = problem_data['special_judge']
-        if problem_data.get('html'):
-            ret.html = problem_data['html']
-        return ret
 
     @staticmethod
     def update_problem(ret, problem_data):

@@ -18,7 +18,7 @@ class VerdictSerializer(serializers.ModelSerializer):
             'id', 'remote_oj', 'remote_id', 'verdict_status', 'verdict', 'execute_time', 'execute_memory', 'status')
 
 
-class SubmissionSerializer(serializers.ModelSerializer):
+class SubmissionSerializer(serializers.Serializer):
     contest_id = IntegerField(required=False)
     code = CharField()
     language = CharField()
@@ -43,37 +43,21 @@ class SubmissionSerializer(serializers.ModelSerializer):
         return contest_id
 
     def validate_code(self, value):
-
         return value
 
-    def validate_language(self, remote_oj, language):
-        try:
-            if Language.objects.filter(oj_name=remote_oj, oj_language=language).exists():
-                raise ValidationError('language not support now')
-        except DatabaseError:
-            raise ValidationError('system error')
-        return language
-
     def validate_remote_oj(self, remote_oj):
-        if Control.Controller.is_support(remote_oj) is False:
+        if Language.objects.filter(oj_name=remote_oj).exists() is False:
             raise ValidationError(str(remote_oj) + ' is not supported')
         return remote_oj
 
-    def validate_remote_id(self, remote_oj, remote_id):
-        try:
-            if Problem.objects.filter(remote_oj=remote_oj, remote_id=remote_id).exists() is False:
-                raise ValidationError('problem not exist')
-        except DatabaseError:
-            raise ValidationError('system error')
-        return remote_id
-
     def validate(self, value):
-        if value.get('contest_id'):
-            self.validate_contest_id(value['contest_id'])
-        self.validate_remote_oj(value['remote_oj'])
-        self.validate_code(value['code'])
-        self.validate_language(value['remote_oj'], value['language'])
-        self.validate_remote_id(value['remote_oj'], value['remote_id'])
+        remote_oj = value['remote_oj']
+        remote_id = value['remote_id']
+        language = value['language']
+        if Problem.objects.filter(remote_oj=remote_oj, remote_id=remote_id).exists() is False:
+            raise ValidationError('problem not exist')
+        if Language.objects.filter(oj_name=remote_oj, oj_language=language).exists() is False:
+            raise ValidationError('language not exist')
         return value
 
 

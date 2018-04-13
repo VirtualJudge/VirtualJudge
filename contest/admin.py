@@ -6,7 +6,7 @@ from contest.models import Contest
 
 
 class ContestAdmin(admin.ModelAdmin):
-    list_display = ('title', 'start_time', 'time_delta')
+    list_display = ('title', 'start_time', 'end_time')
 
 
 admin.site.register(Contest, ContestAdmin)
