@@ -29,7 +29,7 @@ class ProblemLocalAPI(APIView):
 
 
 class ProblemAPI(APIView):
-    def get(self, request, remote_oj, remote_id, lang=0, param=None, **kwargs):
+    def get(self, request, remote_oj, remote_id, param=None, **kwargs):
         remote_oj = Controller.get_real_remote_oj(remote_oj)
         if not Controller.is_support(remote_oj):
             return Response(
