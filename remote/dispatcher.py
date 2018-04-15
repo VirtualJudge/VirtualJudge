@@ -1,10 +1,8 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 from django.db import transaction
 from django.utils import timezone
 
 from remote.models import Setting, Account
-from django.db import DatabaseError
-from django.utils import timezone
 
 
 class ConfigDispatcher(object):

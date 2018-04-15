@@ -1,11 +1,9 @@
-from celery import shared_task
-from django.db.models import Count
 from VirtualJudgeSpider import Control, Config
-from remote.dispatcher import ConfigDispatcher
-from remote.models import Account
-from remote.models import Language
-from django.core.exceptions import ObjectDoesNotExist
+from celery import shared_task
 from django.db import DatabaseError
+
+from remote.dispatcher import ConfigDispatcher
+from remote.models import Language
 
 
 @shared_task
