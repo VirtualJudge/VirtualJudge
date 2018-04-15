@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 MAINTAINER xudian.cn@gmail.com
 
-ENV VJ_ENV develop
+ENV VJ_ENV production
 USER root
 
 
@@ -14,7 +14,7 @@ RUN mkdir -p /public
 RUN chown nobody /public
 VOLUME /public
 
-ADD . /app
+ADD dockerfiles /app
 WORKDIR /app
 
 RUN apt update
