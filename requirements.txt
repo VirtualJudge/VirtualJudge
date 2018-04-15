@@ -8,6 +8,7 @@ gunicorn
 BeautifulSoup4
 flake8
 requests
+colorama
 requests[socks]
 lxml
 google-cloud-translate

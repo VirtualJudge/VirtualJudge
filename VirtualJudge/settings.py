@@ -13,16 +13,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from .utils import get_env
 
-PROXIES_CONF = {
-    'http': get_env('HTTP_PROXY', 'socks5://127.0.0.1:1086'),
-    'https': get_env('HTTPS_PROXY', 'socks5://127.0.0.1:1086')
-}
-TRANSLATE_CONF = {
-    'GOOGLE': {
-        'key': get_env('GOOGLE_TRANSLATE_KEY'),
-        'target': get_env('GOOGLE_TRANSLATE_TARGET', 'zh-CN')
-    }
-}
 if get_env('VJ_ENV', 'develop') == 'production':
     DEBUG = False
 

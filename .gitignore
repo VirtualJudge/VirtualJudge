@@ -15,6 +15,7 @@ db.sqlite3
 */migrations/
 
 !.gitignore
-*.json
 collected_static/
 public/
+tools/accounts.json
+tools/config.json
