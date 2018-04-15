@@ -19,7 +19,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - docker-compose version
   # 运行docker-compose
-  - docker-compose -f docker-env/dev-ci.yml up -d
+  - docker-compose -f dockerfiles/dev-ci.yml up -d
 install:
   - pip install -r requirements.txt
   - pip install coveralls
