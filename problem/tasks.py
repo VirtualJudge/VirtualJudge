@@ -17,8 +17,8 @@ def get_problem_task(problem_id):
                                   Problem.Status.STATUS_CRAWLING_SUCCESS.value]:
         problem.request_status = Problem.Status.STATUS_RUNNING.value
         problem.save()
-    tries = 4
 
-    while tries > 0 and ProblemDispatcher(problem_id).submit():
+    tries = 2
+    while tries > 0 and ProblemDispatcher(problem_id).submit() is False:
         tries -= 1
         time.sleep(2)

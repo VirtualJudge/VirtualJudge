@@ -6,7 +6,7 @@ services:
     container_name: vj-redis-dev
     restart: always
     volumes:
-      - ~/data/redis:/data
+      - ~/data/redis-dev:/data
     ports:
       - '127.0.0.1:6379:6379'
 
@@ -15,7 +15,7 @@ services:
     container_name: vj-postgres-dev
     restart: always
     volumes:
-      - ~/data/postgres:/var/lib/postgresql/data
+      - ~/data/postgres-dev:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=vj_database
       - POSTGRES_USER=vj_username
