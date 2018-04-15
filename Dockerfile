@@ -10,7 +10,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #COPY deploy/sources.list /etc/apt/
 RUN mkdir -p /public
-RUN chown nobody /public
 VOLUME /public
 
 ADD . /app
