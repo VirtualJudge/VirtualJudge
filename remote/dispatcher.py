@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from remote.models import Setting, Account
 from django.db import DatabaseError
+from django.utils import timezone
 
 
 class ConfigDispatcher(object):
@@ -11,27 +12,27 @@ class ConfigDispatcher(object):
     def choose_config(key, value):
         if transaction.atomic():
             try:
-                setting = Setting.objects.get(oj_key=key)
-                if setting.oj_value != value:
-                    setting.oj_value = value
-                    setting.save()
-                    return True
-            except ObjectDoesNotExist:
-                try:
-                    setting = Setting.objects.create(oj_key=key, oj_value=value)
-                    setting.save()
-                    return True
-                except DatabaseError:
-                    return False
+                if Setting.objects.filter(oj_key=key).exists():
+                    setting = Setting.objects.get(oj_key=key)
 
+                    if (setting.update_time - timezone.now()).seconds > 5 and setting.oj_value != value:
+                        setting.oj_value = value
+                        setting.save()
+                        return True
+                    else:
+                        return False
+                else:
+                    setting = Setting(oj_key=key, oj_value=value)
+                    setting.save()
+                    return True
+            except DatabaseError:
+                return False
         return False
 
     @staticmethod
     def release_config(key, value):
         with transaction.atomic():
-            setting = Setting.objects.get(oj_key=key)
-            setting.oj_value = value
-            setting.save()
+            Setting.objects.filter(oj_key=key).update(oj_value=value)
 
     @staticmethod
     def choose_account(remote_oj):

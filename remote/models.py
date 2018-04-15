@@ -4,6 +4,7 @@ from django.db import models
 class Setting(models.Model):
     oj_key = models.CharField(max_length=100, primary_key=True)
     oj_value = models.TextField()
+    update_time = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'setting'

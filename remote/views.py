@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView, Response
 
-from remote.models import Language
+from remote.models import Language, Account
 from remote.serializers import AccountSerializer
 from remote.serializers import LanguagesSerializer
 from remote.tasks import update_language_task
@@ -21,7 +21,7 @@ class LanguagesAPI(APIView):
                 return Response(res_format(LanguagesSerializer(languages, many=True).data), status=status.HTTP_200_OK)
             except DatabaseError:
                 return Response(res_format('request error', status=Message.ERROR),
-                                status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(res_format('we do not support it', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -29,8 +29,14 @@ class FreshLanguageAPI(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, *args, **kwargs):
-        update_language_task.delay()
-        return Response(res_format('Refreshed successfully'), status=status.HTTP_200_OK)
+        try:
+            accounts = Account.objects.all()
+            for remote_oj in {account.oj_name for account in accounts}:
+                update_language_task.delay(remote_oj)
+            return Response(res_format('Refreshed successfully'), status=status.HTTP_200_OK)
+        except DatabaseError:
+            return Response(res_format('Refreshed error', status=Message.ERROR),
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class RemoteAPI(APIView):
@@ -43,7 +49,7 @@ class RemoteAPI(APIView):
                 return Response(res_format('operation success', status=Message.SUCCESS), status=status.HTTP_200_OK)
             else:
                 return Response(res_format('operation failed', status=Message.ERROR),
-                                status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         else:
             return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
