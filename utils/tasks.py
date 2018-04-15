@@ -1,17 +1,16 @@
 import os
+import time
 import traceback
 
 import requests
+from VirtualJudgeSpider import Control, Config
 from bs4 import BeautifulSoup
 from celery import shared_task
+from django.db import DatabaseError
 
 from VirtualJudge import settings
 from problem.models import Problem
 from submission.models import Submission
-from VirtualJudgeSpider import Control, Config
-import time
-from django.db import DatabaseError
-import traceback
 
 
 def load_static(remote_oj, remote_id, website_data):
