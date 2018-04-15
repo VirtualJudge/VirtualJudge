@@ -28,6 +28,9 @@ class UserProfile(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
+    accepted = models.IntegerField(default=0)
+    attempted = models.IntegerField(default=0)
+    nickname = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 

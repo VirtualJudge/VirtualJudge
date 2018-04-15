@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 def submit_task(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
-        tries = 3
+        tries = 2
         while tries > 0 and SubmissionDispatcher(submission.id).submit() is False:
             tries -= 1
     except ObjectDoesNotExist:

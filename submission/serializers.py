@@ -8,6 +8,8 @@ from contest.models import Contest
 from problem.models import Problem
 from remote.models import Language
 from submission.models import Submission
+from account.models import UserProfile
+from django.db.models import F
 
 
 class VerdictSerializer(serializers.ModelSerializer):
@@ -25,7 +27,18 @@ class SubmissionSerializer(serializers.Serializer):
     remote_id = CharField()
 
     def save(self, user):
+        """
+        在这里可以统计提交量和正确量，但是目前核心不支持判断verdict是否是正确，所以目前只能统计尝试的题目数量
+        :param user: request.user
+        :return: submission object
+        """
         try:
+
+            # if Submission.objects.filter(remote_oj=self.remote_oj, remote_id=self.remote_id,
+            #                              user=user).exists() is False:
+            #     user_profile = UserProfile.objects.get(username=user)
+            #     user_profile.attempted = F('attempted') + 1
+            #     user_profile.save()
             submission = Submission(contest_id=self.contest_id, code=self.code, user=user, language=self.language,
                                     remote_id=self.remote_id, remote_oj=self.remote_oj)
             submission.save()

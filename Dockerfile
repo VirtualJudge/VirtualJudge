@@ -10,9 +10,9 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #COPY deploy/sources.list /etc/apt/
-
+RUN useradd vj
 RUN mkdir -p /public
-RUN chmod a+x /public
+RUN chown vj /public
 VOLUME /public
 
 ADD . /app

@@ -12,7 +12,7 @@ from account.models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('username',)
+        fields = ('username', 'accepted', 'attempted', 'nickname')
 
 
 class LoginSerializer(serializers.Serializer):
