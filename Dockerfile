@@ -3,7 +3,6 @@ FROM ubuntu:18.04
 MAINTAINER xudian.cn@gmail.com
 
 ENV VJ_ENV production
-USER root
 
 
 ENV TZ=Asia/Shanghai
