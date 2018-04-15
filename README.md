@@ -25,4 +25,7 @@
 ### 爬虫地址
 [https://github.com/VirtualJudge/Spider](https://github.com/VirtualJudge/Spider)
 
+### demo
+[http://119.29.62.88/](http://119.29.62.88/)
+
 如果对这个项目感兴趣的话，欢迎contribute
