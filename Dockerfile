@@ -14,7 +14,7 @@ RUN mkdir -p /public
 RUN chown nobody /public
 VOLUME /public
 
-ADD dockerfiles /app
+ADD . /app
 WORKDIR /app
 
 RUN apt update
