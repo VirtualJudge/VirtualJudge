@@ -10,13 +10,8 @@ class Command(BaseCommand):
         username = 'root'
         email = 'root@vj.com'
         password = 'rootroot'
-        try:
+        if UserProfile.objects.filter(username=username).exists():
+            self.stdout.write(self.style.WARNING('Due to the existence of this account, no new account was created'))
+        else:
             user = UserProfile.objects.create_superuser(username=username, email=email, password=password)
             user.save()
-        except DatabaseError:
-            self.stdout.write(self.style.WARNING('we did not create new root account, maybe account exist.'))
-        try:
-            UserProfile.objects.get(username=username)
-        except ObjectDoesNotExist:
-            self.stdout.write(self.style.ERROR('Failed to create user'))
-            exit(1)
