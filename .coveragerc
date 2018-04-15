@@ -8,3 +8,4 @@ omit = */urls/*
        */admin.py
        */apps.py
        */models.py
+       tools/*
