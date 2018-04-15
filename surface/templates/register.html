@@ -1,0 +1,63 @@
+
+
+{% extends 'include/base.html' %}
+
+{% block title %}注册账号{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-4 column">
+            </div>
+            <div class="col-md-4 column">
+                <form role="form">
+                    <div class="form-group">
+                        <p id="id_message">
+
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_username">账号</label>
+                        <input type="text" class="form-control" id="id_username"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_email">邮箱</label>
+                        <input type="email" class="form-control" id="id_email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password">密码</label>
+                        <input type="password" class="form-control" id="id_password"/>
+                    </div>
+                    <button id="id_button" onclick="handleButtonClick()" type="button" class="btn btn-default">提交
+                    </button>
+                </form>
+                <script>
+                    function handleRegister(res) {
+                        $("#id_message").html("");
+                        console.log(res);
+                        if (res.status === 0) {
+                            $("#id_message").attr("class", "text text-success");
+                            $("#id_message").append("注册成功，两秒后跳转主页");
+                            setTimeout("location.href='/';", 2000);
+                        } else {
+                            $("#id_message").attr("class", "text text-warning");
+                            $.each(res.data, function (k, v) {
+                                v.forEach(function (val) {
+                                    $("#id_message").append(val + "\n");
+                                })
+                            });
+                        }
+                    }
+
+                    function handleButtonClick() {
+                        registerHandle($("#id_username").val(), $("#id_email").val(), $("#id_password").val(), handleRegister);
+                    }
+
+                </script>
+            </div>
+            <div class="col-md-4 column">
+            </div>
+        </div>
+    </div>
+{% endblock %}

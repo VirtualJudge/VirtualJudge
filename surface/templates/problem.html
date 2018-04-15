@@ -1,0 +1,151 @@
+
+
+{% extends 'include/base.html' %}
+
+{% block title %}题目{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <h3 class="text-center" id="id_title">
+                </h3>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-8 column">
+                <iframe id="id_frame" width="100%" scrolling="no" frameborder="0" style="background-color: #eeeeee">
+
+                </iframe>
+            </div>
+            <div class="col-md-4 column">
+                <div class="row" style="background-color: #eeeeee">
+                    <ul id="id_ul">
+
+                    </ul>
+                </div>
+                <hr class="row">
+                <div class="row" style="background-color: #eeeeee">
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="id_language">选择语言</label>
+                            <select id="id_language" class="form-control" onchange="handleLanguageChange()">
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_file">代码文件</label>
+                            <input type="file" id="id_file"/>
+                        </div>
+                        <button type="button" onclick="handleButtonClick()" class="btn btn-default">Submit</button>
+                        <div class="form-group">
+                            <p id="id_message" class="text">
+
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <hr class="row">
+                <div class="row" style="background-color: #eeeeee">
+                    <ul id="id_verdict_ul">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function reInitFrame() {
+            var iframe = document.getElementById("id_frame");
+            try {
+                var bHeight = iframe.contentWindow.document.body.scrollHeight;
+                var dHeight = iframe.contentWindow.document.documentElement.scrollHeight;
+                var height = Math.min(bHeight, dHeight);
+                iframe.height = height;
+            } catch (ex) {
+            }
+        }
+
+        var timer = null;
+        var submission_id = null;
+
+        function handleVerdict(res) {
+            if (res.status === 0) {
+
+                $("#id_verdict_ul").html("");
+                $("#id_verdict_ul").append("<dl> <dt>提交编号:</dt> <dd>" + res.data.id + "</dd></d;>");
+                $("#id_verdict_ul").append("<dl> <dt>运行结果:</dt> <dd>" + res.data.verdict + "</dd></d;>");
+                $("#id_verdict_ul").append("<dl> <dt>运行时间:</dt> <dd>" + res.data.execute_time + "</dd></d;>");
+                $("#id_verdict_ul").append("<dl> <dt>运行内存:</dt> <dd>" + res.data.execute_memory + "</dd></d;>");
+                $("#id_verdict_ul").append("<dl> <dt>爬取状态:</dt> <dd>" + res.data.status + "</dd></d;>");
+                if (res.data.verdict_status === true) {
+                    clearInterval(timer);
+                }
+            } else {
+                clearInterval(timer);
+            }
+        }
+
+        function queryVerdict() {
+            getVerdict(submission_id, handleVerdict);
+        }
+
+        function handleSubmitId(res) {
+            $("#id_message").html("");
+            if (res.status === 0) {
+                submission_id = res.data;
+                timer = setInterval(queryVerdict, 1000);
+            } else {
+                $("#id_message").html(res.status);
+            }
+        }
+
+        function handleButtonClick() {
+            let remote_oj = localStorage.getItem("remote_oj");
+            let remote_id = localStorage.getItem("remote_id");
+            let language = $("#id_language").val();
+            var selectedFile = document.getElementById("id_file").files[0];
+            var reader = new FileReader();
+            reader.readAsText(selectedFile);
+            reader.onload = function () {
+                submitCode(remote_oj, remote_id, this.result, language, handleSubmitId);
+            };
+        }
+
+        function handleProblemInfo(res) {
+            $("#id_title").html(res.data.title);
+            $("#id_ul").html();
+            $("#id_ul").append("<dl> <dt>题目编号:</dt> <dd><span class=\"label label-primary\">" + res.data.id + "</span></dd></d;>");
+            $("#id_ul").append("<dl> <dt>题目来源:</dt> <dd><span class=\"label label-primary\">" + res.data.remote_oj + "</span></dd></d;>");
+            $("#id_ul").append("<dl> <dt>来源题号:</dt> <dd><span class=\"label label-primary\">" + res.data.remote_id + "</span></dd></d;>");
+            $("#id_ul").append("<dl> <dt>内存限制:</dt> <dd><span class=\"label label-info\">" + res.data.memory_limit + "</span></dd></d;>");
+            $("#id_ul").append("<dl> <dt>更新时间:</dt> <dd><span class=\"label label-warning\">" + moment(res.data.update_time).fromNow() + "</span></dd></d;>");
+        }
+
+        function handleLanguageChange() {
+            let remote_oj = localStorage.getItem("remote_oj");
+            let oj_language = $("#id_language").val();
+            localStorage.setItem(remote_oj + "_prefer_language", oj_language);
+        }
+
+        function handleLanguageList(res) {
+            res.data.forEach(function (language) {
+                $("#id_language").append("<option value=\"" + language.oj_language + "\">" + language.oj_language_name + "</option>");
+            });
+            let remote_oj = localStorage.getItem("remote_oj");
+            let oj_language = localStorage.getItem(remote_oj + "_prefer_language");
+            if (oj_language) {
+                $("#id_language").val(oj_language);
+            }
+
+        }
+
+        $(document).ready(function () {
+            $("#id_frame").attr("src", "/api/problem/" + localStorage.getItem("remote_oj") + "/" + localStorage.getItem("remote_id") + "/html/");
+            window.setInterval("reInitFrame()", 200);
+            getProblem(localStorage.getItem("remote_oj"), localStorage.getItem("remote_id"), handleProblemInfo);
+            getLanguageList(localStorage.getItem("remote_oj"), handleLanguageList);
+        })
+    </script>
+{% endblock %}

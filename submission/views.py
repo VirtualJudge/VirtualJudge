@@ -14,7 +14,7 @@ from utils.response import res_format, Message
 
 
 class VerdictAPI(APIView):
-    def get(self, request, submission_id, *args, **kwargs):
+    def post(self, request, submission_id, *args, **kwargs):
         try:
             submission = Submission.objects.get(id=submission_id)
             return Response(res_format(VerdictSerializer(submission).data), status=status.HTTP_200_OK)
@@ -34,9 +34,9 @@ class SubmissionAPI(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         request.session['last_submit_time'] = datetime.now().timestamp()
 
-        serializer = SubmissionSerializer(request.data)
+        serializer = SubmissionSerializer(data=request.data)
         if serializer.is_valid():
-            submission = serializer.save(request.user)
+            submission = serializer.save(str(request.user))
             if submission is not None:
                 submit_task.delay(submission.id)
                 return Response(res_format(submission.id), status=status.HTTP_200_OK)
@@ -46,19 +46,20 @@ class SubmissionAPI(APIView):
 
 
 class SubmissionListAPI(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         try:
-            submissions = Submission.objects.filter(contest_id=None).order_by('-update_time')[:100]
+            submissions = Submission.objects.filter(contest_id=None).order_by('-create_time')[:100]
             return Response(res_format(SubmissionListSerializer(submissions, many=True).data),
                             status=status.HTTP_200_OK)
         except DatabaseError:
-            return Response(res_format('request failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format('System error', status=Message.ERROR),
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ReJudgeAPI(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, submission_id, *args, **kwargs):
+    def post(self, request, submission_id, *args, **kwargs):
         try:
             submission = Submission.objects.get(id=submission_id)
             if submission.status in {Config.Result.Status.STATUS_NO_ACCOUNT.value,
@@ -68,6 +69,7 @@ class ReJudgeAPI(APIView):
                 submit_task.delay(submission_id)
                 return Response(res_format('rejudge submit success'), status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
-            return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format('System error', status=Message.ERROR),
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except DatabaseError:
             return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)

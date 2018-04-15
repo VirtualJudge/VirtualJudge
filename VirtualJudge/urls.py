@@ -13,16 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
-
-from VirtualJudge import views
+import os
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
-    path('', views.check_status),
-    path('admin/', admin.site.urls),
+    path('', include('surface.urls')),
+    # path('admin/', admin.site.urls),
     path('api/', include('problem.urls')),
     path('api/', include('account.urls')),
     path('api/', include('submission.urls')),
     path('api/', include('remote.urls')),
 ]
+if settings.DEBUG:
+    media_root = os.path.join(settings.BASE_DIR, 'public')
+    urlpatterns += static('/public/', document_root=media_root)

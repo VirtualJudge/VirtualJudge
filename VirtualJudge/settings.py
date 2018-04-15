@@ -16,7 +16,7 @@ from .utils import get_env
 if get_env('VJ_ENV', 'develop') == 'production':
     DEBUG = False
 
-    PUBLIC = '/public'
+    PUBLIC_URL = '/public'
     PUBLIC_DIR = '/public'
 
     REST_FRAMEWORK = {
@@ -33,7 +33,7 @@ else:
     DEBUG = True
 
     PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
-    PUBLIC = '/public/'
+    PUBLIC_URL = '/public'
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'utils',
     'contest.apps.ContestConfig',
+    'surface.apps.SurfaceConfig',
 ]
 
 MIDDLEWARE = [
@@ -94,7 +95,7 @@ ROOT_URLCONF = 'VirtualJudge.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'surface/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -182,19 +183,18 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
+STATIC_URL = '/static/'
+
 if get_env('VJ_ENV', 'develop') == 'production':
     STATIC_ROOT = os.path.join('/data', 'static')
-    STATIC_URL = '/static/'
+
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
-    STATIC_URL = '/public/'
-    STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, 'public'),
-    )
-    STATICFILES_FINDERS = (
-        "django.contrib.staticfiles.finders.FileSystemFinder",
-        "django.contrib.staticfiles.finders.AppDirectoriesFinder"
-    )
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
 
 LOGIN_URL = '/api/login'
 

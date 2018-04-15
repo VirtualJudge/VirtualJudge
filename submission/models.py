@@ -10,8 +10,6 @@ class Submission(models.Model):
     """
     # User
     user = models.CharField(max_length=20)
-    # 题目编号
-    problem_id = models.IntegerField()
     # 比赛编号，可没有
     contest_id = models.IntegerField(null=True)
     # 要提交的代码

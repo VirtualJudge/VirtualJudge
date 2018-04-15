@@ -37,11 +37,24 @@ class SubmissionSerializer(serializers.Serializer):
             #     user_profile = UserProfile.objects.get(username=user)
             #     user_profile.attempted = F('attempted') + 1
             #     user_profile.save()
-            submission = Submission(contest_id=self.contest_id, code=self.code, user=user, language=self.language,
-                                    remote_id=self.remote_id, remote_oj=self.remote_oj)
+            if self.validated_data.get('contest_id'):
+                submission = Submission(contest_id=self.validated_data['contest_id'],
+                                        code=self.validated_data['code'],
+                                        user=user,
+                                        language=self.validated_data['language'],
+                                        remote_id=self.validated_data['remote_id'],
+                                        remote_oj=self.validated_data['remote_oj'])
+            else:
+                submission = Submission(code=self.validated_data['code'],
+                                        user=user,
+                                        language=self.validated_data['language'],
+                                        remote_id=self.validated_data['remote_id'],
+                                        remote_oj=self.validated_data['remote_oj'])
             submission.save()
             return submission
         except DatabaseError:
+            import traceback
+            traceback.print_exc()
             return None
 
     def validate_contest_id(self, contest_id):
@@ -74,4 +87,6 @@ class SubmissionSerializer(serializers.Serializer):
 class SubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ('id', 'remote_oj', 'user', 'remote_id', 'verdict', 'execute_time', 'execute_memory', 'status')
+        fields = (
+            'id', 'remote_oj', 'user', 'remote_id', 'verdict', 'execute_time', 'execute_memory',
+            'status')

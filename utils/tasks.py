@@ -11,6 +11,7 @@ from submission.models import Submission
 from VirtualJudgeSpider import Control, Config
 import time
 from django.db import DatabaseError
+import traceback
 
 
 def load_static(remote_oj, remote_id, website_data):
@@ -23,7 +24,7 @@ def load_static(remote_oj, remote_id, website_data):
         path = settings.PUBLIC_DIR
         path = os.path.join(path, remote_oj)
         path = os.path.join(path, remote_id)
-        url_path = settings.PUBLIC
+        url_path = settings.PUBLIC_URL
         url_path = os.path.join(url_path, remote_oj)
         url_path = os.path.join(url_path, remote_id)
 
@@ -39,6 +40,7 @@ def load_static(remote_oj, remote_id, website_data):
             img['src'] = os.path.join(url_path, file_name)
             id += 1
         except OSError:
+            traceback.print_exc()
             pass
     return str(soup)
 
@@ -59,19 +61,27 @@ def save_files_task(problem_id):
 def reload_result_task(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
-        tries = 5
-        max_wait_times = 5
-        while tries > 0 and Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict):
-            result = Control.Controller(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.remote_run_id,
-                                                                                        pid=submission.remote_id)
-            if result.status == Config.Result.Status.STATUS_RESULT_GET:
-                submission.verdict = result.verdict
-                if not Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict):
-                    submission.verdict_status = True
-                submission.execute_time = result.execute_time
-                submission.execute_memory = result.execute_memory
-                submission.save()
-            tries -= 1
-            time.sleep(max_wait_times - tries)
+        if Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict) is False:
+            submission.verdict_status = True
+            submission.save()
+        else:
+            tries = 5
+            max_wait_times = 5
+            while tries > 0:
+                result = Control.Controller(submission.remote_oj).get_result_by_rid_and_pid(
+                    rid=submission.remote_run_id,
+                    pid=submission.remote_id)
+                if result.status == Config.Result.Status.STATUS_RESULT_GET:
+                    submission.verdict = result.verdict
+                    submission.execute_time = result.execute_time
+                    submission.execute_memory = result.execute_memory
+                    if Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict) is False:
+                        submission.verdict_status = True
+                        submission.save()
+                        break
+                    submission.save()
+                tries -= 1
+                time.sleep(max_wait_times - tries)
     except DatabaseError:
-        pass
+        import traceback
+        traceback.print_exc()

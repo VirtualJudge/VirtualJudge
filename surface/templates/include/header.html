@@ -1,0 +1,59 @@
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Virtual Judge</span><span class="icon-bar"></span><span
+                class="icon-bar"></span><span class="icon-bar"></span></button>
+        <a class="navbar-brand" href="/">Virtual Judge</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li>
+                <a href="/">题目</a>
+            </li>
+            <li>
+                <a href="/status">提交</a>
+            </li>
+        </ul>
+        <ul id="id_session_ul" class="nav navbar-nav navbar-right">
+            <li>
+                <a href="/login">登录</a>
+            </li>
+            <li>
+                <a href="/register">注册</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<script>
+    function handleLoginSession(res) {
+        $("#id_session_ul").html("");
+        if (res.status === 0) {
+            let session_ul = "<li>\n" +
+                "                <a href=\"#\">" + res.data + "</a>\n" +
+                "            </li>\n" +
+                "            <li>\n" +
+                "                <a id=\"id_logout\" style=\"cursor:pointer;\">登出</a>\n" +
+                "            </li>";
+            $("#id_session_ul").html(session_ul);
+            $(document).on('click', "#id_logout", handleLogoutClick);
+        } else {
+            let session_ul = " <li>\n" +
+                "                <a href=\"/login\">登录</a>\n" +
+                "            </li>\n" +
+                "            <li>\n" +
+                "                <a href=\"/register\">注册</a>\n" +
+                "            </li>";
+            $("#id_session_ul").html(session_ul);
+        }
+    }
+
+    function handleLogoutClick() {
+        getLogout();
+        location.reload();
+    }
+
+    $(document).ready(function () {
+        getLoginSession(handleLoginSession);
+    })
+</script>
