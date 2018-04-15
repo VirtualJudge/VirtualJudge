@@ -29,7 +29,7 @@ def login(requests, config_path):
                 post_data = {'username': account.get('username'), 'password': account.get('password')}
                 return requests.post(remote_url, json=post_data)
             return None
-    except:
+    except OSError:
         traceback.print_exc()
         return None
 

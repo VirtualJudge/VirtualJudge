@@ -17,10 +17,7 @@ def register(requests, url):
     email = input('邮箱:')
     password = getpass.getpass('密码:')
     post_data = {'email': email, 'username': username, 'password': password}
-    try:
-        return requests.post(url, json=post_data)
-    except:
-        return None
+    return requests.post(url, json=post_data)
 
 
 if __name__ == '__main__':
