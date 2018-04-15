@@ -3,16 +3,15 @@ FROM ubuntu:18.04
 MAINTAINER xudian.cn@gmail.com
 
 ENV VJ_ENV production
-
+USER root
 
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #COPY deploy/sources.list /etc/apt/
-RUN useradd vj
 RUN mkdir -p /public
-RUN chown vj /public
+RUN chown nobody /public
 VOLUME /public
 
 ADD . /app
