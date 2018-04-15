@@ -8,8 +8,6 @@ from contest.models import Contest
 from problem.models import Problem
 from remote.models import Language
 from submission.models import Submission
-from account.models import UserProfile
-from django.db.models import F
 
 
 class VerdictSerializer(serializers.ModelSerializer):

@@ -2,9 +2,9 @@ import os
 
 from django.core.management.base import BaseCommand
 from django.db import connection
-import traceback
-from VirtualJudge.utils import get_env
 from django.db.utils import OperationalError
+
+from VirtualJudge.utils import get_env
 
 
 class Command(BaseCommand):
