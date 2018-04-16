@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from problem.models import ProblemBuilder, Problem
 from remote.dispatcher import ConfigDispatcher
 from utils.tasks import save_files_task
+from VirtualJudgeSpider import Config
 
 
 class ProblemDispatcher(object):
@@ -22,8 +23,12 @@ class ProblemDispatcher(object):
             self.problem.request_status = Spider_Problem.Status.STATUS_NO_ACCOUNT.value
             self.problem.save()
             return False
-        response = Control.Controller(self.problem.remote_oj).get_problem(
-            self.problem.remote_id, account=account)
+        remote_account = Config.Account(username=account.oj_username, password=account.oj_password,
+                                        cookies=account.cookies)
+        controller = Control.Controller(self.problem.remote_oj)
+        response = controller.get_problem(self.problem.remote_id, account=remote_account)
+        account.cookies = controller.get_cookies()
+        account.save()
         ConfigDispatcher.release_account(account.id)
 
         self.problem.request_status = response.status.value

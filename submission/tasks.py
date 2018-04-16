@@ -1,10 +1,8 @@
-import traceback
-
 from celery import shared_task
+from django.core.exceptions import ObjectDoesNotExist
 
 from submission.dispatcher import SubmissionDispatcher
 from submission.models import Submission
-from django.core.exceptions import ObjectDoesNotExist
 
 
 @shared_task

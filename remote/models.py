@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 
 class Setting(models.Model):
@@ -26,6 +27,7 @@ class Account(models.Model):
     oj_password = models.CharField(max_length=100)
     oj_account_status = models.BooleanField(default=True)
     update_time = models.DateTimeField(auto_now=True)
+    cookies = JSONField(null=True, blank=True)
 
     class Meta:
         db_table = 'remote_account'

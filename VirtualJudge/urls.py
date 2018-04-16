@@ -17,10 +17,11 @@ from django.urls import path, include
 import os
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib import admin
 
 urlpatterns = [
     path('', include('surface.urls')),
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include('problem.urls')),
     path('api/', include('account.urls')),
     path('api/', include('submission.urls')),

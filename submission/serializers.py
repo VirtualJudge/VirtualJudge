@@ -87,4 +87,6 @@ class SubmissionSerializer(serializers.Serializer):
 class SubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ('id', 'remote_oj', 'user', 'remote_id','verdict_code', 'verdict', 'execute_time', 'execute_memory', 'status')
+        fields = (
+            'id', 'remote_oj', 'user', 'remote_id', 'verdict_code', 'verdict', 'execute_time', 'execute_memory',
+            'status')

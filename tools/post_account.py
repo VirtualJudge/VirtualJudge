@@ -58,6 +58,10 @@ if __name__ == '__main__':
         print('Network Error')
     else:
         print(str(pos))
+    import time
+
+    print('3秒后刷新账号数据')
+    time.sleep(3)
     res = fresh_account(client.requests, remote_url)
     if res:
         print(str(res.text))

@@ -17,24 +17,28 @@ class SubmissionDispatcher(object):
     def submit(self):
         if self._submission is None:
             return False
-        remote_account = ConfigDispatcher.choose_account(self._submission.remote_oj)
-        if remote_account is None:
+        account = ConfigDispatcher.choose_account(self._submission.remote_oj)
+        if account is None:
             self._submission.status = Config.Result.Status.STATUS_NO_ACCOUNT.value
             self._submission.save()
             return False
-        account = Config.Account(remote_account.oj_username, remote_account.oj_password)
-        submit_code = Control.Controller(self._submission.remote_oj).submit_code(self._submission.remote_id,
-                                                                                 account,
-                                                                                 self._submission.code,
-                                                                                 self._submission.language)
+        remote_account = Config.Account(account.oj_username, account.oj_password, account.cookies)
+
+        controller = Control.Controller(self._submission.remote_oj)
+        submit_code = controller.submit_code(self._submission.remote_id, remote_account, self._submission.code,
+                                             self._submission.language)
+        account.cookies = controller.get_cookies()
+        account.save()
         if submit_code is False:
             self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
             self._submission.save()
-            ConfigDispatcher.release_account(remote_account.id)
+            ConfigDispatcher.release_account(account.id)
             return False
 
-        result = Control.Controller(self._submission.remote_oj).get_result(pid=self._submission.remote_id,
-                                                                           account=account)
+        result = controller.get_result(pid=self._submission.remote_id, account=remote_account)
+        account.cookies = controller.get_cookies()
+        account.save()
+
         if result.status == Config.Result.Status.STATUS_RESULT:
             self._submission.status = result.status.value
             self._submission.remote_run_id = result.origin_run_id
@@ -44,11 +48,11 @@ class SubmissionDispatcher(object):
             self._submission.verdict_code = result.verdict_code.value
             self._submission.save()
             reload_result_task.delay(self._submission.id)
-            ConfigDispatcher.release_account(remote_account.id)
+            ConfigDispatcher.release_account(account.id)
             return True
         else:
             self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
             self._submission.verdict_code = result.verdict_code.value
             self._submission.save()
-            ConfigDispatcher.release_account(remote_account.id)
+            ConfigDispatcher.release_account(account.id)
             return False

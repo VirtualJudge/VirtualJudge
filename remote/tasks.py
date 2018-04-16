@@ -10,13 +10,17 @@ from remote.models import Language
 def update_language_task(remote_oj):
     if ConfigDispatcher.choose_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'TRUE'):
 
-        r_account = ConfigDispatcher.choose_account(remote_oj)
-        if r_account is None:
+        account = ConfigDispatcher.choose_account(remote_oj)
+        if account is None:
             ConfigDispatcher.release_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'FALSE')
             return
-        langs = Control.Controller(remote_oj).find_language(
-            account=Config.Account(username=r_account.oj_username, password=r_account.oj_password))
-        ConfigDispatcher.release_account(r_account.id)
+        remote_account = Config.Account(username=account.oj_username, password=account.oj_password,
+                                        cookies=account.cookies)
+        controller = Control.Controller(remote_oj)
+        langs = controller.find_language(account=remote_account)
+        account.cookies = controller.get_cookies()
+        account.save()
+        ConfigDispatcher.release_account(account.id)
 
         if langs is None:
             ConfigDispatcher.release_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'FALSE')
