@@ -3,16 +3,16 @@ from django.shortcuts import render
 
 # Create your views here.
 
-def index(request):
-    return render(request, 'index.html')
+def problems(request):
+    return render(request, 'problems.html')
 
 
 def problem(request):
     return render(request, 'problem.html')
 
 
-def status(request):
-    return render(request, 'status.html')
+def submissions(request):
+    return render(request, 'submissions.html')
 
 
 def register(request):

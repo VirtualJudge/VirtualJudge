@@ -48,7 +48,7 @@ class SubmissionAPI(APIView):
 class SubmissionListAPI(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            submissions = Submission.objects.filter(contest_id=None).order_by('-create_time')[:100]
+            submissions = Submission.objects.filter(contest_id=None).order_by('-create_time')[:20]
             return Response(res_format(SubmissionListSerializer(submissions, many=True).data),
                             status=status.HTTP_200_OK)
         except DatabaseError:

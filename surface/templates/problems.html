@@ -5,22 +5,22 @@
 {% block title %}题目{% endblock %}
 
 {% block  body %}
+
     <div class="container">
         <div class="row clearfix">
             <div class="col-md-12 column">
                 <form role="form" class="form-inline">
-                    <div class="form-group">
+                    <div class="form-group my-2">
                         <select id="id_select" class="form-control" onchange="handleSelectChange()">
 
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mx-sm-3 ml-2 my-2">
                         <input type="text" class="form-control" id="id_problem_id"/>
                     </div>
-
-                    <button type="button" id="id_button" class="btn btn-default">查找</button>
-                    <div class="form-group">
-                        <span id="id_info" onclick="handleInfoClick()"></span>
+                    <button type="button" id="id_button" class="btn btn-outline-secondary">查找</button>
+                    <div class="form-group ml-2 my-2">
+                        <span class="form-control-plaintext" id="id_info" onclick="handleInfoClick()"></span>
                     </div>
                 </form>
             </div>
@@ -113,32 +113,32 @@
             $("#id_info").attr("remote_oj", "");
             $("#id_info").attr("remote_id", "");
             if (res.data.request_status === 0) {
-                $("#id_info").attr("class", "label label-info");
+                $("#id_info").attr("class", "badge badge-info");
                 $("#id_info").html("题目等待中");
             } else if (res.data.request_status === 1) {
                 $("#id_info").html("题目正在准备");
-                $("#id_info").attr("class", "label label-primary");
+                $("#id_info").attr("class", "badge badge-primary");
             } else if (res.data.request_status === 2) {
                 $("#id_info").html(res.data.title);
-                $("#id_info").attr("class", "label label-success");
+                $("#id_info").attr("class", "badge badge-success");
                 $("#id_info").attr("style", "cursor:pointer;");
                 $("#id_info").attr("remote_oj", res.data.remote_oj);
                 $("#id_info").attr("remote_id", res.data.remote_id);
             } else if (res.data.request_status === 3) {
                 $("#id_info").html("网络错误");
-                $("#id_info").attr("class", "label label-warning");
+                $("#id_info").attr("class", "badge badge-warning");
             } else if (res.data.request_status === 4) {
                 $("#id_info").html("题目不存在");
-                $("#id_info").attr("class", "label label-danger");
+                $("#id_info").attr("class", "badge badge-danger");
             } else if (res.data.request_status === 5) {
                 $("#id_info").html("系统繁忙，稍后重试");
-                $("#id_info").attr("class", "label label-warning");
+                $("#id_info").attr("class", "badge badge-warning");
             } else if (res.data.request_status === 6) {
                 $("#id_info").html("这个系统不被支持");
-                $("#id_info").attr("class", "label label-danger");
+                $("#id_info").attr("class", "badge badge-danger");
             } else if (res.data.request_status === 7) {
                 $("#id_info").html("网页内容解析错误");
-                $("#id_info").attr("class", "label label-warning");
+                $("#id_info").attr("class", "badge badge-warning");
             }
         }
 

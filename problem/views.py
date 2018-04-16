@@ -43,7 +43,6 @@ class ProblemAPI(APIView):
             problem = Problem.objects.get(remote_oj=remote_oj,
                                           remote_id=remote_id)
             if problem.request_status in [Spider_Problem.Status.STATUS_NETWORK_ERROR.value,
-                                          Spider_Problem.Status.STATUS_PENDING.value,
                                           Spider_Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
                                           Spider_Problem.Status.STATUS_NO_ACCOUNT.value,
                                           Spider_Problem.Status.STATUS_PARSE_ERROR.value]:
