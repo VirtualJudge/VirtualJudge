@@ -13,7 +13,7 @@ class LanguageAdmin(admin.ModelAdmin):
 
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('oj_name', 'oj_username', 'oj_password', 'oj_account_status', 'update_time')
-    list_editable = ('oj_account_status')
+    list_editable = ('oj_account_status',)
 
 
 admin.site.register(Language, LanguageAdmin)
