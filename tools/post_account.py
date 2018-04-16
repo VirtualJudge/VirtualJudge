@@ -11,13 +11,13 @@ import argparse
 import json
 import traceback
 
-from .login import login
-from .utils import HttpUtil
+from tools.login import login
+from tools.utils import HttpUtil
 
 
 def fresh_account(requests, remote_url):
     remote_url = str(remote_url).rstrip('/') + '/api/language/'
-    return requests.get(remote_url)
+    return requests.post(remote_url)
 
 
 def post_account(requests, remote_url, account_path):

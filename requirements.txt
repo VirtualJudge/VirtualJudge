@@ -1,7 +1,6 @@
 Django
 djangorestframework
 psycopg2-binary
-django-cors-headers
 celery
 redis
 gunicorn
@@ -11,5 +10,4 @@ requests
 colorama
 requests[socks]
 lxml
-google-cloud-translate
 git+https://github.com/VirtualJudge/VirtualJudgeSpider

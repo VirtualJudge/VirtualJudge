@@ -12,7 +12,7 @@ import traceback
 
 from colorama import Fore, Style
 
-from .utils import HttpUtil
+from tools.utils import HttpUtil
 
 
 def login(requests, config_path):
