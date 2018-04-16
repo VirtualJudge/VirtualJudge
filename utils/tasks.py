@@ -60,8 +60,8 @@ def save_files_task(problem_id):
 def reload_result_task(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
-        if Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict) is False:
-            submission.verdict_status = True
+        if Control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
+            submission.verdict_status = 0
             submission.save()
         else:
             tries = 5
@@ -70,11 +70,12 @@ def reload_result_task(submission_id):
                 result = Control.Controller(submission.remote_oj).get_result_by_rid_and_pid(
                     rid=submission.remote_run_id,
                     pid=submission.remote_id)
-                if result.status == Config.Result.Status.STATUS_RESULT_GET:
+                if result.status == Config.Result.Status.STATUS_RESULT:
                     submission.verdict = result.verdict
+                    submission.verdict_code = result.verdict_code.value
                     submission.execute_time = result.execute_time
                     submission.execute_memory = result.execute_memory
-                    if Control.Controller(submission.remote_oj).is_waiting_for_judge(submission.verdict) is False:
+                    if Control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
                         submission.verdict_status = True
                         submission.save()
                         break

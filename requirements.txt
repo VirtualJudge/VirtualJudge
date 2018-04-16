@@ -10,4 +10,4 @@ requests
 colorama
 requests[socks]
 lxml
-git+https://github.com/VirtualJudge/VirtualJudgeSpider
+git+https://github.com/VirtualJudge/Spider

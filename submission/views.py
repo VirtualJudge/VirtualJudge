@@ -20,7 +20,7 @@ class VerdictAPI(APIView):
             return Response(res_format(VerdictSerializer(submission).data), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response(res_format('submission not exist', status=Message.ERROR),
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_200_OK)
 
 
 class SubmissionAPI(APIView):
@@ -31,7 +31,7 @@ class SubmissionAPI(APIView):
         last_submit_time = request.session.get('last_submit_time', None)
         if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
             return Response(res_format("Cannot be resubmitted within five seconds", status=Message.ERROR),
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_200_OK)
         request.session['last_submit_time'] = datetime.now().timestamp()
 
         serializer = SubmissionSerializer(data=request.data)
@@ -40,9 +40,9 @@ class SubmissionAPI(APIView):
             if submission is not None:
                 submit_task.delay(submission.id)
                 return Response(res_format(submission.id), status=status.HTTP_200_OK)
-            return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_200_OK)
         else:
-            return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_200_OK)
 
 
 class SubmissionListAPI(APIView):
@@ -53,7 +53,7 @@ class SubmissionListAPI(APIView):
                             status=status.HTTP_200_OK)
         except DatabaseError:
             return Response(res_format('System error', status=Message.ERROR),
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                            status=status.HTTP_200_OK)
 
 
 class ReJudgeAPI(APIView):
@@ -67,9 +67,9 @@ class ReJudgeAPI(APIView):
                 submission.status = Config.Result.Status.STATUS_PENDING.value
                 submission.save()
                 submit_task.delay(submission_id)
-                return Response(res_format('rejudge submit success'), status=status.HTTP_400_BAD_REQUEST)
+                return Response(res_format('rejudge submit success'), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response(res_format('System error', status=Message.ERROR),
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                            status=status.HTTP_200_OK)
         except DatabaseError:
-            return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_400_BAD_REQUEST)
+            return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_200_OK)

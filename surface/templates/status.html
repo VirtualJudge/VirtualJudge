@@ -40,16 +40,39 @@
                     </tbody>
                 </table>
                 <script>
+                    function getColorVerdict(val, code) {
+                        console.log(val, code);
+                        switch (code) {
+                            case 0:
+                                return "<span class=\"label label-default\">" + val + "</span>";
+                            case 1:
+                                return "<span class=\"label label-success\">" + val + "</span>";
+                            case 2:
+                                return "<span class=\"label label-warning\">" + val + "</span>";
+                            case 3:
+                                return "<span class=\"label label-danger\">" + val + "</span>";
+                            case 4:
+                                return "<span class=\"label label-primary\">" + val + "</span>";
+                        }
+                    }
+
+                    function verdictCheck(val, code) {
+                        if (val) {
+                            return getColorVerdict(val, code);
+                        }
+                        return " ";
+                    }
+
                     function spaceCheck(val) {
                         if (val) {
                             return val;
                         } else {
                             return " ";
                         }
-
                     }
 
                     function handleStatusList(res) {
+                        console.log(res);
                         res.data.forEach(function (item) {
 
                             $("#id_list").append("<tr>" +
@@ -57,7 +80,7 @@
                                 "<td>" + item.remote_oj + "</td>" +
                                 "<td>" + item.remote_id + "</td>" +
                                 "<td>" + item.user + "</td>" +
-                                "<td>" + spaceCheck(item.verdict) + "</td>" +
+                                "<td>" + verdictCheck(item.verdict, item.verdict_code) + "</td>" +
                                 "<td>" + spaceCheck(item.execute_time) + "</td>" +
                                 "<td>" + spaceCheck(item.execute_memory) + "</td>" +
 

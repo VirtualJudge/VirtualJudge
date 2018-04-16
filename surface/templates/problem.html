@@ -44,13 +44,12 @@
 
                             </p>
                         </div>
-                    </form>
-                </div>
-                <hr class="row">
-                <div class="row" style="background-color: #eeeeee">
-                    <ul id="id_verdict_ul">
+                        <div class="form-group">
+                            <ul id="id_verdict_ul">
 
-                    </ul>
+                            </ul>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -70,15 +69,38 @@
         var timer = null;
         var submission_id = null;
 
+        function getColorVerdict(val, code) {
+            console.log(val, code);
+            switch (code) {
+                case 0:
+                    return "<span class=\"label label-default\">" + val + "</span>";
+                case 1:
+                    return "<span class=\"label label-success\">" + val + "</span>";
+                case 2:
+                    return "<span class=\"label label-warning\">" + val + "</span>";
+                case 3:
+                    return "<span class=\"label label-danger\">" + val + "</span>";
+                case 4:
+                    return "<span class=\"label label-primary\">" + val + "</span>";
+            }
+        }
+
+        function verdictCheck(val, code) {
+            if (val) {
+                return getColorVerdict(val, code);
+            }
+            return getColorVerdict("Pending", code);
+        }
+
         function handleVerdict(res) {
             if (res.status === 0) {
 
                 $("#id_verdict_ul").html("");
-                $("#id_verdict_ul").append("<dl> <dt>提交编号:</dt> <dd>" + res.data.id + "</dd></d;>");
-                $("#id_verdict_ul").append("<dl> <dt>运行结果:</dt> <dd>" + res.data.verdict + "</dd></d;>");
-                $("#id_verdict_ul").append("<dl> <dt>运行时间:</dt> <dd>" + res.data.execute_time + "</dd></d;>");
-                $("#id_verdict_ul").append("<dl> <dt>运行内存:</dt> <dd>" + res.data.execute_memory + "</dd></d;>");
-                $("#id_verdict_ul").append("<dl> <dt>爬取状态:</dt> <dd>" + res.data.status + "</dd></d;>");
+                //     $("#id_verdict_ul").append("<dl> <dt>提交编号:</dt> <dd>" + res.data.id + "</dd></d;>");
+                $("#id_verdict_ul").append("<dl> <dt>运行结果:</dt> <dd>" + verdictCheck(res.data.verdict, res.data.verdict_code) + "</dd></d;>");
+                //     $("#id_verdict_ul").append("<dl> <dt>运行时间:</dt> <dd>" + res.data.execute_time + "</dd></d;>");
+                //    $("#id_verdict_ul").append("<dl> <dt>运行内存:</dt> <dd>" + res.data.execute_memory + "</dd></d;>");
+                //     $("#id_verdict_ul").append("<dl> <dt>爬取状态:</dt> <dd>" + res.data.status + "</dd></d;>");
                 if (res.data.verdict_status === true) {
                     clearInterval(timer);
                 }

@@ -35,18 +35,20 @@ class SubmissionDispatcher(object):
 
         result = Control.Controller(self._submission.remote_oj).get_result(pid=self._submission.remote_id,
                                                                            account=account)
-        if result.status == Config.Result.Status.STATUS_RESULT_GET:
+        if result.status == Config.Result.Status.STATUS_RESULT:
             self._submission.status = result.status.value
             self._submission.remote_run_id = result.origin_run_id
             self._submission.execute_time = result.execute_time
             self._submission.execute_memory = result.execute_memory
             self._submission.verdict = result.verdict
+            self._submission.verdict_code = result.verdict_code.value
             self._submission.save()
             reload_result_task.delay(self._submission.id)
             ConfigDispatcher.release_account(remote_account.id)
             return True
         else:
             self._submission.status = Config.Result.Status.STATUS_NETWORK_ERROR.value
+            self._submission.verdict_code = result.verdict_code.value
             self._submission.save()
             ConfigDispatcher.release_account(remote_account.id)
             return False
