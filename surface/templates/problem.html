@@ -39,7 +39,17 @@
                             <div class="input-group">
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="id_file">
-                                    <label class="custom-file-label" for="id_file">选择文件</label>
+                                    <label class="custom-file-label" for="id_file" id="id_file_label">选择文件</label>
+                                    <script>
+                                        function getFileName(o) {
+                                            let pos = o.lastIndexOf("\\");
+                                            return o.substring(pos + 1);
+                                        }
+
+                                        $("#id_file").change(function () {
+                                            $("#id_file_label").html(getFileName($("#id_file").val()));
+                                        })
+                                    </script>
                                 </div>
                                 <div class="input-group-append">
                                     <button onclick="handleButtonClick()" class="btn btn-outline-secondary"
@@ -141,7 +151,7 @@
             };
         }
 
-        function handleProblemInfo(res) {
+        function handleProblemInfo(res, who = null) {
             $("#id_title").html(res.data.title);
             $("#id_ul").html();
             //$("#id_ul").append("<li class=\"list-group-item\">" + res.data.id + "</li>");

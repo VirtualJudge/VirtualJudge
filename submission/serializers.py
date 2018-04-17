@@ -14,7 +14,8 @@ class VerdictSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = (
-            'id', 'remote_oj', 'remote_id', 'verdict_code', 'verdict', 'execute_time', 'execute_memory', 'status')
+            'id', 'remote_oj', 'remote_id', 'verdict_code', 'verdict', 'execute_time', 'execute_memory', 'status',
+            'create_time')
 
 
 class SubmissionSerializer(serializers.Serializer):
@@ -37,17 +38,22 @@ class SubmissionSerializer(serializers.Serializer):
             #     user_profile = UserProfile.objects.get(username=user)
             #     user_profile.attempted = F('attempted') + 1
             #     user_profile.save()
+            language = self.validated_data['language']
+            remote_oj = self.validated_data['remote_oj']
+            language_obj = Language.objects.get(oj_name=remote_oj, oj_language=language)
             if self.validated_data.get('contest_id'):
                 submission = Submission(contest_id=self.validated_data['contest_id'],
                                         code=self.validated_data['code'],
                                         user=user,
-                                        language=self.validated_data['language'],
+                                        language=language_obj.oj_language,
+                                        language_name=language_obj.oj_language_name,
                                         remote_id=self.validated_data['remote_id'],
                                         remote_oj=self.validated_data['remote_oj'])
             else:
                 submission = Submission(code=self.validated_data['code'],
                                         user=user,
-                                        language=self.validated_data['language'],
+                                        language=language_obj.oj_language,
+                                        language_name=language_obj.oj_language_name,
                                         remote_id=self.validated_data['remote_id'],
                                         remote_oj=self.validated_data['remote_oj'])
             submission.save()
@@ -88,5 +94,6 @@ class SubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = (
-            'id', 'remote_oj', 'user', 'remote_id', 'verdict_code', 'verdict', 'execute_time', 'execute_memory',
+            'id', 'remote_oj', 'user', 'remote_id', 'language', 'language_name', 'verdict_code', 'verdict',
+            'execute_time', 'execute_memory', 'create_time',
             'status')

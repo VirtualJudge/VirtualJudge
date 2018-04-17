@@ -28,10 +28,16 @@
                             运行结果
                         </th>
                         <th>
+                            语言
+                        </th>
+                        <th>
                             运行时间
                         </th>
                         <th>
                             运行内存
+                        </th>
+                        <th>
+                            提交时间
                         </th>
                     </tr>
                     </thead>
@@ -54,6 +60,7 @@
                                 return "<span class=\"badge badge-primary\">" + val + "</span>";
                         }
                     }
+
                     function verdictCheck(val, code) {
                         if (val) {
                             return getColorVerdict(val, code);
@@ -82,8 +89,10 @@
                                 "<td>" + item.remote_id + "</td>" +
                                 "<td>" + item.user + "</td>" +
                                 "<td>" + verdictCheck(item.verdict, item.verdict_code) + "</td>" +
+                                "<td>" + spaceCheck(item.language_name) + "</td>" +
                                 "<td>" + spaceCheck(item.execute_time) + "</td>" +
                                 "<td>" + spaceCheck(item.execute_memory) + "</td>" +
+                                "<td>" + moment(item.create_time).calendar() + "</td>" +
                                 "</tr>"
                             )
                         });

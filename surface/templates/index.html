@@ -1,0 +1,33 @@
+
+
+{% extends 'include/base.html' %}
+
+{% block title %}首页{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-12 column mt-3">
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h1 class="card-title">欢迎!</h1>
+                        <blockquote class="blockquote mb-0">
+                            <p>Virtual Judge是一种特殊的在线评测系统。与其他在线评测系统不同的是，Virtual
+                                Judge系统本身并没有任何测试数据，而是通过在其他在线评测系统中注册的机器人账号进行评测并抓取评测结果。因此可以在只有题目而没有测试数据的前提下创建竞赛。</p>
+
+                        </blockquote>
+                        <hr>
+                        <ul>
+                            <li>开源，极速部署</li>
+                            <li>统一风格</li>
+                            <li>RESTful API</li>
+                        </ul>
+                        <a class="btn btn-primary btn-lg" href="https://github.com/VirtualJudge/VirtualJudge"
+                           role="button">GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

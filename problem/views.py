@@ -1,6 +1,7 @@
 from VirtualJudgeSpider.config import Problem as Spider_Problem
 from VirtualJudgeSpider.control import Controller
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
@@ -76,10 +77,14 @@ class ProblemAPI(APIView):
                                           Spider_Problem.Status.STATUS_PARSE_ERROR.value]:
                 get_problem_task.delay(problem.id)
         except ObjectDoesNotExist:
-            problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
-                              request_status=Spider_Problem.Status.STATUS_PENDING.value)
-            problem.save()
-            get_problem_task.delay(problem.id)
+            try:
+                problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
+                                  request_status=Spider_Problem.Status.STATUS_PENDING.value)
+                problem.save()
+                get_problem_task.delay(problem.id)
+            except IntegrityError:
+                pass
+
         return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
 
 

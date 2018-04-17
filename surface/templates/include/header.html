@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="/">Virtual Judge<sup>
-        <span style="font-size: 12px;">&nbsp;Alpha 1&nbsp;</span>
+        <span class="badge badge-secondary">Alpha 1</span>
     </sup></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,13 +10,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item mx-2">
-                <a class="nav-link" href="/">题目</a>
+                <a class="nav-link link_problem link_problems" href="/problems/">题目</a>
             </li>
             <li class="nav-item mx-2">
-                <a class="nav-link" href="/submissions/">提交</a>
+                <a class="nav-link link_submission link_submissions" href="/submissions/">提交</a>
             </li>
             <li class="nav-item mx-2">
-                <a class="nav-link" href="/contests/">比赛</a>
+                <a class="nav-link link_contest link_contests" href="/contests/">比赛</a>
             </li>
             <li class="nav-item mx-2">
                 <a class="nav-link" style="color: red">删档测试，请备份好提交数据</a>
@@ -24,10 +24,10 @@
         </ul>
         <ul id="id_session_ul" class="navbar-nav navbar-right">
             <li class="nav-item mx-2">
-                <a class="nav-link" href="/login/">登录</a>
+                <a class="nav-link link_login" href="/login/">登录</a>
             </li>
             <li class="nav-item mx-2">
-                <a class="nav-link" href="/register/">注册</a>
+                <a class="nav-link link_register" href="/register/">注册</a>
             </li>
         </ul>
     </div>
@@ -61,7 +61,14 @@
         location.reload();
     }
 
+    function activeLink() {
+        url = window.location.pathname.split('/')[1];
+        $(".link_" + url).addClass("active");
+    }
+
     $(document).ready(function () {
+        activeLink();
         getLoginSession(handleLoginSession);
+
     })
 </script>

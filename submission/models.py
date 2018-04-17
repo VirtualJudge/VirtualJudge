@@ -16,6 +16,8 @@ class Submission(models.Model):
     code = models.TextField()
     # 提交的语言
     language = models.CharField(max_length=20)
+
+    language_name = models.CharField(max_length=30, null=True)
     """
     通过problem_id获取的部分
     """
