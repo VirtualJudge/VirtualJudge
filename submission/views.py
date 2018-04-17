@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from VirtualJudgeSpider import Config
+from VirtualJudgeSpider import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
 
 from submission.models import Submission
@@ -24,10 +23,10 @@ class VerdictAPI(APIView):
 
 
 class SubmissionAPI(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-
+        if request.user is None or request.user.is_authenticated is False:
+            return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
         last_submit_time = request.session.get('last_submit_time', None)
         if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
             return Response(res_format("Cannot be resubmitted within five seconds", status=Message.ERROR),
@@ -57,14 +56,15 @@ class SubmissionListAPI(APIView):
 
 
 class ReJudgeAPI(APIView):
-    permission_classes = [IsAuthenticated]
 
     def post(self, request, submission_id, *args, **kwargs):
+        if request.user is None or request.user.is_authenticated is False:
+            return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
         try:
             submission = Submission.objects.get(id=submission_id)
-            if submission.status in {Config.Result.Status.STATUS_NO_ACCOUNT.value,
-                                     Config.Result.Status.STATUS_NETWORK_ERROR.value}:
-                submission.status = Config.Result.Status.STATUS_PENDING.value
+            if submission.status in {config.Result.Status.STATUS_NO_ACCOUNT.value,
+                                     config.Result.Status.STATUS_NETWORK_ERROR.value}:
+                submission.status = config.Result.Status.STATUS_PENDING.value
                 submission.save()
                 submit_task.delay(submission_id)
                 return Response(res_format('rejudge submit success'), status=status.HTTP_200_OK)

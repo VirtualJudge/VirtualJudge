@@ -1,4 +1,4 @@
-from VirtualJudgeSpider import Control
+from VirtualJudgeSpider import control
 from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
@@ -26,8 +26,8 @@ class SupportAPI(APIView):
 class LanguagesAPI(APIView):
 
     def post(self, request, raw_oj_name, *args, **kwargs):
-        remote_oj = Control.Controller.get_real_remote_oj(raw_oj_name)
-        if Control.Controller.is_support(remote_oj):
+        remote_oj = control.Controller.get_real_remote_oj(raw_oj_name)
+        if control.Controller.is_support(remote_oj):
             try:
                 languages = Language.objects.filter(oj_name=remote_oj)
                 return Response(res_format(LanguagesSerializer(languages, many=True).data), status=status.HTTP_200_OK)
@@ -38,9 +38,10 @@ class LanguagesAPI(APIView):
 
 
 class FreshLanguageAPI(APIView):
-    permission_classes = [IsAdminUser]
 
     def post(self, request, *args, **kwargs):
+        if request.user is None or request.user.is_authenticated is False or request.user.is_admin is False:
+            return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
         try:
             accounts = Account.objects.all()
             for remote_oj in {account.oj_name for account in accounts}:

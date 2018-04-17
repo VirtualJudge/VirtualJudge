@@ -3,7 +3,7 @@ import time
 import traceback
 
 import requests
-from VirtualJudgeSpider import Control, Config
+from VirtualJudgeSpider import control, config
 from bs4 import BeautifulSoup
 from celery import shared_task
 from django.db import DatabaseError
@@ -60,22 +60,22 @@ def save_files_task(problem_id):
 def reload_result_task(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
-        if Control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
+        if control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
             submission.verdict_status = 0
             submission.save()
         else:
             tries = 5
             max_wait_times = 5
             while tries > 0:
-                result = Control.Controller(submission.remote_oj).get_result_by_rid_and_pid(
+                result = control.Controller(submission.remote_oj).get_result_by_rid_and_pid(
                     rid=submission.remote_run_id,
                     pid=submission.remote_id)
-                if result.status == Config.Result.Status.STATUS_RESULT:
+                if result.status == config.Result.Status.STATUS_RESULT:
                     submission.verdict = result.verdict
                     submission.verdict_code = result.verdict_code.value
                     submission.execute_time = result.execute_time
                     submission.execute_memory = result.execute_memory
-                    if Control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
+                    if control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
                         submission.verdict_status = True
                         submission.save()
                         break

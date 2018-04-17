@@ -1,6 +1,6 @@
 import time
 
-from VirtualJudgeSpider.Config import Problem
+from VirtualJudgeSpider.config import Problem
 from celery import shared_task
 
 from problem.dispatcher import ProblemDispatcher

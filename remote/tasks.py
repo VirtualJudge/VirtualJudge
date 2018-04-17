@@ -1,4 +1,4 @@
-from VirtualJudgeSpider import Control, Config
+from VirtualJudgeSpider import control, config
 from celery import shared_task
 from django.db import DatabaseError
 
@@ -14,9 +14,9 @@ def update_language_task(remote_oj):
         if account is None:
             ConfigDispatcher.release_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'FALSE')
             return
-        remote_account = Config.Account(username=account.oj_username, password=account.oj_password,
+        remote_account = config.Account(username=account.oj_username, password=account.oj_password,
                                         cookies=account.cookies)
-        controller = Control.Controller(remote_oj)
+        controller = control.Controller(remote_oj)
         langs = controller.find_language(account=remote_account)
         account.cookies = controller.get_cookies()
         account.save()

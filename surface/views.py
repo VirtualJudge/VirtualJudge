@@ -15,6 +15,14 @@ def submissions(request):
     return render(request, 'submissions.html')
 
 
+def contests(request):
+    return render(request, 'contests.html')
+
+
+def contest_new(request):
+    return render(request, 'contest/new.html')
+
+
 def register(request):
     return render(request, 'register.html')
 

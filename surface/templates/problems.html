@@ -8,27 +8,8 @@
 
     <div class="container">
         <div class="row clearfix">
-            <div class="col-md-12 column">
-                <form role="form" class="form-inline">
-                    <div class="form-group my-2">
-                        <select id="id_select" class="form-control" onchange="handleSelectChange()">
+            <div class="col-md-8 column mt-2">
 
-                        </select>
-                    </div>
-                    <div class="form-group mx-sm-3 ml-2 my-2">
-                        <input type="text" class="form-control" id="id_problem_id"/>
-                    </div>
-                    <button type="button" id="id_button" class="btn btn-outline-secondary">查找</button>
-                    <div class="form-group ml-2 my-2">
-                        <span class="form-control-plaintext" id="id_info" onclick="handleInfoClick()"></span>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="row clearfix">
-            <div class="col-md-12 column">
                 <table class="table table-hover">
                     <thead>
                     <tr>
@@ -55,6 +36,36 @@
                     </tr>
                     </tbody>
                 </table>
+
+            </div>
+            <div class="col-md-4 column mt-2">
+                <div class="card">
+                    <div class="card-header">
+                        查找题目
+                    </div>
+                    <div class="card-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="id_select">
+                                    源名称
+                                </label>
+                                <select id="id_select" class="form-control" onchange="handleSelectChange()">
+
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_problem_id">
+                                    源编号
+                                </label>
+                                <input type="text" class="form-control" id="id_problem_id"/>
+                            </div>
+                            <button type="button" id="id_button" class="btn btn-outline-secondary">查找</button>
+                            <div class="form-group mt-2">
+                                <p class="form-control-plaintext" id="id_info" onclick="handleInfoClick()"></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -98,7 +109,6 @@
         }
 
         function handleTrClick() {
-            console.log($(this));
             var remote_oj = $(this).attr("remote_oj");
             var remote_id = $(this).attr("remote_id");
             if (remote_oj && remote_id) {
@@ -113,32 +123,32 @@
             $("#id_info").attr("remote_oj", "");
             $("#id_info").attr("remote_id", "");
             if (res.data.request_status === 0) {
-                $("#id_info").attr("class", "badge badge-info");
+                $("#id_info").attr("class", "form-control-plaintext text-info");
                 $("#id_info").html("题目等待中");
             } else if (res.data.request_status === 1) {
                 $("#id_info").html("题目正在准备");
-                $("#id_info").attr("class", "badge badge-primary");
+                $("#id_info").attr("class", "form-control-plaintext text-primary");
             } else if (res.data.request_status === 2) {
                 $("#id_info").html(res.data.title);
-                $("#id_info").attr("class", "badge badge-success");
+                $("#id_info").attr("class", "form-control-plaintext text-white bg-success");
                 $("#id_info").attr("style", "cursor:pointer;");
                 $("#id_info").attr("remote_oj", res.data.remote_oj);
                 $("#id_info").attr("remote_id", res.data.remote_id);
             } else if (res.data.request_status === 3) {
                 $("#id_info").html("网络错误");
-                $("#id_info").attr("class", "badge badge-warning");
+                $("#id_info").attr("class", "form-control-plaintext text-warning");
             } else if (res.data.request_status === 4) {
                 $("#id_info").html("题目不存在");
-                $("#id_info").attr("class", "badge badge-danger");
+                $("#id_info").attr("class", "form-control-plaintext text-danger");
             } else if (res.data.request_status === 5) {
                 $("#id_info").html("系统繁忙，稍后重试");
-                $("#id_info").attr("class", "badge badge-warning");
+                $("#id_info").attr("class", "form-control-plaintext text-warning");
             } else if (res.data.request_status === 6) {
                 $("#id_info").html("这个系统不被支持");
-                $("#id_info").attr("class", "badge badge-danger");
+                $("#id_info").attr("class", "form-control-plaintext text-danger");
             } else if (res.data.request_status === 7) {
                 $("#id_info").html("网页内容解析错误");
-                $("#id_info").attr("class", "badge badge-warning");
+                $("#id_info").attr("class", "form-control-plaintext text-warning");
             }
         }
 

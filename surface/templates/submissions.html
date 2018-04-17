@@ -41,7 +41,6 @@
                 </table>
                 <script>
                     function getColorVerdict(val, code) {
-                        console.log(val, code);
                         switch (code) {
                             case 0:
                                 return "<span class=\"badge badge-secondary\">" + val + "</span>";
@@ -55,7 +54,6 @@
                                 return "<span class=\"badge badge-primary\">" + val + "</span>";
                         }
                     }
-
                     function verdictCheck(val, code) {
                         if (val) {
                             return getColorVerdict(val, code);
@@ -71,11 +69,14 @@
                         }
                     }
 
+                    function handleSubmissionItemClick() {
+                        console.log($(this).attr('sid'))
+                    }
+
                     function handleStatusList(res) {
-                        console.log(res);
                         res.data.forEach(function (item) {
 
-                            $("#id_list").append("<tr>" +
+                            $("#id_list").append("<tr class=\"submission_list_item\" sid=" + item.id + ">" +
                                 "<td>" + item.id + "</td>" +
                                 "<td>" + item.remote_oj + "</td>" +
                                 "<td>" + item.remote_id + "</td>" +
@@ -83,10 +84,10 @@
                                 "<td>" + verdictCheck(item.verdict, item.verdict_code) + "</td>" +
                                 "<td>" + spaceCheck(item.execute_time) + "</td>" +
                                 "<td>" + spaceCheck(item.execute_memory) + "</td>" +
-
                                 "</tr>"
                             )
-                        })
+                        });
+                        $(document).on('click', '.submission_list_item', handleSubmissionItemClick);
                     }
 
                     function loadStatusList() {

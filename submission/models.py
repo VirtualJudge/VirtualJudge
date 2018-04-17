@@ -1,5 +1,5 @@
 from django.db import models
-from VirtualJudgeSpider import Config
+from VirtualJudgeSpider import config
 
 
 class Submission(models.Model):
@@ -43,7 +43,7 @@ class Submission(models.Model):
     """
 
     # 当前爬虫状态
-    status = models.IntegerField(default=Config.Result.Status.STATUS_PENDING.value)
+    status = models.IntegerField(default=config.Result.Status.STATUS_PENDING.value)
 
     class Meta:
         db_table = 'submission'

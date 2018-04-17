@@ -1,0 +1,105 @@
+
+
+{% extends 'include/base.html' %}
+{% block title %}新建比赛{% endblock %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-2 column"></div>
+            <div class="col-md-8 column mt-2">
+                <div class="card">
+                    <div class="card-header">
+                        新建比赛
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <input type="email" class="form-control" id="exampleInputEmail1"
+                                       aria-describedby="emailHelp" placeholder="标题">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <input type="text" class="form-control" placeholder="开始时间:yyyy/mm/dd hh:MM:ss">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <input type="text" class="form-control" placeholder="结束时间:yyyy/mm/dd hh:MM:ss">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-2">
+                                    <input id="id_add_pid" type="button" class="form-control btn btn-secondary"
+                                           value="添加">
+                                    <script>
+                                        let text = "                                <div  class=\"form-row id_pid_item\">\n" +
+                                            "                                    <div class=\"form-group col-md-3\">\n" +
+                                            "                                        <select class=\"class_supports form-control\">\n" +
+                                            "                                            <option selected>Choose...</option>\n" +
+                                            "                                            <option>...</option>\n" +
+                                            "                                        </select>\n" +
+                                            "\n" +
+                                            "                                    </div>\n" +
+                                            "                                    <div class=\"form-group col-md-2\">\n" +
+                                            "                                        <input type=\"text\" class=\"form-control\" placeholder=\"源编号\">\n" +
+                                            "                                    </div>\n" +
+                                            "                                    <div class=\"form-group col-md-4\">\n" +
+                                            "                                        <input type=\"text\" class=\"form-control\" placeholder=\"重命名\">\n" +
+                                            "                                    </div>\n" +
+                                            "                                    <div class=\"form-group col-md-3\">\n" +
+                                            "                                        <a href=\"#\" class=\"form-control-plaintext\">加载中..</a>\n" +
+                                            "                                    </div>\n" +
+                                            "                                </div>\n";
+                                        $('#id_add_pid').click(function () {
+                                            if ($("#id_pid_list").children().length < 30) {
+                                                $("#id_pid_list").append(text);
+                                            }
+                                        })
+                                    </script>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <input id="id_delete_pid" type="button" class="form-control btn btn-danger"
+                                           value="删除">
+                                    <script>
+                                        $("#id_delete_pid").click(function () {
+                                            if ($("#id_pid_list").children().length > 1) {
+                                                $("#id_pid_list").children("div:last-child").remove();
+                                            }
+                                        })
+                                    </script>
+                                </div>
+                            </div>
+                            <div id="id_pid_list" class="form-group">
+                                <div class="form-row id_pid_item">
+                                    <div class="form-group col-md-3">
+                                        <select class="class_supports form-control">
+                                            <option selected>Choose...</option>
+                                            <option>...</option>
+                                        </select>
+
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <input type="text" class="form-control" placeholder="源编号">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <input type="text" class="form-control" placeholder="重命名">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <a href="#" class="form-control-plaintext">加载中..</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <button type="button" class="btn btn-primary">提交</button>
+                        </form>
+
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-2 column"></div>
+
+        </div>
+    </div>
+{% endblock %}

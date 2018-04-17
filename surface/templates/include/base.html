@@ -17,6 +17,8 @@
     {% load staticfiles %}
     <script src="{% static 'api.js' %}"></script>
 
+    {% block include %}
+    {% endblock %}
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
