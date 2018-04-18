@@ -14,7 +14,6 @@
                 <form role="form">
                     <div class="form-group">
                         <p id="id_message">
-
                         </p>
                     </div>
                     <div class="form-group">
@@ -32,32 +31,11 @@
                     <button id="id_button" onclick="handleButtonClick()" type="button" class="btn btn-secondary">提交
                     </button>
                 </form>
-                <script>
-                    function handleRegister(res) {
-                        $("#id_message").html("");
-                        console.log(res);
-                        if (res.status === 0) {
-                            $("#id_message").attr("class", "text text-success");
-                            $("#id_message").append("注册成功，两秒后跳转主页");
-                            setTimeout("location.href='/';", 2000);
-                        } else {
-                            $("#id_message").attr("class", "text text-warning");
-                            $.each(res.data, function (k, v) {
-                                v.forEach(function (val) {
-                                    $("#id_message").append(val + "\n");
-                                })
-                            });
-                        }
-                    }
-
-                    function handleButtonClick() {
-                        registerHandle($("#id_username").val(), $("#id_email").val(), $("#id_password").val(), handleRegister);
-                    }
-
-                </script>
             </div>
             <div class="col-sm-2 col-md-3 col-lg-4 column">
             </div>
         </div>
     </div>
+    {% load staticfiles %}
+    <script src="{% static 'register.js' %}"></script>
 {% endblock %}

@@ -28,29 +28,11 @@
                     <button id="id_button" onclick="handleButtonClick()" type="button" class="btn btn-secondary">提交
                     </button>
                 </form>
-                <script>
-                    function handleLogin(res) {
-                        $("#id_message").html("");
-                        console.log(res);
-                        if (res.status === 0) {
-                            window.location.href = '/';
-                        } else {
-                            $.each(res.data, function (k, v) {
-                                v.forEach(function (val) {
-                                    $("#id_message").append(val + "\n");
-                                })
-                            });
-                        }
-                    }
-
-                    function handleButtonClick() {
-                        loginWebsite($("#id_username").val(), $("#id_password").val(), handleLogin);
-                    }
-
-                </script>
             </div>
             <div class="col-sm-2 col-md-3 col-lg-4 column">
             </div>
         </div>
     </div>
+    {% load staticfiles %}
+    <script src="{% static "login.js" %}"></script>
 {% endblock %}

@@ -51,9 +51,9 @@ function getSupport(callback) {
     })
 }
 
-function getProblem(remote_oj, remote_id, who, callback) {
+function getProblem(remote_oj, remote_id, callback) {
     $.post(base_url + '/problem/' + remote_oj + '/' + remote_id + '/', function (res) {
-        callback(res, who);
+        callback(res);
     })
 }
 
