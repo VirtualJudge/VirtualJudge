@@ -13,6 +13,9 @@ function handleLogin(res) {
 }
 
 function handleButtonClick() {
-    loginWebsite($("#id_username").val(), $("#id_password").val(), handleLogin);
+    let obj = new Account();
+    let username = $("#id_username").val();
+    let password = $("#id_password").val();
+    obj.login(username, password, handleLogin);
 }
 

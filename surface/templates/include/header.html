@@ -32,43 +32,5 @@
         </ul>
     </div>
 </nav>
-
-<script>
-    function handleLoginSession(res) {
-        $("#id_session_ul").html("");
-        if (res.status === 0) {
-            let session_ul = "<li class=\"nav-item\">\n" +
-                "                <a class=\"nav-link\" href=\"#\">" + res.data + "</a>\n" +
-                "            </li>\n" +
-                "            <li class=\"nav-item\">\n" +
-                "                <a class=\"nav-link\" id=\"id_logout\" style=\"cursor:pointer;\">登出</a>\n" +
-                "            </li>";
-            $("#id_session_ul").html(session_ul);
-            $(document).on('click', "#id_logout", handleLogoutClick);
-        } else {
-            let session_ul = " <li class=\"nav-item\">\n" +
-                "                <a class=\"nav-link\" href=\"/login\">登录</a>\n" +
-                "            </li>\n" +
-                "            <li class=\"nav-item\">\n" +
-                "                <a class=\"nav-link\" href=\"/register\">注册</a>\n" +
-                "            </li>";
-            $("#id_session_ul").html(session_ul);
-        }
-    }
-
-    function handleLogoutClick() {
-        getLogout();
-        location.reload();
-    }
-
-    function activeLink() {
-        url = window.location.pathname.split('/')[1];
-        $(".link_" + url).addClass("active");
-    }
-
-    $(document).ready(function () {
-        activeLink();
-        getLoginSession(handleLoginSession);
-
-    })
-</script>
+{% load staticfiles %}
+<script src="{% static "include/header.js" %}"></script>

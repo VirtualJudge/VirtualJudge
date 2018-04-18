@@ -52,10 +52,11 @@ function handleStatusList(res) {
 }
 
 function loadStatusList() {
-    getStatusList(handleStatusList);
+    let submissionObj = new Submission();
+    submissionObj.submissions(handleStatusList);
 }
 
 $(document).ready(function () {
     loadStatusList();
     // setInterval(loadStatusList, 5000);
-})
+});

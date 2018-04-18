@@ -20,6 +20,7 @@ def load_static(remote_oj, remote_id, website_data):
         url = img['src']
 
         suffix = str(url).split('/')[-1].split('.')[-1]
+
         path = settings.PUBLIC_DIR
         path = os.path.join(path, remote_oj)
         path = os.path.join(path, remote_id)
@@ -33,7 +34,10 @@ def load_static(remote_oj, remote_id, website_data):
         try:
             if os.path.exists(path) is False:
                 os.makedirs(path)
-            file_name = str(id) + '.' + suffix
+            if suffix.isalpha():
+                file_name = f'IMG_{str(id)}.{suffix}'
+            else:
+                file_name = f'IMG_{str(id)}'
             with open(os.path.join(path, file_name), 'wb') as fout:
                 fout.write(res.content)
             img['src'] = os.path.join(url_path, file_name)

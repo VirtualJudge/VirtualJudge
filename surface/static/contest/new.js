@@ -9,7 +9,8 @@ function handleSupport(res) {
 
 function getRemotes() {
     if (localStorage.getItem('supports') === null || localStorage.getItem('set_supports_times') === null || moment().subtract(1, 'hours').isAfter(localStorage.getItem('set_supports_times'))) {
-        getSupport(handleSupport);
+        let remoteObj = new Remote();
+        remoteObj.support(handleSupport);
         localStorage.setItem('set_supports_times', moment().format());
     }
     return localStorage.getItem('supports');
@@ -39,7 +40,8 @@ function getRemoteItem() {
 
 function handlePidChange() {
     let this_tr = $(this).parent().parent();
-    getProblem(this_tr.find('.class_oid').val(), this_tr.find('.class_pid').val(), this_tr.find('.class_link'), handleProblemSearch);
+    let problemObj = new Problem();
+    problemObj.problem(this_tr.find('.class_oid').val(), this_tr.find('.class_pid').val(), this_tr.find('.class_link'), void(0));
 }
 
 $('#id_add_pid').click(function () {

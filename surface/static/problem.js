@@ -48,11 +48,7 @@ function handleVerdict(res) {
     if (res.status === 0) {
 
         $("#id_result").html("");
-        //     $("#id_verdict_ul").append("<dl> <dt>提交编号:</dt> <dd>" + res.data.id + "</dd></d;>");
         $("#id_result").html(verdictCheck(res.data.verdict, res.data.verdict_code));
-        //     $("#id_verdict_ul").append("<dl> <dt>运行时间:</dt> <dd>" + res.data.execute_time + "</dd></d;>");
-        //    $("#id_verdict_ul").append("<dl> <dt>运行内存:</dt> <dd>" + res.data.execute_memory + "</dd></d;>");
-        //     $("#id_verdict_ul").append("<dl> <dt>爬取状态:</dt> <dd>" + res.data.status + "</dd></d;>");
         if (res.data.verdict_status === true) {
             clearInterval(timer);
         }
@@ -62,7 +58,8 @@ function handleVerdict(res) {
 }
 
 function queryVerdict() {
-    getVerdict(submission_id, handleVerdict);
+    let submissionObj = new Submission();
+    submissionObj.verdict(submission_id, handleVerdict);
 }
 
 function handleSubmitId(res) {
@@ -79,23 +76,25 @@ function handleButtonClick() {
     let remote_oj = localStorage.getItem("remote_oj");
     let remote_id = localStorage.getItem("remote_id");
     let language = $("#id_language").val();
-    var selectedFile = document.getElementById("id_file").files[0];
-    var reader = new FileReader();
+    let selectedFile = document.getElementById("id_file").files[0];
+    let reader = new FileReader();
     reader.readAsText(selectedFile);
     reader.onload = function () {
-        submitCode(remote_oj, remote_id, this.result, language, handleSubmitId);
+        let submissionObj = new Submission();
+        submissionObj.submission(remote_oj, remote_id, this.result, language, handleSubmitId);
     };
 }
 
 function handleProblemInfo(res, who = null) {
     $("#id_title").html(res.data.title);
-    $("#id_ul").html();
+    let problem_info = $("#id_ul");
+    problem_info.html();
     //$("#id_ul").append("<li class=\"list-group-item\">" + res.data.id + "</li>");
-    $("#id_ul").append("<li class=\"list-group-item\">来源平台: <span class=\"badge badge-dark\">" + res.data.remote_oj + "</span></li>");
-    $("#id_ul").append("<li class=\"list-group-item\">来源编号: <span class=\"badge badge-secondary\">" + res.data.remote_id + "</span></li>");
-    $("#id_ul").append("<li class=\"list-group-item\">时间限制: <span class=\"badge badge-primary\">" + res.data.time_limit + "</span></li>");
-    $("#id_ul").append("<li class=\"list-group-item\">内存限制: <span class=\"badge badge-success\">" + res.data.memory_limit + "</span></li>");
-    $("#id_ul").append("<li class=\"list-group-item\">更新时间: <span class=\"badge badge-info\">" + moment(res.data.update_time).fromNow() + "</span></li>");
+    problem_info.append("<li class=\"list-group-item\">来源平台: <span class=\"badge badge-dark\">" + res.data.remote_oj + "</span></li>");
+    problem_info.append("<li class=\"list-group-item\">来源编号: <span class=\"badge badge-secondary\">" + res.data.remote_id + "</span></li>");
+    problem_info.append("<li class=\"list-group-item\">时间限制: <span class=\"badge badge-primary\">" + res.data.time_limit + "</span></li>");
+    problem_info.append("<li class=\"list-group-item\">内存限制: <span class=\"badge badge-success\">" + res.data.memory_limit + "</span></li>");
+    problem_info.append("<li class=\"list-group-item\">更新时间: <span class=\"badge badge-info\">" + moment(res.data.update_time).fromNow() + "</span></li>");
 }
 
 function handleLanguageChange() {
@@ -119,6 +118,8 @@ function handleLanguageList(res) {
 $(document).ready(function () {
     $("#id_frame").attr("src", "/api/problem/" + localStorage.getItem("remote_oj") + "/" + localStorage.getItem("remote_id") + "/html/");
     window.setInterval("reInitFrame()", 200);
-    getProblem(localStorage.getItem("remote_oj"), localStorage.getItem("remote_id"), handleProblemInfo);
-    getLanguageList(localStorage.getItem("remote_oj"), handleLanguageList);
+    let problemObj = new Problem();
+    problemObj.problem(localStorage.getItem("remote_oj"), localStorage.getItem("remote_id"), handleProblemInfo);
+    let remoteObj = new Remote();
+    remoteObj.languages(localStorage.getItem("remote_oj"), handleLanguageList);
 });
