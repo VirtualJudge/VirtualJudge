@@ -1,4 +1,5 @@
 from enum import Enum
+from rest_framework.utils.serializer_helpers import ReturnDict
 
 
 class Message(Enum):
@@ -6,8 +7,23 @@ class Message(Enum):
     ERROR = 1
 
 
-def res_format(data, status=Message.SUCCESS):
-    return {
-        'status': status.value,
-        'data': data
-    }
+def res_format(raw_data, status=Message.SUCCESS):
+    if status == Message.SUCCESS:
+        return {
+            'status': status.value,
+            'data': raw_data
+        }
+    else:
+        data = list()
+        if isinstance(raw_data, dict):
+            for k, v in raw_data.items():
+                if isinstance(v, list):
+                    data += v
+                else:
+                    data.append(v)
+        elif isinstance(raw_data, str):
+            data.append(raw_data)
+        return {
+            'status': status.value,
+            'data': data
+        }

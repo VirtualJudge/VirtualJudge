@@ -40,16 +40,21 @@ jQuery(document).ajaxSend(function (event, xhr, settings) {
 function Account() {
     this.base_url = '/api';
     this.login = function (username, password, callback) {
-        $.post(this.base_url + '/login/', {'username': username, 'password': password}, function (res) {
+        let data = {
+            'username': username,
+            'password': password
+        };
+        $.post(this.base_url + '/login/', data, function (res) {
             callback(res);
         })
     };
     this.register = function (username, password, email, callback) {
-        $.post(this.base_url + '/register/', {
+        let data = {
             'username': username,
             'email': email,
             'password': password
-        }, function (res) {
+        };
+        $.post(this.base_url + '/register/', data, function (res) {
             callback(res);
         })
     };
@@ -89,7 +94,12 @@ function Problem() {
         })
     };
     this.problem = function (remote_oj, remote_id, callback) {
-        $.post(this.base_url + '/problem/' + remote_oj + '/' + remote_id + '/', function (res) {
+        if (localStorage.getItem('Problem_problem_' + remote_oj + '_' + remote_id) && moment().subtract(1, 'hours').isAfter(localStorage.getItem('Problem_problem_' + remote_oj + '_' + remote_id + '_time'))) {
+            callback(localStorage.getItem('Problem_problem_' + remote_oj + '_' + remote_id))
+        }
+        $.get(this.base_url + '/problem/' + remote_oj + '/' + remote_id + '/', function (res) {
+            localStorage.setItem('Problem_problem_' + remote_oj + '_' + remote_id, res);
+            localStorage.setItem('Problem_problem_' + remote_oj + '_' + remote_id + '_time', moment().format());
             callback(res);
         })
     };
@@ -99,12 +109,13 @@ function Problem() {
 function Submission() {
     this.base_url = '/api';
     this.submission = function (remote_oj, remote_id, code, language, callback) {
-        $.post(this.base_url + '/submission/', {
+        let data = {
             'remote_oj': remote_oj,
             "remote_id": remote_id,
             "code": code,
             "language": language
-        }, function (res) {
+        };
+        $.post(this.base_url + '/submission/', data, function (res) {
             callback(res);
         });
     };

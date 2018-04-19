@@ -3,10 +3,11 @@ from VirtualJudgeSpider.control import Controller
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.utils.decorators import method_decorator
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
@@ -14,6 +15,7 @@ from utils.response import res_format, Message
 
 
 class ProblemLocalAPI(APIView):
+
     def post(self, request, problem_id, param=None, **kwargs):
         try:
             problem = Problem.objects.get(id=problem_id)
@@ -29,6 +31,7 @@ class ProblemLocalAPI(APIView):
 
 
 class ProblemHtmlAPI(APIView):
+    @method_decorator(cache_page(60 * 15))
     def get(self, request, remote_oj, remote_id, **kwargs):
         remote_oj = Controller.get_real_remote_oj(remote_oj)
         if not Controller.is_support(remote_oj):
@@ -58,6 +61,36 @@ class ProblemHtmlAPI(APIView):
 
 
 class ProblemAPI(APIView):
+    def get(self, request, remote_oj, remote_id, **kwargs):
+        remote_oj = Controller.get_real_remote_oj(remote_oj)
+        if not Controller.is_support(remote_oj):
+            return Response(
+                res_format('remote_oj not valid', status=Message.ERROR),
+                status=status.HTTP_200_OK)
+        if not remote_id.isalnum():
+            return Response(
+                res_format('remote_id not valid', status=Message.ERROR),
+                status=status.HTTP_200_OK)
+        try:
+            problem = Problem.objects.get(remote_oj=remote_oj,
+                                          remote_id=remote_id)
+            if problem.request_status in [Spider_Problem.Status.STATUS_NETWORK_ERROR.value,
+                                          Spider_Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
+                                          Spider_Problem.Status.STATUS_NO_ACCOUNT.value,
+                                          Spider_Problem.Status.STATUS_PARSE_ERROR.value]:
+                get_problem_task.delay(problem.id)
+        except ObjectDoesNotExist:
+            try:
+                problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
+                                  request_status=Spider_Problem.Status.STATUS_PENDING.value)
+                problem.save()
+                get_problem_task.delay(problem.id)
+            except IntegrityError:
+                return Response(res_format('System error', Message.ERROR), status=status.HTTP_200_OK)
+        ret = ProblemSerializer(problem).data
+        del ret['html']
+        return Response(res_format(ret), status=status.HTTP_200_OK)
+
     def post(self, request, remote_oj, remote_id, **kwargs):
         remote_oj = Controller.get_real_remote_oj(remote_oj)
         if not Controller.is_support(remote_oj):
@@ -83,7 +116,7 @@ class ProblemAPI(APIView):
                 problem.save()
                 get_problem_task.delay(problem.id)
             except IntegrityError:
-                pass
+                return Response(res_format('System error', Message.ERROR), status=status.HTTP_200_OK)
 
         return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
 
