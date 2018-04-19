@@ -1,5 +1,4 @@
 from enum import Enum
-from rest_framework.utils.serializer_helpers import ReturnDict
 
 
 class Message(Enum):
