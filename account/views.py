@@ -4,16 +4,29 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.views import Response
 
-from account.serializers import (LoginSerializer, RegisterSerializer,
+from account.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer,
                                  UserProfileSerializer)
 from utils.response import res_format, Message
+
+
+class ChangePasswordAPI(APIView):
+    def post(self, request, *args, **kwargs):
+        if request.user and request.user.is_authenticated:
+            serializer = ChangePasswordSerializer(data=request.data)
+            if serializer.is_valid():
+                user = serializer.change_password()
+                if user is not None:
+                    return Response(res_format(UserProfileSerializer(user).data, status=Message.SUCCESS))
+                return Response(res_format('Change password failed', status=Message.ERROR))
+            return Response(res_format(serializer.errors, status=Message.ERROR))
+        return Response(res_format('Login required', status=Message.ERROR))
 
 
 class SessionAPI(APIView):
     def post(self, request, **kwargs):
         if request.user and request.user.is_authenticated:
-            return Response(res_format(str(request.user), Message.SUCCESS))
-        return Response(res_format('Login required', Message.ERROR))
+            return Response(res_format(str(request.user), status=Message.SUCCESS))
+        return Response(res_format('Login required', status=Message.ERROR))
 
 
 class ProfileAPI(APIView):

@@ -9,6 +9,36 @@ from rest_framework.serializers import CharField, ValidationError, EmailField
 from account.models import UserProfile
 
 
+class ChangePasswordSerializer(serializers.Serializer):
+    username = CharField()
+    old_password = CharField()
+    new_password = CharField()
+
+    @staticmethod
+    def validate_new_password(value):
+        if re.match(r'^[a-zA-Z0-9\-_.]{8,30}$', value) is None:
+            raise ValidationError(
+                'New password can only contain letters, numbers, -, _ and no shorter than 8 and no longer than 30')
+        return value
+
+    def validate(self, values):
+        if auth.authenticate(username=values['username'],
+                             password=values['old_password']) is None:
+            raise ValidationError('username or password not correct')
+        return values
+
+    def change_password(self):
+        try:
+            if len(UserProfile.objects.filter(username=self.validated_data['username'])) == 1:
+                user = UserProfile.objects.get(username=self.validated_data['username'])
+                user.set_password(self.validated_data['new_password'])
+                user.save()
+                return user
+            return None
+        except DatabaseError:
+            return None
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
