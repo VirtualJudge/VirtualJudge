@@ -52,5 +52,5 @@ class RegisterAPI(APIView):
             if register.save():
                 return Response(res_format('Register success'))
             else:
-                return Response(res_format('System error'))
-        return Response(res_format(register.errors))
+                return Response(res_format('System error', status=Message.ERROR))
+        return Response(res_format(register.errors, status=Message.ERROR))

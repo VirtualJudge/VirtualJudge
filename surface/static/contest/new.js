@@ -4,6 +4,7 @@ function handleSupport(res) {
         remotes += "<option value=\"" + oj_name + "\">" + oj_name + "</option>";
     });
     localStorage.setItem('supports', remotes);
+    localStorage.setItem('set_supports_times', moment().format());
     return remotes;
 }
 
@@ -11,7 +12,6 @@ function getRemotes() {
     if (localStorage.getItem('supports') === null || localStorage.getItem('set_supports_times') === null || moment().subtract(1, 'hours').isAfter(localStorage.getItem('set_supports_times'))) {
         let remoteObj = new Remote();
         remoteObj.support(handleSupport);
-        localStorage.setItem('set_supports_times', moment().format());
     }
     return localStorage.getItem('supports');
 

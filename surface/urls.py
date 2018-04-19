@@ -3,17 +3,17 @@ from django.urls import path
 from surface import views
 
 urlpatterns = [
-    path('', views.index),
-    path('problem/', views.problem),
-    path('problems/', views.problems),
+    path('', views.IndexAPI.as_view()),
+    path('problem/', views.ProblemAPI.as_view()),
+    path('problems/', views.ProblemsAPI.as_view()),
 
-    path('submissions/', views.submissions),
-    path('submission/', views.submissions),
+    path('submissions/', views.SubmisssionsAPI.as_view()),
+    path('submission/', views.SubmisssionAPI.as_view()),
 
-    path('contests/', views.contests),
-    path('contest/new/', views.contest_new),
-    path('contest/', views.contests),
+    path('contests/', views.ContestsAPI.as_view()),
+    path('contest/new/', views.ContestNewAPI.as_view()),
+    path('contest/', views.ContestsAPI.as_view()),
 
-    path('login/', views.login),
-    path('register/', views.register),
+    path('login/', views.LoginAPI.as_view()),
+    path('register/', views.RegisterAPI.as_view()),
 ]

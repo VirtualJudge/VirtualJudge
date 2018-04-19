@@ -1,43 +1,60 @@
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.cache import cache_page
 
 
 # Create your views here.
-@cache_page(60 * 15)
-def index(request):
-    return render(request, 'index.html')
+
+class IndexAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'index.html')
 
 
-@cache_page(60 * 15)
-def problems(request):
-    return render(request, 'problems.html')
+class ProblemsAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'problems.html')
 
 
-@cache_page(60 * 15)
-def problem(request):
-    return render(request, 'problem.html')
+class ProblemAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'problem.html')
 
 
-@cache_page(60 * 15)
-def submissions(request):
-    return render(request, 'submissions.html')
+class SubmisssionsAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'submissions.html')
 
 
-@cache_page(60 * 15)
-def contests(request):
-    return render(request, 'contests.html')
+class SubmisssionAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'submission.html')
 
 
-@cache_page(60 * 15)
-def contest_new(request):
-    return render(request, 'contest/new.html')
+class ContestsAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'contests.html')
 
 
-@cache_page(60 * 15)
-def register(request):
-    return render(request, 'register.html')
+class ContestNewAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'contest/new.html')
 
 
-@cache_page(60 * 15)
-def login(request):
-    return render(request, 'login.html')
+class RegisterAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'register.html')
+
+
+class LoginAPI(View):
+    @method_decorator(cache_page(60 * 15))
+    def get(self, request, *args, **kwargs):
+        return render(request, 'login.html')

@@ -94,12 +94,7 @@ function Problem() {
         })
     };
     this.problem = function (remote_oj, remote_id, callback) {
-        if (localStorage.getItem('Problem_problem_' + remote_oj + '_' + remote_id) && moment().subtract(1, 'hours').isAfter(localStorage.getItem('Problem_problem_' + remote_oj + '_' + remote_id + '_time'))) {
-            callback(localStorage.getItem('Problem_problem_' + remote_oj + '_' + remote_id))
-        }
         $.get(this.base_url + '/problem/' + remote_oj + '/' + remote_id + '/', function (res) {
-            localStorage.setItem('Problem_problem_' + remote_oj + '_' + remote_id, res);
-            localStorage.setItem('Problem_problem_' + remote_oj + '_' + remote_id + '_time', moment().format());
             callback(res);
         })
     };

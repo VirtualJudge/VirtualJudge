@@ -7,11 +7,9 @@ function handleRegister(res) {
         message.append("注册成功，两秒后跳转主页");
         setTimeout("location.href='/';", 2000);
     } else {
-        message.attr("class", "text text-warning");
-        $.each(res.data, function (k, v) {
-            v.forEach(function (val) {
-                message.append(val + "\n");
-            })
+        message.attr("class", "text text-danger");
+        $.each(res.data, function (i, item) {
+            message.append(item + "\n");
         });
     }
 }

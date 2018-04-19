@@ -19,7 +19,7 @@ def load_static(remote_oj, remote_id, website_data):
     for img in soup.find_all('img'):
         url = img['src']
 
-        suffix = str(url).split('/')[-1].split('.')[-1]
+        file_name_list = str(url).split('/')[-1].split('.')
 
         path = settings.PUBLIC_DIR
         path = os.path.join(path, remote_oj)
@@ -34,8 +34,8 @@ def load_static(remote_oj, remote_id, website_data):
         try:
             if os.path.exists(path) is False:
                 os.makedirs(path)
-            if suffix.isalpha():
-                file_name = f'IMG_{str(id)}.{suffix}'
+            if len(file_name_list) > 1 and file_name_list[-1].isalpha():
+                file_name = f'IMG_{str(id)}.{file_name_list[-1]}'
             else:
                 file_name = f'IMG_{str(id)}'
             with open(os.path.join(path, file_name), 'wb') as fout:
@@ -43,7 +43,6 @@ def load_static(remote_oj, remote_id, website_data):
             img['src'] = os.path.join(url_path, file_name)
             id += 1
         except OSError:
-            traceback.print_exc()
             pass
     return str(soup)
 

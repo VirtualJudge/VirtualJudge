@@ -85,7 +85,7 @@ function handleButtonClick() {
     };
 }
 
-function handleProblemInfo(res, who = null) {
+function handleProblemInfo(res) {
     $("#id_title").html(res.data.title);
     let problem_info = $("#id_ul");
     problem_info.html();
