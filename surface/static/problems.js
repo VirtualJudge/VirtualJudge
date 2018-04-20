@@ -32,9 +32,7 @@ function handleInfoClick() {
     let remote_oj = problem_info.attr("remote_oj");
     let remote_id = problem_info.attr("remote_id");
     if (remote_oj && remote_id) {
-        localStorage.setItem("remote_oj", remote_oj);
-        localStorage.setItem("remote_id", remote_id);
-        window.location.href = '/problem/';
+        window.location.href = '/problem/' + remote_oj + '/' + remote_id + '/';
     }
 }
 
@@ -42,9 +40,7 @@ function handleTrClick() {
     let remote_oj = $(this).attr("data-remote_oj");
     let remote_id = $(this).attr("data-remote_id");
     if (remote_oj && remote_id) {
-        localStorage.setItem("remote_oj", remote_oj);
-        localStorage.setItem("remote_id", remote_id);
-        window.location.href = '/problem/';
+        window.location.href = '/problem/' + remote_oj + '/' + remote_id + '/';
     }
 }
 

@@ -1,6 +1,7 @@
 from VirtualJudgeSpider import control, config
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db.models import F
+from account.models import UserProfile
 from remote.dispatcher import ConfigDispatcher
 from submission.models import Submission
 from utils.tasks import reload_result_task
@@ -47,6 +48,14 @@ class SubmissionDispatcher(object):
             self._submission.verdict = result.verdict
             self._submission.verdict_code = result.verdict_code.value
             self._submission.save()
+            if self._submission.verdict_code == config.Result.VerdictCode.STATUS_ACCEPTED.value and len(
+                    Submission.objects.filter(user=self._submission.user, remote_oj=self._submission.remote_oj,
+                                              remote_id=self._submission.remote_id,
+                                              verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value)) == 1:
+                print('accept')
+                UserProfile.objects.filter(username=self._submission.user).update(attempted=F('attempted') - 1,
+                                                                                  accepted=F('accepted') + 1)
+
             reload_result_task.delay(self._submission.id)
             ConfigDispatcher.release_account(account.id)
             return True

@@ -45,6 +45,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('username', 'accepted', 'attempted', 'nickname')
 
 
+class RankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('username', 'accepted', 'attempted', 'submitted')
+
+
 class LoginSerializer(serializers.Serializer):
     username = CharField()
     password = CharField()

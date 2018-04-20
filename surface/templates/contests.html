@@ -2,10 +2,11 @@
 
 {% extends 'include/base.html' %}
 
-{% block title %}比赛{% endblock %}
+{% block title %}
+    <title>比赛列表</title>
+{% endblock %}
 
 {% block  body %}
-
     <div class="container">
         <div class="row clearfix">
             <div class="col-md-9 column">
@@ -13,42 +14,7 @@
                     <div class="card-header">
                         比赛列表
                     </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="media">
-                                <div class="media-body">
-                                    <h5 class="mt-0">3 - Virtual Judge Contest Test</h5>
-                                    <p>
-                                        这是一个默认比赛介绍
-                                    </p>
-                                    <a class="btn btn-primary" href="#">进入</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="media">
-                                <div class="media-body">
-                                    <h5 class="mt-0">2 - 这是标题</h5>
-                                    <span class="badge badge-secondary">开始时间:一天前</span>
-                                    <span class="badge badge-success">结束时间:2小时后</span>
-                                    <p>
-                                        这是介绍
-                                    </p>
-                                    <a class="btn btn-primary" href="#">进入</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <div class="media">
-                                <div class="media-body">
-                                    <h5 class="mt-0">1 - 虚拟OJ比赛测试</h5>
-                                    <p>
-                                        这是默认介绍
-                                    </p>
-                                    <a class="btn btn-primary" href="#">进入</a>
-                                </div>
-                            </div>
-                        </li>
+                    <ul id="id_contest_list" class="list-group list-group-flush">
                     </ul>
                 </div>
 
@@ -67,4 +33,6 @@
             </div>
         </div>
     </div>
+    {% load staticfiles %}
+    <script src="{% static "contests.js" %}"></script>
 {% endblock %}

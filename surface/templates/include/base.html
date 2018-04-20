@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
     {% block include %}
     {% endblock %}
-    <title>{% block title %}{% endblock %}</title>
+    {% block title %}<{% endblock %}
 </head>
 <body>
 {% include 'include/header.html' %}

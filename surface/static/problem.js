@@ -73,8 +73,9 @@ function handleSubmitId(res) {
 }
 
 function handleButtonClick() {
-    let remote_oj = localStorage.getItem("remote_oj");
-    let remote_id = localStorage.getItem("remote_id");
+    let this_url = window.location.pathname;
+    let remote_oj = this_url.split('/')[2];
+    let remote_id = this_url.split('/')[3];
     let language = $("#id_language").val();
     let selectedFile = document.getElementById("id_file").files[0];
     let reader = new FileReader();
@@ -98,7 +99,9 @@ function handleProblemInfo(res) {
 }
 
 function handleLanguageChange() {
-    let remote_oj = localStorage.getItem("remote_oj");
+    let this_url = window.location.pathname;
+    let remote_oj = this_url.split('/')[2];
+
     let oj_language = $("#id_language").val();
     localStorage.setItem(remote_oj + "_prefer_language", oj_language);
 }
@@ -107,7 +110,9 @@ function handleLanguageList(res) {
     res.data.forEach(function (language) {
         $("#id_language").append("<option value=\"" + language.oj_language + "\">" + language.oj_language_name + "</option>");
     });
-    let remote_oj = localStorage.getItem("remote_oj");
+    let this_url = window.location.pathname;
+    let remote_oj = this_url.split('/')[2];
+
     let oj_language = localStorage.getItem(remote_oj + "_prefer_language");
     if (oj_language) {
         $("#id_language").val(oj_language);
@@ -116,10 +121,14 @@ function handleLanguageList(res) {
 }
 
 $(document).ready(function () {
-    $("#id_frame").attr("src", "/api/problem/" + localStorage.getItem("remote_oj") + "/" + localStorage.getItem("remote_id") + "/html/");
+    let this_url = window.location.pathname;
+    let remote_oj = this_url.split('/')[2];
+    let remote_id = this_url.split('/')[3];
+    console.log(remote_oj,remote_id);
+    $("#id_frame").attr("src", "/api/problem/" + remote_oj + "/" + remote_id + "/html/");
     window.setInterval("reInitFrame()", 200);
     let problemObj = new Problem();
-    problemObj.problem(localStorage.getItem("remote_oj"), localStorage.getItem("remote_id"), handleProblemInfo);
+    problemObj.problem(remote_oj, remote_id, handleProblemInfo);
     let remoteObj = new Remote();
-    remoteObj.languages(localStorage.getItem("remote_oj"), handleLanguageList);
+    remoteObj.languages(remote_oj, handleLanguageList);
 });

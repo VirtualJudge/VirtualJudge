@@ -8,9 +8,9 @@ urlpatterns = [
     # 新建比赛
     path('contest/', views.ContestAPI.as_view(), name='contest'),
     # 获取比赛信息
-    path('contest/<int:contest_id>/'),
+    #    path('contest/<int:contest_id>/'),
     # 获取比赛题目列表
-    path('contest/<int:contest_id>/problems/'),
+    #   path('contest/<int:contest_id>/problems/'),
     # 获取比赛提交列表
-    path('contest/<int:contest_id>/submissions/'),
+    #  path('contest/<int:contest_id>/submissions/'),
 ]

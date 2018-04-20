@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -6,13 +5,13 @@ from django.db import models
 
 
 class Contest(models.Model):
+
     title = models.CharField(max_length=50)
     user = models.CharField(max_length=20)
-    start_time = models.DateTimeField(auto_now=True)
-    problems = ArrayField(models.IntegerField(), blank=True, null=True,
-                          max_length=30)
 
-    end_time = models.DateTimeField(auto_now=True)
+    start_time = models.DateTimeField()
+
+    end_time = models.DateTimeField()
 
     created_time = models.DateTimeField(auto_now_add=True)
 

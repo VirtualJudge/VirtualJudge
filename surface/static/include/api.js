@@ -68,6 +68,11 @@ function Account() {
         $.post(this.base_url + '/session/', function (res) {
             callback(res);
         })
+    };
+    this.rank = function (callback) {
+        $.post(this.base_url + '/rank/', function (res) {
+            callback(res);
+        })
     }
 }
 
@@ -121,6 +126,20 @@ function Submission() {
     };
     this.submissions = function (callback) {
         $.post(this.base_url + '/submissions/', function (res) {
+            callback(res);
+        })
+    }
+}
+
+function Contest() {
+    this.base_url = '/api';
+    this.contest = function (data, callback) {
+        $.post(this.base_url + '/contest/', data, function (res) {
+            callback(res);
+        })
+    };
+    this.contests = function (callback) {
+        $.post(this.base_url + '/contests/', function (res) {
             callback(res);
         })
     }

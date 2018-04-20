@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.views import Response
-
-from account.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer,
+from account.models import UserProfile
+from account.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer, RankSerializer,
                                  UserProfileSerializer)
 from utils.response import res_format, Message
 
@@ -67,3 +67,9 @@ class RegisterAPI(APIView):
             else:
                 return Response(res_format('System error', status=Message.ERROR))
         return Response(res_format(register.errors, status=Message.ERROR))
+
+
+class RankAPI(APIView):
+    def post(self, request, **kwargs):
+        users = UserProfile.objects.all().order_by('-accepted')[:20]
+        return Response(res_format(RankSerializer(users, many=True).data))

@@ -21,8 +21,9 @@ from django.contrib import admin
 
 urlpatterns = [
     path('', include('surface.urls')),
-    path('admin/', admin.site.urls),
+    path('adminAdminAdmin/', admin.site.urls),
     path('api/', include('problem.urls')),
+    path('api/', include('contest.urls')),
     path('api/', include('account.urls')),
     path('api/', include('submission.urls')),
     path('api/', include('remote.urls')),
