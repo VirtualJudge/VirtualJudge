@@ -7,8 +7,10 @@ from VirtualJudgeSpider import control, config
 from bs4 import BeautifulSoup
 from celery import shared_task
 from django.db import DatabaseError
+from django.db.models import F
 
 from VirtualJudge import settings
+from account.models import UserProfile
 from problem.models import Problem
 from submission.models import Submission
 
@@ -67,9 +69,9 @@ def reload_result_task(submission_id):
             submission.verdict_status = 0
             submission.save()
         else:
-            tries = 5
-            max_wait_times = 5
-            while tries > 0:
+            sleep_time = 1
+            while sleep_time <= 16:
+
                 result = control.Controller(submission.remote_oj).get_result_by_rid_and_pid(
                     rid=submission.remote_run_id,
                     pid=submission.remote_id)
@@ -81,10 +83,19 @@ def reload_result_task(submission_id):
                     if control.Controller(submission.remote_oj).is_running(submission.verdict) is False:
                         submission.verdict_status = True
                         submission.save()
+                        if submission.verdict_code == config.Result.VerdictCode.STATUS_ACCEPTED.value and len(
+                                Submission.objects.filter(user=submission.user, remote_oj=submission.remote_oj,
+                                                          remote_id=submission.remote_id,
+                                                          verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value)) == 1:
+                            UserProfile.objects.filter(username=submission.user).update(
+                                attempted=F('attempted') - 1,
+                                accepted=F('accepted') + 1)
+
                         break
                     submission.save()
-                tries -= 1
-                time.sleep(max_wait_times - tries)
+                time.sleep(sleep_time)
+                sleep_time *= 2
+
     except DatabaseError:
         import traceback
         traceback.print_exc()

@@ -40,12 +40,22 @@ class SubmissionAPI(APIView):
             if submission is not None:
                 try:
                     UserProfile.objects.filter(username=request.user).update(submitted=F('submitted') + 1)
-                    if len(Submission.objects.filter(user=request.user,
+                    print('len:', len(Submission.objects.filter(user=str(request.user),
+                                                                remote_oj=serializer.validated_data['remote_oj'],
+                                                                remote_id=serializer.validated_data['remote_id'])),
+                          sep=' ')
+                    print('user:', str(request.user), sep=' ')
+                    print('remote_oj:', serializer.validated_data['remote_oj'], sep=' ')
+                    print('remote_id:', serializer.validated_data['remote_id'], sep=' ')
+                    if len(Submission.objects.filter(user=str(request.user),
                                                      remote_oj=serializer.validated_data['remote_oj'],
-                                                     remote_id=serializer.validated_data['remote_id'])) == 0:
-                        UserProfile.objects.filter(username=request.user).update(attempted=F('attempted') + 1)
+                                                     remote_id=serializer.validated_data['remote_id'])) == 1:
+                        print('update attempted:' + str(request.user))
+                        UserProfile.objects.filter(username=str(request.user)).update(attempted=F('attempted') + 1)
 
                 except DatabaseError:
+                    import traceback
+                    traceback.print_exc()
                     pass
                 submit_task.delay(submission.id)
                 return Response(res_format(submission.id), status=status.HTTP_200_OK)
