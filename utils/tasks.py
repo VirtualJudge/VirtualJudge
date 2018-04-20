@@ -86,7 +86,8 @@ def reload_result_task(submission_id):
                         if submission.verdict_code == config.Result.VerdictCode.STATUS_ACCEPTED.value and len(
                                 Submission.objects.filter(user=submission.user, remote_oj=submission.remote_oj,
                                                           remote_id=submission.remote_id,
-                                                          verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value)) == 1:
+                                                          verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value
+                                                          )) == 1:
                             UserProfile.objects.filter(username=submission.user).update(
                                 attempted=F('attempted') - 1,
                                 accepted=F('accepted') + 1)
