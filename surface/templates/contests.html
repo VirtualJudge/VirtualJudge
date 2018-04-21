@@ -3,7 +3,7 @@
 {% extends 'include/base.html' %}
 
 {% block title %}
-    <title>比赛列表</title>
+    <title>题集列表</title>
 {% endblock %}
 
 {% block  body %}
@@ -12,12 +12,11 @@
             <div class="col-md-9 column">
                 <div class="card mt-2">
                     <div class="card-header">
-                        比赛列表
+                        题集列表
                     </div>
                     <ul id="id_contest_list" class="list-group list-group-flush">
                     </ul>
                 </div>
-
             </div>
             <div class="col-md-3 column">
                 <div class="card mt-2">
@@ -25,9 +24,8 @@
                         操作
                     </div>
                     <div class="list-group list-group-flush">
-                        <a href="/contest/new/" class="list-group-item  list-group-item-action">新建比赛</a>
-                        <a href="#" class="list-group-item  list-group-item-action">未知操作</a>
-                        <a href="#" class="list-group-item  list-group-item-action">高端操作</a>
+                        <a href="/contest/new/" class="list-group-item  list-group-item-action">新建题集</a>
+                        <a href="#" class="list-group-item  list-group-item-action">我的题集</a>
                     </div>
                 </div>
             </div>

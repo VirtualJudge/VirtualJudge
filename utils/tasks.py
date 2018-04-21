@@ -3,7 +3,7 @@ import time
 import traceback
 
 import requests
-from VirtualJudgeSpider import control, config
+from VirtualJudgeSpider import control, config, utils
 from bs4 import BeautifulSoup
 from celery import shared_task
 from django.db import DatabaseError
@@ -13,6 +13,7 @@ from VirtualJudge import settings
 from account.models import UserProfile
 from problem.models import Problem
 from submission.models import Submission
+from submission.serializers import VerdictSerializer
 
 
 def load_static(remote_oj, remote_id, website_data):
@@ -58,7 +59,6 @@ def save_files_task(problem_id):
             problem.save()
     except DatabaseError:
         traceback.print_exc()
-        pass
 
 
 @shared_task
@@ -100,3 +100,17 @@ def reload_result_task(submission_id):
     except DatabaseError:
         import traceback
         traceback.print_exc()
+
+
+@shared_task
+def hook_task(submission_id):
+    try:
+        if len(Submission.objects.filter(id=submission_id)):
+            submission = Submission.objects.get(id=submission_id)
+            user_profile = UserProfile.objects.get(username=submission.user)
+            if user_profile.hook is not None:
+                req = utils.HttpUtil()
+                res = req.post(url=user_profile.hook, data=VerdictSerializer(submission).data)
+                print(res)
+    except DatabaseError:
+        pass

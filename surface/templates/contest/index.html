@@ -1,0 +1,33 @@
+
+
+{% extends 'include/base.html' %}
+
+{% block title %}
+    <title>题集</title>
+{% endblock %}
+
+{% block  body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 column">
+                <div class="card mt-3">
+                    <div class="card-header">标题</div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">源名称</th>
+                            <th scope="col">源编号</th>
+                            <th scope="col">标题</th>
+                        </tr>
+                        </thead>
+                        <tbody id="id_problem_list">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% load staticfiles %}
+    <script src="{% static 'contest/index.js' %}"></script>
+{% endblock %}

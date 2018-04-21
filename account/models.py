@@ -32,6 +32,8 @@ class UserProfile(AbstractBaseUser):
     attempted = models.IntegerField(default=0)
     submitted = models.IntegerField(default=0)
 
+    hook = models.URLField(max_length=200, null=True, blank=True)
+
     nickname = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']

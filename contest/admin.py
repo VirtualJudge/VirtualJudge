@@ -6,7 +6,7 @@ from contest.models import Contest, ContestProblem
 
 
 class ContestAdmin(admin.ModelAdmin):
-    list_display = ('title', 'start_time', 'end_time')
+    list_display = ('title', 'user')
 
 
 class ContestProblemAdmin(admin.ModelAdmin):

@@ -3,7 +3,7 @@ function handleSession(res) {
     session_url.html("");
     if (res.status === 0) {
         let header_html = "<li class=\"nav-item\">\n" +
-            "<a class=\"nav-link\" href=\"#\">" + res.data + "</a>\n" +
+            "<a class=\"nav-link link_profile\" href=\"/profile/\">" + res.data + "</a>\n" +
             "</li>\n" +
             "<li class=\"nav-item\">\n" +
             "<a class=\"nav-link\" id=\"id_logout\" style=\"cursor:pointer;\">登出</a>\n" +
@@ -19,6 +19,7 @@ function handleSession(res) {
             "</li>";
         session_url.html(header_html);
     }
+    handleActiveLink();
 }
 
 function handleLogoutClick() {
@@ -28,12 +29,11 @@ function handleLogoutClick() {
 }
 
 function handleActiveLink() {
-    url = window.location.pathname.split('/')[1];
+    let url = window.location.pathname.split('/')[1];
     $(".link_" + url).addClass("active");
 }
 
 $(document).ready(function () {
-    handleActiveLink();
     let accountObj = new Account();
     accountObj.session(handleSession);
 });

@@ -7,10 +7,10 @@ urlpatterns = [
     path('problem/<str:remote_oj>/<str:remote_id>/', views.ProblemAPI.as_view()),
     path('problems/', views.ProblemsAPI.as_view()),
     path('rank/', views.RankAPI.as_view()),
-
+    path('help/', views.HelpAPI.as_view()),
     path('submissions/', views.SubmisssionsAPI.as_view()),
     path('submission/', views.SubmisssionAPI.as_view()),
-
+    path('profile/', views.ProfileAPI.as_view()),
     path('contests/', views.ContestsAPI.as_view()),
     path('contest/new/', views.ContestNewAPI.as_view()),
     path('contest/<int:contest_id>/', views.ContestAPI.as_view()),

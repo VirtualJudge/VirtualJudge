@@ -4,6 +4,11 @@ from django.views import View
 
 # Create your views here.
 
+class ProfileAPI(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'profile.html')
+
+
 class IndexAPI(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'index.html')
@@ -17,6 +22,11 @@ class ProblemsAPI(View):
 class ProblemAPI(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'problem.html')
+
+
+class HelpAPI(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'help.html')
 
 
 class RankAPI(View):

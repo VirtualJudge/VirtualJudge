@@ -133,13 +133,18 @@ function Submission() {
 
 function Contest() {
     this.base_url = '/api';
-    this.contest = function (data, callback) {
-        $.post(this.base_url + '/contest/', data, function (res) {
+    this.contest_new = function (data, callback) {
+        $.post(this.base_url + '/contest/new/', data, function (res) {
             callback(res);
         })
     };
     this.contests = function (callback) {
         $.post(this.base_url + '/contests/', function (res) {
+            callback(res);
+        })
+    };
+    this.problems = function (contest_id, callback) {
+        $.post(this.base_url + '/contest/' + contest_id + '/', function (res) {
             callback(res);
         })
     }

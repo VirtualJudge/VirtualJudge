@@ -36,6 +36,11 @@ class ProfileAPI(APIView):
         return Response(res_format('Login required', Message.ERROR))
 
 
+class WebhookAPI(APIView):
+    def post(self, request, **kwargs):
+        pass
+
+
 class LoginAPI(APIView):
     def get(self, request, **kwargs):
         return Response(res_format('Login required', Message.ERROR))
@@ -67,6 +72,19 @@ class RegisterAPI(APIView):
             else:
                 return Response(res_format('System error', status=Message.ERROR))
         return Response(res_format(register.errors, status=Message.ERROR))
+
+
+class HookAPI(APIView):
+    def delete(self, request, **kwargs):
+        if request.user is None or request.user.is_authenticated is False:
+            return Response(res_format('Login required', status=Message.ERROR))
+        UserProfile.objects.filter(username=str(request.user)).update(hook='')
+        return Response(res_format('Delete hook url success'))
+
+    def post(self, request, **kwargs):
+        if request.user is None or request.user.is_authenticated is False:
+            return Response(res_format('Login required', status=Message.ERROR))
+        return Response(res_format('Update hook url success'))
 
 
 class RankAPI(APIView):

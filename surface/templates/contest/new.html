@@ -1,64 +1,75 @@
 
 
 {% extends 'include/base.html' %}
-{% block title %}新建比赛{% endblock %}
+{% block title %}<title>新建题集</title>{% endblock %}
 
 
 {% block body %}
     <div class="container">
         <div class="row clearfix">
-            <div class="col-md-2 column"></div>
-            <div class="col-md-8 column mt-2">
+            <div class="col-lg-8 column mt-3">
                 <div class="card">
                     <div class="card-header">
-                        新建比赛
+                        新建题集
                     </div>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">源名称</th>
+                            <th scope="col">源编号</th>
+                            <th scope="col">标题</th>
+                        </tr>
+                        </thead>
+                        <tbody id="id_problem_list">
+                        </tbody>
+                    </table>
                     <div class="card-body">
                         <form>
                             <div class="form-group row">
-                                <label for="id_title" class="col-lg-3 col-form-label">标题</label>
-                                <div class="col-lg-9">
+                                <label for="id_title" class="col-lg-2 col-form-label">标题</label>
+                                <div class="col-lg-8">
                                     <input type="text" class="form-control" id="id_title" required>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="id_start_time" class="col-lg-3 col-form-label">开始时间</label>
-                                <div class="col-lg-6">
-                                    <input id="id_start_time" type="datetime-local" class="form-control" required>
+                                <div class="col-lg-2">
+                                    <button id="id_submit_button" type="button" class="form-control btn btn-primary">
+                                        提交
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="id_end_time" class="col-lg-3 col-form-label">结束时间</label>
-                                <div class="col-lg-6">
-                                    <input id="id_end_time" type="datetime-local" class="form-control">
-                                </div>
-                                <div class="col-lg-3">
-
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-lg-2">
-                                    <input id="id_add_pid" type="button" class="form-control btn btn-secondary"
-                                           value="添加题目">
-                                </div>
-                                <div class="form-group col-lg-2">
-                                    <input id="id_delete_pid" type="button" class="form-control btn btn-danger"
-                                           value="删除">
-                                </div>
-                            </div>
-                            <div id="id_pid_list" class="form-group">
-
-                            </div>
-                            <div class="form-row justify-content-center">
-                                <button id="id_button" type="button" class="col-lg-2 form-control btn btn-primary">
-                                    提交
-                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="col-md-2 column"></div>
+            <div class="col-lg-4 column mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        查找题目
+                    </div>
+                    <div class="card-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="id_select">
+                                    源名称
+                                </label>
+                                <select id="id_select" class="form-control" onchange="handleSelectChange()">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_problem_id">
+                                    源编号
+                                </label>
+                                <input type="text" class="form-control" id="id_problem_id"/>
+                            </div>
+                            <button type="button" id="id_find_button" class="btn btn-outline-secondary">查找
+                            </button>
+                            <div class="form-group mt-3">
+                                <span id="id_info"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     {% load staticfiles %}

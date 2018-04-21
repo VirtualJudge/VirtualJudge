@@ -63,12 +63,13 @@ function queryVerdict() {
 }
 
 function handleSubmitId(res) {
-    $("#id_message").html("");
+    let tag_message = $("#id_message");
+    tag_message.html("");
     if (res.status === 0) {
         submission_id = res.data;
         timer = setInterval(queryVerdict, 1000);
     } else {
-        $("#id_message").html(res.status);
+        tag_message.html(res.status);
     }
 }
 
@@ -124,7 +125,7 @@ $(document).ready(function () {
     let this_url = window.location.pathname;
     let remote_oj = this_url.split('/')[2];
     let remote_id = this_url.split('/')[3];
-    console.log(remote_oj,remote_id);
+    console.log(remote_oj, remote_id);
     $("#id_frame").attr("src", "/api/problem/" + remote_oj + "/" + remote_id + "/html/");
     window.setInterval("reInitFrame()", 200);
     let problemObj = new Problem();
