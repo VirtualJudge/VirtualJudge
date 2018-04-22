@@ -5,6 +5,7 @@ from account.models import UserProfile
 from remote.dispatcher import ConfigDispatcher
 from submission.models import Submission
 from utils.tasks import reload_result_task
+import time
 
 
 class SubmissionDispatcher(object):
@@ -35,7 +36,7 @@ class SubmissionDispatcher(object):
             self._submission.save()
             ConfigDispatcher.release_account(account.id)
             return False
-
+        time.sleep(2)
         result = controller.get_result(pid=self._submission.remote_id, account=remote_account)
         account.cookies = controller.get_cookies()
         account.save()

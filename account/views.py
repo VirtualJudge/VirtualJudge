@@ -7,6 +7,7 @@ from account.models import UserProfile
 from account.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer, RankSerializer,
                                  UserProfileSerializer)
 from utils.response import res_format, Message
+from django.db import DatabaseError
 
 
 class ChangePasswordAPI(APIView):
@@ -14,7 +15,7 @@ class ChangePasswordAPI(APIView):
         if request.user and request.user.is_authenticated:
             serializer = ChangePasswordSerializer(data=request.data)
             if serializer.is_valid():
-                user = serializer.change_password()
+                user = serializer.save()
                 if user is not None:
                     return Response(res_format(UserProfileSerializer(user).data, status=Message.SUCCESS))
                 return Response(res_format('Change password failed', status=Message.ERROR))
@@ -75,6 +76,15 @@ class RegisterAPI(APIView):
 
 
 class HookAPI(APIView):
+    def get(self, request, **kwargs):
+        if request.user is None or request.user.is_authenticated is False:
+            return Response(res_format('Login required', status=Message.ERROR))
+        try:
+            user = UserProfile.objects.get(username=str(request.user))
+            return Response(res_format(user.hook))
+        except DatabaseError:
+            return Response(res_format('System error', status=Message.ERROR))
+
     def delete(self, request, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))

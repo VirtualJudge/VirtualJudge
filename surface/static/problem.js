@@ -83,7 +83,13 @@ function handleButtonClick() {
     reader.readAsText(selectedFile);
     reader.onload = function () {
         let submissionObj = new Submission();
-        submissionObj.submission(remote_oj, remote_id, this.result, language, handleSubmitId);
+        let data = {
+            'remote_oj': remote_oj,
+            "remote_id": remote_id,
+            "code": this.result,
+            "language": language
+        };
+        submissionObj.submission(handleSubmitId,data);
     };
 }
 

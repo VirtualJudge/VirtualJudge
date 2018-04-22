@@ -13,6 +13,10 @@ function handleButtonClick() {
     let obj = new Account();
     let username = $("#id_username").val();
     let password = $("#id_password").val();
-    obj.login(username, password, handleLogin);
+    let data = {
+        'username': username,
+        'password': password
+    };
+    obj.login(handleLogin, data);
 }
 

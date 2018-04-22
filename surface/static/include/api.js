@@ -39,21 +39,12 @@ jQuery(document).ajaxSend(function (event, xhr, settings) {
 
 function Account() {
     this.base_url = '/api';
-    this.login = function (username, password, callback) {
-        let data = {
-            'username': username,
-            'password': password
-        };
+    this.login = function (callback, data) {
         $.post(this.base_url + '/login/', data, function (res) {
             callback(res);
         })
     };
-    this.register = function (username, password, email, callback) {
-        let data = {
-            'username': username,
-            'email': email,
-            'password': password
-        };
+    this.register = function (callback, data) {
         $.post(this.base_url + '/register/', data, function (res) {
             callback(res);
         })
@@ -71,6 +62,20 @@ function Account() {
     };
     this.rank = function (callback) {
         $.post(this.base_url + '/rank/', function (res) {
+            callback(res);
+        })
+    };
+    this.change_password = function (callback, data) {
+        $.post(this.base_url + '/profile/change_password/', data, function (res) {
+            callback(res);
+        })
+    };
+    this.hook = function (callback, data, method) {
+        $.ajax({
+            'url': this.base_url + '/profile/hook/',
+            'data': data,
+            'method': method
+        }, function (res) {
             callback(res);
         })
     }
@@ -108,13 +113,7 @@ function Problem() {
 
 function Submission() {
     this.base_url = '/api';
-    this.submission = function (remote_oj, remote_id, code, language, callback) {
-        let data = {
-            'remote_oj': remote_oj,
-            "remote_id": remote_id,
-            "code": code,
-            "language": language
-        };
+    this.submission = function (callback, data) {
         $.post(this.base_url + '/submission/', data, function (res) {
             callback(res);
         });
@@ -133,7 +132,7 @@ function Submission() {
 
 function Contest() {
     this.base_url = '/api';
-    this.contest_new = function (data, callback) {
+    this.contest_new = function (callback, data) {
         $.post(this.base_url + '/contest/new/', data, function (res) {
             callback(res);
         })

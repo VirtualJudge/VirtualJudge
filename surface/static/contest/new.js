@@ -88,6 +88,9 @@ function handleFindButtonClick() {
 
 function handleNewContest(res) {
     console.log(res);
+    if (res.status === 0) {
+        window.location.href = '/contest/' + res.data + '/';
+    }
 }
 
 function handleSubmitButtonClick() {
@@ -108,7 +111,7 @@ function handleSubmitButtonClick() {
         };
         console.log(post_data);
         let contestObj = new Contest();
-        contestObj.contest_new(post_data, handleNewContest);
+        contestObj.contest_new(handleNewContest, post_data);
     }
 
 

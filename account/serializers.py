@@ -27,7 +27,7 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise ValidationError('username or password not correct')
         return values
 
-    def change_password(self):
+    def save(self):
         try:
             if len(UserProfile.objects.filter(username=self.validated_data['username'])) == 1:
                 user = UserProfile.objects.get(username=self.validated_data['username'])
@@ -73,7 +73,8 @@ class LoginSerializer(serializers.Serializer):
         user = auth.authenticate(username=self.validated_data['username'],
                                  password=self.validated_data['password'])
         if user:
-            auth.login(request, user)
+            if request:
+                auth.login(request, user)
             return user
 
 

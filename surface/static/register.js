@@ -16,5 +16,10 @@ function handleRegister(res) {
 
 function handleButtonClick() {
     let accountObj = new Account();
-    accountObj.register($("#id_username").val(), $("#id_email").val(), $("#id_password").val(), handleRegister);
+    let data = {
+            'username': $("#id_username").val(),
+            'email': $("#id_email").val(),
+            'password': $("#id_password").val()
+        };
+    accountObj.register(handleRegister, data);
 }
