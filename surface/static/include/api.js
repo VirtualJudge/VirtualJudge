@@ -74,9 +74,10 @@ function Account() {
         $.ajax({
             'url': this.base_url + '/profile/hook/',
             'data': data,
-            'method': method
-        }, function (res) {
-            callback(res);
+            'method': method,
+            'success': function (res) {
+                callback(res);
+            }
         })
     }
 }

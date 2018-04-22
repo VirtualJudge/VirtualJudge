@@ -14,7 +14,6 @@ urlpatterns = [
     path('contests/', views.ContestsAPI.as_view()),
     path('contest/new/', views.ContestNewAPI.as_view()),
     path('contest/<int:contest_id>/', views.ContestAPI.as_view()),
-
     path('login/', views.LoginAPI.as_view()),
     path('register/', views.RegisterAPI.as_view()),
 ]

@@ -9,6 +9,21 @@ from rest_framework.serializers import CharField, ValidationError, EmailField
 from account.models import UserProfile
 
 
+class HookSerializer(serializers.Serializer):
+    url = serializers.URLField()
+
+    def validate_url(self, value):
+        if len(value) > 200:
+            raise ValidationError('url should not len > 200')
+        return value
+
+    def save(self, user):
+        try:
+            return UserProfile.objects.filter(username=user).update(hook=self.validated_data['url'])
+        except DatabaseError:
+            return None
+
+
 class ChangePasswordSerializer(serializers.Serializer):
     username = CharField()
     old_password = CharField()

@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.views import Response
 from account.models import UserProfile
 from account.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer, RankSerializer,
+                                 HookSerializer,
                                  UserProfileSerializer)
 from utils.response import res_format, Message
 from django.db import DatabaseError
@@ -88,13 +89,18 @@ class HookAPI(APIView):
     def delete(self, request, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))
-        UserProfile.objects.filter(username=str(request.user)).update(hook='')
+        UserProfile.objects.filter(username=str(request.user)).update(hook=None)
         return Response(res_format('Delete hook url success'))
 
     def post(self, request, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))
-        return Response(res_format('Update hook url success'))
+        serializer = HookSerializer(data=request.data)
+        if serializer.is_valid():
+            if serializer.save(str(request.user)):
+                return Response(res_format('Update hook url success'))
+            return Response(res_format('System error', status=Message.ERROR))
+        return Response(res_format('Post data not valid', status=Message.ERROR))
 
 
 class RankAPI(APIView):
