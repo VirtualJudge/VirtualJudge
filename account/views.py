@@ -105,5 +105,8 @@ class HookAPI(APIView):
 
 class RankAPI(APIView):
     def post(self, request, **kwargs):
-        users = UserProfile.objects.all().order_by('-accepted')[:20]
-        return Response(res_format(RankSerializer(users, many=True).data))
+        try:
+            users = UserProfile.objects.all().order_by('-accepted')[:20]
+            return Response(res_format(RankSerializer(users, many=True).data))
+        except DatabaseError:
+            return Response(res_format('System error', status=Message.ERROR))
