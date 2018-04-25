@@ -10,7 +10,7 @@
 #### 测试环境
  
  - python3.6
- - docker:latest
+ - docker latest
  - docker-compose latest
  - git
  
@@ -28,4 +28,4 @@
 ### demo
 [http://119.29.62.88/](http://119.29.62.88/)
 
-如果对这个项目感兴趣的话，欢迎contribute
+
