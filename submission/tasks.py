@@ -9,7 +9,7 @@ from submission.models import Submission
 def submit_task(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
-        SubmissionDispatcher(submission.id).submit()
+        SubmissionDispatcher(submission.id).submit
     except ObjectDoesNotExist:
         import traceback
         traceback.print_exc()

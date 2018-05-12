@@ -13,15 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, include
 import os
-from django.conf.urls.static import static
+
 from django.conf import settings
-from django.contrib import admin
+from django.conf.urls.static import static
+from django.urls import path, include
 
 urlpatterns = [
-    path('', include('surface.urls')),
-    path('adminAdminAdmin/', admin.site.urls),
+    # path('', include('surface.urls')),
+    # path('adminAdminAdmin/', admin.site.urls),
     path('api/', include('problem.urls')),
     path('api/', include('contest.urls')),
     path('api/', include('account.urls')),
@@ -30,4 +30,6 @@ urlpatterns = [
 ]
 if settings.DEBUG:
     media_root = os.path.join(settings.BASE_DIR, 'public')
-    urlpatterns += static('/public/', document_root=media_root)
+else:
+    media_root = os.path.abspath('/public')
+urlpatterns += static('api/public/', document_root=media_root)

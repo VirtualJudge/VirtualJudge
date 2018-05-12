@@ -14,10 +14,10 @@ class Command(BaseCommand):
         except OperationalError:
             self.stdout.write(self.style.WARNING('waiting database connect'))
             exit(1)
-        if os.system('python3 manage.py init_database') != 0:
-            self.stdout.write(self.style.ERROR('failed execute:python3 manage.py init_database'))
+        if os.system('python3 manage.py migrate') != 0:
+            self.stdout.write(self.style.ERROR('python3 manage.py migrate'))
             exit(1)
-        self.stdout.write(self.style.SUCCESS("python3 manage.py init_database:Done"))
+        self.stdout.write(self.style.SUCCESS("python3 manage.py migrate:Done"))
         if os.system('python3 manage.py init_user') != 0:
             self.stdout.write(self.style.ERROR('failed execute:python3 manage.py init_user'))
             exit(1)

@@ -16,7 +16,7 @@ from .utils import get_env
 if get_env('VJ_ENV', 'develop') == 'production':
     DEBUG = False
 
-    PUBLIC_URL = '/public'
+    PUBLIC_URL = '/api/public'
     PUBLIC_DIR = '/public'
 
     REST_FRAMEWORK = {
@@ -33,7 +33,7 @@ else:
     DEBUG = True
 
     PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
-    PUBLIC_URL = '/public'
+    PUBLIC_URL = '/api/public'
 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (

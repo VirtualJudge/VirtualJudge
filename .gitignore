@@ -12,7 +12,6 @@ db.sqlite3
 .idea/
 .DS_Store
 
-*/migrations/
 
 !.gitignore
 collected_static/

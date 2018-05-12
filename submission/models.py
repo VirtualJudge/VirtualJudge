@@ -47,6 +47,8 @@ class Submission(models.Model):
     # 当前爬虫状态
     status = models.IntegerField(default=config.Result.Status.STATUS_PENDING.value)
 
+    hook = models.BooleanField(default=False)
+
     class Meta:
         db_table = 'submission'
         ordering = ("-create_time",)
