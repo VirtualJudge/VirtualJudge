@@ -3,11 +3,12 @@ from VirtualJudgeSpider.control import Controller
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
+
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
@@ -31,7 +32,6 @@ class ProblemLocalAPI(APIView):
 
 
 class ProblemHtmlAPI(APIView):
-    @method_decorator(cache_page(60 * 15))
     def get(self, request, remote_oj, remote_id, **kwargs):
         remote_oj = Controller.get_real_remote_oj(remote_oj)
         if not Controller.is_support(remote_oj):
@@ -104,7 +104,7 @@ class ProblemAPI(APIView):
         try:
             problem = Problem.objects.get(remote_oj=remote_oj,
                                           remote_id=remote_id)
-            if problem.request_status in [Spider_Problem.Status.STATUS_NETWORK_ERROR.value,
+            if problem.request_status in [Spider_Problem.Status.STATUS_SUBMIT_FAILED.value,
                                           Spider_Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
                                           Spider_Problem.Status.STATUS_NO_ACCOUNT.value,
                                           Spider_Problem.Status.STATUS_PARSE_ERROR.value]:
