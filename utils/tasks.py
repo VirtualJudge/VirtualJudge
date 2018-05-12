@@ -101,7 +101,7 @@ def hook_task(submission_id):
             user_profile = UserProfile.objects.get(username=submission.user)
             if user_profile.hook is not None:
                 req = utils.HttpUtil()
-                res = req.post(url=user_profile.hook, json=VerdictSerializer(submission).data)
+                req.post(url=user_profile.hook, json=VerdictSerializer(submission).data)
             submission.hook = True
             submission.save()
     except DatabaseError:
