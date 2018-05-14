@@ -1,10 +1,11 @@
+import hashlib
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 from rest_framework import serializers
 from rest_framework.serializers import CharField
-from rest_framework.serializers import IntegerField
 from rest_framework.validators import ValidationError
 
-from contest.models import Contest
 from problem.models import Problem
 from remote.models import Language
 from submission.models import Submission
@@ -19,7 +20,6 @@ class VerdictSerializer(serializers.ModelSerializer):
 
 
 class SubmissionSerializer(serializers.Serializer):
-    contest_id = IntegerField(required=False)
     code = CharField()
     language = CharField()
     remote_oj = CharField()
@@ -38,24 +38,24 @@ class SubmissionSerializer(serializers.Serializer):
             #     user_profile = UserProfile.objects.get(username=user)
             #     user_profile.attempted = F('attempted') + 1
             #     user_profile.save()
+
             language = self.validated_data['language']
             remote_oj = self.validated_data['remote_oj']
             language_obj = Language.objects.get(oj_name=remote_oj, oj_language=language)
-            if self.validated_data.get('contest_id'):
-                submission = Submission(contest_id=self.validated_data['contest_id'],
-                                        code=self.validated_data['code'],
-                                        user=user,
-                                        language=language_obj.oj_language,
-                                        language_name=language_obj.oj_language_name,
-                                        remote_id=self.validated_data['remote_id'],
-                                        remote_oj=self.validated_data['remote_oj'])
-            else:
-                submission = Submission(code=self.validated_data['code'],
-                                        user=user,
-                                        language=language_obj.oj_language,
-                                        language_name=language_obj.oj_language_name,
-                                        remote_id=self.validated_data['remote_id'],
-                                        remote_oj=self.validated_data['remote_oj'])
+            try:
+                submission = Submission.objects.get(remote_id=self.validated_data['remote_id'],
+                                                    remote_oj=self.validated_data['remote_oj'],
+                                                    sha256=hashlib.sha256(self.validated_data['code']).hexdigest())
+                return submission
+            except ObjectDoesNotExist:
+                pass
+            submission = Submission(code=self.validated_data['code'],
+                                    user=user,
+                                    language=language_obj.oj_language,
+                                    language_name=language_obj.oj_language_name,
+                                    sha256=hashlib.sha256(self.validated_data['code']).hexdigest(),
+                                    remote_id=self.validated_data['remote_id'],
+                                    remote_oj=self.validated_data['remote_oj'])
             submission.save()
             return submission
         except DatabaseError:
@@ -63,15 +63,9 @@ class SubmissionSerializer(serializers.Serializer):
             traceback.print_exc()
             return None
 
-    def validate_contest_id(self, contest_id):
-        try:
-            if Contest.objects.filter(id=contest_id).exists() is False:
-                raise ValidationError('The contest does not exist')
-        except DatabaseError:
-            raise ValidationError('system error')
-        return contest_id
-
     def validate_code(self, value):
+        if len(value) < 20:
+            raise ValidationError('code is too short')
         return value
 
     def validate_remote_oj(self, remote_oj):

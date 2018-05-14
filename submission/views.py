@@ -38,15 +38,10 @@ class SubmissionAPI(APIView):
         if serializer.is_valid():
             submission = serializer.save(str(request.user))
             if submission is not None:
+                if submission.status != config.Result.Status.STATUS_PENDING:
+                    return Response(res_format(submission.id), status=status.HTTP_200_OK)
                 try:
                     UserProfile.objects.filter(username=request.user).update(submitted=F('submitted') + 1)
-                    print('len:', len(Submission.objects.filter(user=str(request.user),
-                                                                remote_oj=serializer.validated_data['remote_oj'],
-                                                                remote_id=serializer.validated_data['remote_id'])),
-                          sep=' ')
-                    print('user:', str(request.user), sep=' ')
-                    print('remote_oj:', serializer.validated_data['remote_oj'], sep=' ')
-                    print('remote_id:', serializer.validated_data['remote_id'], sep=' ')
                     if len(Submission.objects.filter(user=str(request.user),
                                                      remote_oj=serializer.validated_data['remote_oj'],
                                                      remote_id=serializer.validated_data['remote_id'])) == 1:

@@ -45,6 +45,7 @@ class Submission(models.Model):
     """
 
     # 当前爬虫状态
+    sha256 = models.CharField(max_length=200, null=True)
     status = models.IntegerField(default=config.Result.Status.STATUS_PENDING.value)
 
     hook = models.BooleanField(default=False)

@@ -27,6 +27,8 @@ if get_env('VJ_ENV', 'develop') == 'production':
         ), 'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
+        ), 'DEFAULT_PARSER_CLASSES': (
+            'rest_framework.parsers.JSONParser',
         )
     }
 else:
@@ -44,6 +46,8 @@ else:
         ), 'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
+        ), 'DEFAULT_PARSER_CLASSES': (
+            'rest_framework.parsers.JSONParser',
         )
     }
 
