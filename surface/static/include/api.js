@@ -134,7 +134,13 @@ function Submission() {
 function Contest() {
     this.base_url = '/api';
     this.contest_new = function (callback, data) {
-        $.post(this.base_url + '/contest/new/', data, function (res) {
+        $.post({
+            url: this.base_url + '/contest/new/',
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            dataType: "json",
+        }, function (res) {
+            console.log('call back new contest');
             callback(res);
         })
     };

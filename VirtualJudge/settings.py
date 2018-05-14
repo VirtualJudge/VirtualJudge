@@ -19,38 +19,23 @@ if get_env('VJ_ENV', 'develop') == 'production':
     PUBLIC_URL = '/api/public'
     PUBLIC_DIR = '/public'
 
-    REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-        ), 'DEFAULT_PERMISSION_CLASSES': (
-            'rest_framework.permissions.AllowAny',
-        ), 'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework.authentication.BasicAuthentication',
-            'rest_framework.authentication.SessionAuthentication',
-        ), 'DEFAULT_PARSER_CLASSES': (
-            'rest_framework.parsers.JSONParser',
-        )
-    }
+
 else:
     DEBUG = True
 
     PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
     PUBLIC_URL = '/api/public'
 
-    REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.BrowsableAPIRenderer',
-        ), 'DEFAULT_PERMISSION_CLASSES': (
-            'rest_framework.permissions.AllowAny',
-        ), 'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework.authentication.BasicAuthentication',
-            'rest_framework.authentication.SessionAuthentication',
-        ), 'DEFAULT_PARSER_CLASSES': (
-            'rest_framework.parsers.JSONParser',
-        )
-    }
-
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ), 'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ), 'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
 ALLOWED_HOSTS = ['*']
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

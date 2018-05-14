@@ -8,6 +8,7 @@ from remote.models import Language
 
 @shared_task
 def update_language_task(remote_oj):
+    print(remote_oj)
     if ConfigDispatcher.choose_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'TRUE'):
 
         account = ConfigDispatcher.choose_account(remote_oj)
@@ -18,6 +19,7 @@ def update_language_task(remote_oj):
                                         cookies=account.cookies)
         controller = control.Controller(remote_oj)
         langs = controller.find_language(account=remote_account)
+        print(remote_oj, langs)
         account.cookies = controller.get_cookies()
         account.save()
         ConfigDispatcher.release_account(account.id)

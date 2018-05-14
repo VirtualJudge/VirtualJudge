@@ -27,6 +27,7 @@ class ProblemDispatcher(object):
                                         cookies=account.cookies)
         controller = control.Controller(self.problem.remote_oj)
         response = controller.get_problem(self.problem.remote_id, account=remote_account)
+        print(response.__dict__)
         account.cookies = controller.get_cookies()
         account.save()
         ConfigDispatcher.release_account(account.id)

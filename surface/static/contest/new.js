@@ -107,7 +107,7 @@ function handleSubmitButtonClick() {
     if (title_text !== null && title_text !== "") {
         let post_data = {
             'title': title_text,
-            'problems': JSON.stringify(problem_list_data)
+            'problems': problem_list_data
         };
         console.log(post_data);
         let contestObj = new Contest();
