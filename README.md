@@ -26,6 +26,6 @@
 [https://github.com/VirtualJudge/Spider](https://github.com/VirtualJudge/Spider)
 
 ### demo
-[http://119.29.62.88/](http://119.29.62.88/)
+[http://vj.prefixai.com/](http://vj.prefixai.com/)
 
 
