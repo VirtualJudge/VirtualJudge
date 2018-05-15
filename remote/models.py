@@ -32,3 +32,12 @@ class Account(models.Model):
     class Meta:
         db_table = 'remote_account'
         unique_together = ('oj_name', 'oj_username')
+
+
+class Proxy(models.Model):
+    oj_name = models.CharField(max_length=20, primary_key=True)
+    oj_proxy = models.CharField(max_length=200)
+    oj_proxy_type = models.CharField(default='socks', max_length=10)
+
+    class Meta:
+        db_table = 'remote_proxy'

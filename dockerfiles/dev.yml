@@ -22,3 +22,11 @@ services:
       - POSTGRES_PASSWORD=vj_password
     ports:
       - '127.0.0.1:5432:5432'
+
+  vj-phantomjs-dev:
+    image: wernight/phantomjs
+    container_name: vj-phantomjs-dev
+    restart: always
+    ports:
+      - '127.0.0.1:8910:8910'
+    command: ['phantomjs', '--webdriver=8910']
