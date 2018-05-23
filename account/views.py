@@ -12,6 +12,7 @@ from django.db import DatabaseError
 
 
 class ChangePasswordAPI(APIView):
+    # 修改密码
     def post(self, request, *args, **kwargs):
         if request.user and request.user.is_authenticated:
             serializer = ChangePasswordSerializer(data=request.data)
@@ -24,29 +25,22 @@ class ChangePasswordAPI(APIView):
         return Response(res_format('Login required', status=Message.ERROR))
 
 
-class SessionAPI(APIView):
-    def post(self, request, **kwargs):
+class ProfileAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # 获取个人信息
+    def get(self, request, **kwargs):
+        return Response(res_format('Login required', Message.ERROR))
+
+
+class AuthAPI(APIView):
+    # 检查登录状态
+    def get(self, request, **kwargs):
         if request.user and request.user.is_authenticated:
             return Response(res_format(str(request.user), status=Message.SUCCESS))
         return Response(res_format('Login required', status=Message.ERROR))
 
-
-class ProfileAPI(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, **kwargs):
-        return Response(res_format('Login required', Message.ERROR))
-
-
-class WebhookAPI(APIView):
-    def post(self, request, **kwargs):
-        pass
-
-
-class LoginAPI(APIView):
-    def get(self, request, **kwargs):
-        return Response(res_format('Login required', Message.ERROR))
-
+    # 提交登录
     def post(self, request, **kwargs):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -58,8 +52,7 @@ class LoginAPI(APIView):
                 return Response(res_format('Incorrect username or password', Message.ERROR))
         return Response(res_format(serializer.errors, Message.ERROR))
 
-
-class LogoutAPI(APIView):
+    # 退出登录
     def delete(self, request, **kwargs):
         auth.logout(request)
         return Response(res_format('Logout success'))
@@ -77,6 +70,7 @@ class RegisterAPI(APIView):
 
 
 class HookAPI(APIView):
+    # 获取 hook url
     def get(self, request, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))
@@ -86,12 +80,14 @@ class HookAPI(APIView):
         except DatabaseError:
             return Response(res_format('System error', status=Message.ERROR))
 
+    # 删除 hook url
     def delete(self, request, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))
         UserProfile.objects.filter(username=str(request.user)).update(hook=None)
         return Response(res_format('Delete hook url success'))
 
+    # 修改 hook url
     def post(self, request, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))
@@ -104,7 +100,8 @@ class HookAPI(APIView):
 
 
 class RankAPI(APIView):
-    def post(self, request, **kwargs):
+    # 获取排行榜
+    def get(self, request, **kwargs):
         try:
             users = UserProfile.objects.all().order_by('-accepted')[:20]
             return Response(res_format(RankSerializer(users, many=True).data))

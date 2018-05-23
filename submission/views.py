@@ -14,7 +14,7 @@ from django.db.models import F
 
 
 class VerdictAPI(APIView):
-    def post(self, request, submission_id, *args, **kwargs):
+    def get(self, request, submission_id, *args, **kwargs):
         try:
             submission = Submission.objects.get(id=submission_id)
             return Response(res_format(VerdictSerializer(submission).data), status=status.HTTP_200_OK)
@@ -60,7 +60,7 @@ class SubmissionAPI(APIView):
 
 
 class SubmissionListAPI(APIView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
             submissions = Submission.objects.all().order_by('-create_time')[:20]
             return Response(res_format(SubmissionListSerializer(submissions, many=True).data),

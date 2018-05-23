@@ -13,7 +13,7 @@ from utils.response import res_format, Message
 
 class SupportAPI(APIView):
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
             support = list({language.oj_name for language in Language.objects.all()})
             support.sort()

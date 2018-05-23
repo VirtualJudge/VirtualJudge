@@ -10,4 +10,8 @@ requests
 colorama
 requests[socks]
 lxml
+wheel
+coverage
+Flask
+selenium
 git+https://github.com/VirtualJudge/Spider

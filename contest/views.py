@@ -13,7 +13,7 @@ from VirtualJudgeSpider import config
 # Create your views here.
 
 class ContestAPI(APIView):
-    def post(self, request, contest_id, *args, **kwargs):
+    def get(self, request, contest_id, *args, **kwargs):
         problems = ContestProblem.objects.filter(contest_id=contest_id)
         serializers = ContestProblemSerializer(problems, many=True)
         res_list = serializers.data
@@ -28,6 +28,10 @@ class ContestAPI(APIView):
             else:
                 item['status'] = 2
         return Response(res_format(res_list))
+
+    def delete(self, request, contest_id, *args, **kwargs):
+        Contest.objects.filter(id=contest_id).delete()
+        return Response(res_format('delete success'))
 
 
 class ContestNewAPI(APIView):
@@ -47,20 +51,10 @@ class ContestNewAPI(APIView):
 
 
 class ContestListAPI(APIView):
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
             contests = Contest.objects.all().order_by('-created_time')[:20]
             serializer = ContestListSerializer(contests, many=True)
             return Response(res_format(serializer.data), status=status.HTTP_200_OK)
         except DatabaseError:
             return Response(res_format('System error', status=Message.ERROR))
-
-
-class ContestProblemList(APIView):
-    def post(self, request, contest_id, *args, **kwargs):
-        pass
-
-
-class ContestSubmissionList(APIView):
-    def post(self, request, contest_id, *args, **kwargs):
-        pass
