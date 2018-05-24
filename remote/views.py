@@ -25,7 +25,7 @@ class SupportAPI(APIView):
 
 class LanguagesAPI(APIView):
 
-    def post(self, request, raw_oj_name, *args, **kwargs):
+    def get(self, request, raw_oj_name, *args, **kwargs):
         remote_oj = control.Controller.get_real_remote_oj(raw_oj_name)
         if control.Controller.is_support(remote_oj):
             try:
