@@ -42,13 +42,13 @@ class SubmissionSerializer(serializers.Serializer):
             language = self.validated_data['language']
             remote_oj = self.validated_data['remote_oj']
             language_obj = Language.objects.get(oj_name=remote_oj, oj_language=language)
-            try:
-                submission = Submission.objects.get(remote_id=self.validated_data['remote_id'],
-                                                    remote_oj=self.validated_data['remote_oj'],
-                                                    sha256=hashlib.sha256(self.validated_data['code'].encode('utf-8')).hexdigest())
-                return submission
-            except ObjectDoesNotExist:
-                pass
+            # try:
+            #     submission = Submission.objects.get(remote_id=self.validated_data['remote_id'],
+            #                                         remote_oj=self.validated_data['remote_oj'],
+            #                                         sha256=hashlib.sha256(self.validated_data['code'].encode('utf-8')).hexdigest())
+            #     return submission
+            # except ObjectDoesNotExist:
+            #     pass
             submission = Submission(code=self.validated_data['code'],
                                     user=user,
                                     language=language_obj.oj_language,

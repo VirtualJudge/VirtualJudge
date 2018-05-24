@@ -16,7 +16,6 @@ class SubmissionDispatcher(object):
             self._submission = None
         self.remote_account = None
 
-    @property
     def submit(self):
         if self._submission is None:
             return False
