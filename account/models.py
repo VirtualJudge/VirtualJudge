@@ -29,7 +29,6 @@ class UserProfile(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
 
     accepted = models.IntegerField(default=0)
-    attempted = models.IntegerField(default=0)
     submitted = models.IntegerField(default=0)
 
     hook = models.URLField(max_length=200, null=True, blank=True)
