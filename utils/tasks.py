@@ -82,9 +82,7 @@ def reload_result_task(submission_id):
                                                       remote_id=submission.remote_id,
                                                       verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value
                                                       )) == 1:
-                        UserProfile.objects.filter(username=submission.user).update(
-                            attempted=F('attempted') - 1,
-                            accepted=F('accepted') + 1)
+                        UserProfile.objects.filter(username=submission.user).update(accepted=F('accepted') + 1)
                     break
                 submission.save()
             time.sleep(sleep_time)
