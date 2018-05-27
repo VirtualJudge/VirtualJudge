@@ -3,14 +3,15 @@ from datetime import datetime
 from VirtualJudgeSpider import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
+from django.db.models import F
 from rest_framework import status
 from rest_framework.views import APIView, Response
+
 from account.models import UserProfile
 from submission.models import Submission
 from submission.serializers import SubmissionListSerializer, VerdictSerializer, SubmissionSerializer
 from submission.tasks import submit_task
 from utils.response import res_format, Message
-from django.db.models import F
 
 
 class VerdictAPI(APIView):
@@ -50,7 +51,7 @@ class SubmissionAPI(APIView):
                 # except DatabaseError:
                 #     import traceback
                 #     traceback.print_exc()
-
+                UserProfile.objects.filter(username=str(request.user)).update(submitted=F('submitted') + 1)
                 submit_task.delay(submission.id)
                 return Response(res_format(submission.id), status=status.HTTP_200_OK)
             return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_200_OK)
