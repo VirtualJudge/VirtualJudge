@@ -15,7 +15,7 @@ class VerdictSerializer(serializers.ModelSerializer):
         model = Submission
         fields = (
             'id', 'remote_oj', 'remote_id', 'verdict_code', 'verdict', 'execute_time', 'execute_memory', 'status',
-            'create_time')
+            'user', 'code', 'create_time')
 
 
 class SubmissionSerializer(serializers.Serializer):

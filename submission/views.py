@@ -18,7 +18,12 @@ class VerdictAPI(APIView):
     def get(self, request, submission_id, *args, **kwargs):
         try:
             submission = Submission.objects.get(id=submission_id)
-            return Response(res_format(VerdictSerializer(submission).data), status=status.HTTP_200_OK)
+            if submission.user == str(request.user):
+                return Response(res_format(VerdictSerializer(submission).data), status=status.HTTP_200_OK)
+            else:
+                res_data = VerdictSerializer(submission).data
+                res_data['code'] = None
+                return Response(res_format(res_data), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response(res_format('submission not exist', status=Message.ERROR),
                             status=status.HTTP_200_OK)
