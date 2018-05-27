@@ -31,23 +31,9 @@ class SubmissionSerializer(serializers.Serializer):
         :return: submission object
         """
         try:
-
-            # if Submission.objects.filter(remote_oj=self.remote_oj, remote_id=self.remote_id,
-            #                              user=user).exists() is False:
-            #     user_profile = UserProfile.objects.get(username=user)
-            #     user_profile.attempted = F('attempted') + 1
-            #     user_profile.save()
-
             language = self.validated_data['language']
             remote_oj = self.validated_data['remote_oj']
             language_obj = Language.objects.get(oj_name=remote_oj, oj_language=language)
-            # try:
-            #     submission = Submission.objects.get(remote_id=self.validated_data['remote_id'],
-            #                                         remote_oj=self.validated_data['remote_oj'],
-            #                                         sha256=hashlib.sha256(self.validated_data['code'].encode('utf-8')).hexdigest())
-            #     return submission
-            # except ObjectDoesNotExist:
-            #     pass
             submission = Submission(code=self.validated_data['code'],
                                     user=user,
                                     language=language_obj.oj_language,
@@ -88,6 +74,5 @@ class SubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = (
-            'id', 'remote_oj', 'user', 'remote_id', 'language', 'language_name', 'verdict_code', 'verdict',
-            'execute_time', 'execute_memory', 'create_time',
-            'status')
+        'id', 'remote_oj', 'user', 'remote_id', 'language', 'language_name', 'verdict_code', 'verdict', 'execute_time',
+        'execute_memory', 'create_time', 'status')

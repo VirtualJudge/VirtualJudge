@@ -39,19 +39,9 @@ class SubmissionAPI(APIView):
         if serializer.is_valid():
             submission = serializer.save(str(request.user))
             if submission is not None:
+                UserProfile.objects.filter(username=str(request.user)).update(submitted=F('submitted') + 1)
                 if submission.status != config.Result.Status.STATUS_PENDING.value:
                     return Response(res_format(submission.id), status=status.HTTP_200_OK)
-                # try:
-                #     UserProfile.objects.filter(username=request.user).update(submitted=F('submitted') + 1)
-                #     if len(Submission.objects.filter(user=str(request.user),
-                #                                      remote_oj=serializer.validated_data['remote_oj'],
-                #                                      remote_id=serializer.validated_data['remote_id'])) == 1:
-                #         print('update attempted:' + str(request.user))
-                #         UserProfile.objects.filter(username=str(request.user)).update(attempted=F('attempted') + 1)
-                # except DatabaseError:
-                #     import traceback
-                #     traceback.print_exc()
-                UserProfile.objects.filter(username=str(request.user)).update(submitted=F('submitted') + 1)
                 submit_task.delay(submission.id)
                 return Response(res_format(submission.id), status=status.HTTP_200_OK)
             return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_200_OK)
