@@ -5,10 +5,12 @@ from django.db import DatabaseError
 from rest_framework import serializers
 from rest_framework.serializers import CharField
 from rest_framework.validators import ValidationError
-
+from account.models import UserProfile
 from problem.models import Problem
 from remote.models import Language
 from submission.models import Submission
+
+from django.db.models import F
 
 
 class VerdictSerializer(serializers.ModelSerializer):
@@ -56,7 +58,9 @@ class SubmissionSerializer(serializers.Serializer):
                                     sha256=hashlib.sha256(self.validated_data['code'].encode('utf-8')).hexdigest(),
                                     remote_id=self.validated_data['remote_id'],
                                     remote_oj=self.validated_data['remote_oj'])
+
             submission.save()
+            UserProfile.objects.filter(username=user).update(submitted=F('submitted') + 1)
             return submission
         except DatabaseError:
             import traceback
