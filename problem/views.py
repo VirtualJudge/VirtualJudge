@@ -11,6 +11,7 @@ from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
 from utils.response import res_format, Message
+from datetime import datetime
 
 
 class ProblemLocalAPI(APIView):
@@ -86,6 +87,23 @@ class ProblemAPI(APIView):
             except IntegrityError:
                 return Response(res_format('System error', Message.ERROR), status=status.HTTP_200_OK)
         return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
+
+
+class ProblemRefreshAPI(APIView):
+    def get(self, request, remote_oj, remote_id, **kwargs):
+        last_submit_time = request.session.get('last_refresh_time', None)
+        if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
+            return Response(res_format("Cannot  Refresh within five seconds", status=Message.ERROR),
+                            status=status.HTTP_200_OK)
+        request.session['last_refresh_time'] = datetime.now().timestamp()
+        try:
+            problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
+            problem.request_status = Spider_Problem.Status.STATUS_PENDING.value
+            problem.save()
+            get_problem_task.delay(problem.id)
+            return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
+        except ObjectDoesNotExist:
+            return Response(res_format('System error', Message.ERROR), status=status.HTTP_200_OK)
 
 
 class ProblemListAPI(APIView):

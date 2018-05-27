@@ -25,6 +25,8 @@ class VerdictAPI(APIView):
 
 
 class SubmissionAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        pass
 
     def post(self, request, *args, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
@@ -52,6 +54,10 @@ class SubmissionAPI(APIView):
 class SubmissionListAPI(APIView):
     def get(self, request, *args, **kwargs):
         try:
+            if request.GET.get('user'):
+                submissions = Submission.objects.filter(user=request.GET.get('user')).order_by('-create_time')[:20]
+                return Response(res_format(SubmissionListSerializer(submissions, many=True).data),
+                                status=status.HTTP_200_OK)
             submissions = Submission.objects.all().order_by('-create_time')[:20]
             return Response(res_format(SubmissionListSerializer(submissions, many=True).data),
                             status=status.HTTP_200_OK)

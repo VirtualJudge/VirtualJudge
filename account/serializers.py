@@ -57,7 +57,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('username', 'nickname', 'is_admin', 'email', 'accepted')
+        fields = ('username', 'nickname', 'submitted', 'accepted', 'email')
 
 
 class RankSerializer(serializers.ModelSerializer):

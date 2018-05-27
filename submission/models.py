@@ -29,7 +29,7 @@ class Submission(models.Model):
     """
     remote_run_id = models.CharField(max_length=20, null=True)
     # 返回的结果
-    verdict = models.CharField(max_length=40, null=True, default='waiting')
+    verdict = models.CharField(max_length=40, null=True, default='Waiting')
     # 返回结果是那种类型
     verdict_code = models.IntegerField(default=0)
     # 程序运行时间

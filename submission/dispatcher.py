@@ -43,11 +43,13 @@ class SubmissionDispatcher(object):
             self._submission.save()
             if self._submission.verdict_code != config.Result.VerdictCode.STATUS_RUNNING.value:
                 pass
-            if self._submission.verdict_code == config.Result.VerdictCode.STATUS_ACCEPTED.value and len(
-                    Submission.objects.filter(user=self._submission.user, remote_oj=self._submission.remote_oj,
-                                              remote_id=self._submission.remote_id,
-                                              verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value)) == 1:
-                UserProfile.objects.filter(username=self._submission.user).update(accepted=F('accepted') + 1)
+            if self._submission.verdict_code == config.Result.VerdictCode.STATUS_ACCEPTED.value:
+                if len(Submission.objects.filter(user=self._submission.user, remote_oj=self._submission.remote_oj,
+                                                 remote_id=self._submission.remote_id,
+                                                 verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value)) == 1:
+
+                    UserProfile.objects.filter(username=self._submission.user).update(accepted=F('accepted') + 1)
+
             if self._submission.verdict_code != config.Result.VerdictCode.STATUS_RUNNING.value:
                 reload_result_task.delay(self._submission.id)
             else:

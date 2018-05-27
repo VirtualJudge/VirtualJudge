@@ -9,7 +9,7 @@ class Problem(models.Model):
 
     update_time = models.DateTimeField(auto_now=True)
     request_status = models.IntegerField(default=config.Problem.Status.STATUS_PENDING.value)
-    title = models.CharField(max_length=128, null=True)
+    title = models.CharField(max_length=200, null=True)
     time_limit = models.CharField(max_length=20, null=True)
     memory_limit = models.CharField(max_length=20, null=True)
     special_judge = models.BooleanField(default=False)

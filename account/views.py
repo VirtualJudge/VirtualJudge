@@ -9,7 +9,7 @@ from account.serializers import (LoginSerializer, RegisterSerializer, ChangePass
                                  UserProfileSerializer)
 from utils.response import res_format, Message
 from django.db import DatabaseError
-
+import hashlib
 
 class ChangePasswordAPI(APIView):
     # 修改密码
@@ -30,7 +30,13 @@ class ProfileAPI(APIView):
 
     # 获取个人信息
     def get(self, request, **kwargs):
-        return Response(res_format('Login required', Message.ERROR))
+        if request.user and request.user.is_authenticated:
+            user_profile = UserProfile.objects.get(username=request.user)
+            serializer = UserProfileSerializer(user_profile)
+            res_data = serializer.data
+            res_data['email'] = hashlib.md5(str(res_data['email']).encode('utf-8')).hexdigest()
+            return Response(res_format(res_data, status=Message.SUCCESS))
+        return Response(res_format('Login required', status=Message.ERROR))
 
 
 class AuthAPI(APIView):
