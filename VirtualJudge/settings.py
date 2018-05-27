@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'utils',
     'contest.apps.ContestConfig',
-    'surface.apps.SurfaceConfig',
 ]
 
 MIDDLEWARE = [
