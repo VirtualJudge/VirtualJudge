@@ -53,7 +53,7 @@ class ContestNewAPI(APIView):
 class ContestListAPI(APIView):
     def get(self, request, *args, **kwargs):
         try:
-            contests = Contest.objects.all().order_by('-created_time')[:20]
+            contests = Contest.objects.all().order_by('-created_time')[:500]
             serializer = ContestListSerializer(contests, many=True)
             return Response(res_format(serializer.data), status=status.HTTP_200_OK)
         except DatabaseError:

@@ -109,5 +109,5 @@ class ProblemRefreshAPI(APIView):
 class ProblemListAPI(APIView):
     def get(self, request, **kwargs):
         problems = Problem.objects.filter(request_status=Spider_Problem.Status.STATUS_CRAWLING_SUCCESS.value).order_by(
-            '-update_time')[:20]
+            '-update_time')[:500]
         return Response(res_format(ProblemListSerializer(problems, many=True).data), status=status.HTTP_200_OK)

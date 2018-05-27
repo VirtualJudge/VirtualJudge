@@ -109,7 +109,7 @@ class RankAPI(APIView):
     # 获取排行榜
     def get(self, request, **kwargs):
         try:
-            users = UserProfile.objects.all().order_by('-accepted')[:20]
+            users = UserProfile.objects.all().order_by('-accepted')[:500]
             return Response(res_format(RankSerializer(users, many=True).data))
         except DatabaseError:
             return Response(res_format('System error', status=Message.ERROR))
