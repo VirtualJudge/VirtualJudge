@@ -25,14 +25,10 @@ class VerdictAPI(APIView):
                 res_data['code'] = None
                 return Response(res_format(res_data), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
-            return Response(res_format('submission not exist', status=Message.ERROR),
-                            status=status.HTTP_200_OK)
+            return Response(res_format('submission not exist', status=Message.ERROR), status=status.HTTP_200_OK)
 
 
 class SubmissionAPI(APIView):
-    def get(self, request, *args, **kwargs):
-        pass
-
     def post(self, request, *args, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
@@ -71,7 +67,7 @@ class SubmissionListAPI(APIView):
                             status=status.HTTP_200_OK)
 
 
-class ReJudgeAPI(APIView):
+class ReloadAPI(APIView):
 
     def post(self, request, submission_id, *args, **kwargs):
         if request.user is None or request.user.is_authenticated is False:
@@ -85,7 +81,6 @@ class ReJudgeAPI(APIView):
                 submit_task.delay(submission_id)
                 return Response(res_format('rejudge submit success'), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
-            return Response(res_format('System error', status=Message.ERROR),
-                            status=status.HTTP_200_OK)
+            return Response(res_format('System error', status=Message.ERROR), status=status.HTTP_200_OK)
         except DatabaseError:
             return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_200_OK)
