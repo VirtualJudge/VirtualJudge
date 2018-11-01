@@ -41,6 +41,7 @@ class ConfigDispatcher(object):
                 remote_account = remote_accounts[0]
                 remote_account.oj_account_status = False
                 remote_account.save()
+                print(remote_account.oj_username)
                 return remote_account
         return None
 

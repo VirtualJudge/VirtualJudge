@@ -9,10 +9,17 @@
 import argparse
 import json
 import traceback
-
+import requests
 from colorama import Fore, Style
 
-from tools.utils import HttpUtil
+
+class HttpUtil(object):
+    def __init__(self):
+        self._req = requests.session()
+
+    @property
+    def requests(self):
+        return self._req
 
 
 def login(requests, config_path):
@@ -21,9 +28,9 @@ def login(requests, config_path):
             config_json = json.loads(f.read())
             remote_url = config_json.get('base_url')
             if str(remote_url).endswith('/'):
-                remote_url += 'api/login/'
+                remote_url += 'api/auth/'
             else:
-                remote_url += '/api/login/'
+                remote_url += '/api/auth/'
             account = config_json.get('account')
             if account and account.get('username') and account.get('password'):
                 post_data = {'username': account.get('username'), 'password': account.get('password')}

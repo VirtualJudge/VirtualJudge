@@ -71,8 +71,7 @@ class ProblemAPI(APIView):
                 res_format('remote_id not valid', status=Message.ERROR),
                 status=status.HTTP_200_OK)
         try:
-            problem = Problem.objects.get(remote_oj=remote_oj,
-                                          remote_id=remote_id)
+            problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
             if problem.request_status in [Spider_Problem.Status.STATUS_SUBMIT_FAILED.value,
                                           Spider_Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
                                           Spider_Problem.Status.STATUS_NO_ACCOUNT.value,

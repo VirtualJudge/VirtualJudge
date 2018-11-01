@@ -8,7 +8,7 @@ from contest.models import ContestProblem
 
 class ContestSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=50)
-    problems = serializers.JSONField(binary=True)
+    problems = serializers.ListField()
 
     @staticmethod
     def validate_title(value):
@@ -20,10 +20,10 @@ class ContestSerializer(serializers.Serializer):
     def validate_problems(self, value):
         if isinstance(value, list) is False:
             raise ValidationError(f'value required {type(list)}, but got {type(value)}')
-        if len(value) > 30:
-            raise ValidationError(f'value length > 30')
+        if len(value) > 100:
+            raise ValidationError(f'value length > 100')
         for item in value:
-            if item.get('remote_oj') is None or item.get('remote_id') is None or item.get('alias') is None:
+            if item.get('remote_oj') is None or item.get('remote_id') is None:
                 raise ValidationError('lack information')
         return value
 
@@ -35,7 +35,6 @@ class ContestSerializer(serializers.Serializer):
             contest.save()
             contest_problem_list = [ContestProblem(remote_id=problem['remote_id'],
                                                    remote_oj=problem['remote_oj'],
-                                                   alias=problem['alias'],
                                                    contest_id=contest.id) for problem in
                                     self.validated_data['problems']]
             ContestProblem.objects.bulk_create(contest_problem_list)
