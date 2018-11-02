@@ -107,6 +107,14 @@ class ProblemRefreshAPI(APIView):
 
 class ProblemListAPI(APIView):
     def get(self, request, **kwargs):
+
         problems = Problem.objects.filter(request_status=Spider_Problem.Status.STATUS_CRAWLING_SUCCESS.value).order_by(
-            '-update_time')[:500]
+            '-update_time')
+        if request.GET.get('remote_oj'):
+            remote_oj = Controller.get_real_remote_oj(request.GET.get('remote_oj'))
+            problems = problems.filter(remote_oj=remote_oj)
+        if request.GET.get('remote_id'):
+            problems = problems.filter(remote_id__contains=request.GET.get('remote_id'))
+        if request.GET.get('title'):
+            problems = problems.filter(title__contains=request.GET.get('title'))
         return Response(res_format(ProblemListSerializer(problems, many=True).data), status=status.HTTP_200_OK)

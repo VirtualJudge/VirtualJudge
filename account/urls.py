@@ -1,8 +1,9 @@
 from django.urls import path
-from account.views import AuthAPI, RegisterAPI, ProfileAPI, ChangePasswordAPI, RankAPI, HookAPI
+from account.views import AuthAPI, RegisterAPI, ProfileAPI, ChangePasswordAPI, RankAPI, HookAPI,PrivilegeAPI
 
 urlpatterns = [
     path("auth/", AuthAPI.as_view(), name="auth"),
+    path("privilege/", PrivilegeAPI.as_view(), name="privilege"),
     path("register/", RegisterAPI.as_view(), name="register"),
     path("rank/", RankAPI.as_view(), name="rank"),
     path('profile/', ProfileAPI.as_view(), name='profile'),

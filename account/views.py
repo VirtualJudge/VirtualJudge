@@ -11,6 +11,7 @@ from utils.response import res_format, Message
 from django.db import DatabaseError
 import hashlib
 
+
 class ChangePasswordAPI(APIView):
     # 修改密码
     def post(self, request, *args, **kwargs):
@@ -37,6 +38,13 @@ class ProfileAPI(APIView):
             res_data['email'] = hashlib.md5(str(res_data['email']).encode('utf-8')).hexdigest()
             return Response(res_format(res_data, status=Message.SUCCESS))
         return Response(res_format('Login required', status=Message.ERROR))
+
+
+class PrivilegeAPI(APIView):
+    def get(self, request, **kwargs):
+        if request.user and request.user.is_authenticated and request.user.is_admin:
+            return Response(res_format(True, status=Message.SUCCESS))
+        return Response(res_format(False, status=Message.SUCCESS))
 
 
 class AuthAPI(APIView):
