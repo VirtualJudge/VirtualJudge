@@ -3,7 +3,7 @@ from VirtualJudgeSpider.config import Problem as Spider_Problem
 from django.core.exceptions import ObjectDoesNotExist
 
 from problem.models import ProblemBuilder, Problem
-from remote.dispatcher import ConfigDispatcher
+from support.dispatcher import ConfigDispatcher
 from utils.tasks import save_files_task
 from VirtualJudgeSpider import config
 

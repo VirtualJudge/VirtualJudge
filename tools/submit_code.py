@@ -18,7 +18,7 @@ def login(requests, base_url):
     try:
         if str(base_url).endswith('/') is False:
             base_url += '/'
-        account = config_json.get('account')
+        account = config_json.get('user')
         if account and account.get('username') and account.get('password'):
             post_data = {'username': account.get('username'), 'password': account.get('password')}
             return requests.post(base_url + 'api/auth/', json=post_data)

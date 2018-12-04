@@ -17,7 +17,7 @@ class Language(models.Model):
     oj_language_name = models.CharField(max_length=40)
 
     class Meta:
-        db_table = 'remote_language'
+        db_table = 'languages'
         unique_together = ('oj_name', 'oj_language')
 
 
@@ -30,14 +30,17 @@ class Account(models.Model):
     cookies = JSONField(null=True, blank=True)
 
     class Meta:
-        db_table = 'remote_account'
+        db_table = 'accounts'
         unique_together = ('oj_name', 'oj_username')
 
 
-class Proxy(models.Model):
+class Support(models.Model):
+    STATUS_CHOICES = (('PENDING', '等待中'), ('SUCCEED', '成功'), ('FAILED', '失败'))
+
     oj_name = models.CharField(max_length=20, primary_key=True)
-    oj_proxy = models.CharField(max_length=200)
-    oj_proxy_type = models.CharField(default='socks', max_length=10)
+    oj_proxies = models.CharField(max_length=200, default=None,blank=True,null=True)
+    oj_enable = models.BooleanField(default=False)
+    oj_status = models.CharField(choices=STATUS_CHOICES, max_length=20, default='PENDING')
 
     class Meta:
-        db_table = 'remote_proxy'
+        db_table = 'support'

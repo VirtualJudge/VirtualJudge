@@ -6,7 +6,7 @@ from django.db import DatabaseError
 from rest_framework import serializers
 from rest_framework.serializers import CharField, ValidationError, EmailField
 
-from account.models import UserProfile
+from user.models import UserProfile
 
 
 class HookSerializer(serializers.Serializer):

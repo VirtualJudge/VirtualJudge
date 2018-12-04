@@ -31,7 +31,7 @@ def login(requests, config_path):
                 remote_url += 'api/auth/'
             else:
                 remote_url += '/api/auth/'
-            account = config_json.get('account')
+            account = config_json.get('user')
             if account and account.get('username') and account.get('password'):
                 post_data = {'username': account.get('username'), 'password': account.get('password')}
                 return requests.post(remote_url, json=post_data)

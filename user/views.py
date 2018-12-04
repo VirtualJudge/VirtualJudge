@@ -3,10 +3,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.views import Response
-from account.models import UserProfile
-from account.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer, RankSerializer,
-                                 HookSerializer,
-                                 UserProfileSerializer)
+from user.models import UserProfile
+from user.serializers import (LoginSerializer, RegisterSerializer, ChangePasswordSerializer, RankSerializer,
+                              HookSerializer,
+                              UserProfileSerializer)
 from utils.response import res_format, Message
 from django.db import DatabaseError
 import hashlib

@@ -10,7 +10,7 @@ from django.db import DatabaseError
 from django.db.models import F
 
 from VirtualJudge import settings
-from account.models import UserProfile
+from user.models import UserProfile
 from problem.models import Problem
 from submission.models import Submission
 from submission.serializers import VerdictSerializer

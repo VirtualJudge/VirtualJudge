@@ -4,8 +4,8 @@ import string
 from django.test import TestCase
 
 # Create your tests here.
-from account.serializers import LoginSerializer, RegisterSerializer, ChangePasswordSerializer
-from account.models import UserProfile
+from user.serializers import LoginSerializer, RegisterSerializer, ChangePasswordSerializer
+from user.models import UserProfile
 
 
 def random_string(length):

@@ -59,11 +59,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'problem.apps.ProblemConfig',
     'rest_framework',
-    'remote.apps.RemoteConfig',
+    'support.apps.RemoteConfig',
     'submission.apps.SubmissionConfig',
-    'account.apps.AccountConfig',
+    'user.apps.AccountConfig',
     'utils',
     'contest.apps.ContestConfig',
+    'statistic.apps.StatisticConfig'
 ]
 
 MIDDLEWARE = [
@@ -154,7 +155,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -192,4 +193,4 @@ STATICFILES_FINDERS = (
 
 LOGIN_URL = '/api/login'
 
-AUTH_USER_MODEL = 'account.UserProfile'
+AUTH_USER_MODEL = 'user.UserProfile'

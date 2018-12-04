@@ -7,7 +7,7 @@ from django.db.models import F
 from rest_framework import status
 from rest_framework.views import APIView, Response
 
-from account.models import UserProfile
+from user.models import UserProfile
 from submission.models import Submission
 from submission.serializers import SubmissionListSerializer, VerdictSerializer, SubmissionSerializer
 from submission.tasks import submit_task

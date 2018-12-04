@@ -24,9 +24,10 @@ urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('api/', include('problem.urls')),
     path('api/', include('contest.urls')),
-    path('api/', include('account.urls')),
+    path('api/', include('user.urls')),
     path('api/', include('submission.urls')),
-    path('api/', include('remote.urls')),
+    path('api/', include('support.urls')),
+    path('api/', include('statistic.urls')),
 ]
 if settings.DEBUG:
     media_root = os.path.join(settings.BASE_DIR, 'public')

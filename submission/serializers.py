@@ -6,7 +6,7 @@ from rest_framework.serializers import CharField
 from rest_framework.validators import ValidationError
 
 from problem.models import Problem
-from remote.models import Language
+from support.models import Language
 from submission.models import Submission
 
 

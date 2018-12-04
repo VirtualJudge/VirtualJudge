@@ -2,9 +2,9 @@ from VirtualJudgeSpider import control
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError, CharField
 
-from remote.models import Language
+from support.models import Language, Account, Support
 from django.db import DatabaseError
-from remote.models import Account
+from support.tasks import update_oj_status
 
 
 class LanguagesSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class AccountSerializer(serializers.Serializer):
     def validated_remote_oj(value):
         if control.Controller.is_support(value) is False:
             raise ValidationError(str(value) + ' is not support')
-        return control.Controller.get_real_remote_oj(value)
+        return value
 
     def validate(self, value):
         self.validated_remote_oj(value['remote_oj'])
@@ -37,6 +37,17 @@ class AccountSerializer(serializers.Serializer):
             else:
                 Account(oj_name=self.validated_data['remote_oj'], oj_password=self.validated_data['password'],
                         oj_username=self.validated_data['username']).save()
+            support = Support.objects.filter(oj_name=self.validated_data['remote_oj'])
+            if support.count() == 1:
+                oj = Support.objects.get(oj_name=self.validated_data['remote_oj'])
+                if oj.oj_status == 'PENDING':
+                    update_oj_status.delay(oj.oj_name)
+            elif support.count() == 0:
+                Support.objects.create(oj_name=self.validated_data['remote_oj']).save()
+                oj = Support.objects.get(oj_name=self.validated_data['remote_oj'])
+                if oj.oj_status == 'PENDING':
+                    update_oj_status.delay(oj.oj_name)
             return True
-        except DatabaseError:
+        except DatabaseError as e:
+            print(e)
             return False

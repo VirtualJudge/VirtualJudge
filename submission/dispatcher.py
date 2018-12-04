@@ -2,8 +2,8 @@ from VirtualJudgeSpider import control, config
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F
 
-from account.models import UserProfile
-from remote.dispatcher import ConfigDispatcher
+from user.models import UserProfile
+from support.dispatcher import ConfigDispatcher
 from submission.models import Submission
 from utils.tasks import reload_result_task, hook_task
 

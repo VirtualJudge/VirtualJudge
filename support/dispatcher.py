@@ -2,7 +2,7 @@ from django.db import DatabaseError
 from django.db import transaction
 from django.utils import timezone
 
-from remote.models import Setting, Account
+from support.models import Setting, Account
 
 
 class ConfigDispatcher(object):

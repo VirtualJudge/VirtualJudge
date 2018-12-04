@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from contest.models import Contest
 from problem.models import Problem
-from remote.models import Language
+from support.models import Language
 from submission.serializers import SubmissionSerializer
 
 

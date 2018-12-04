@@ -1,6 +1,10 @@
 from django.contrib import admin
-from remote.models import Setting
-from remote.models import Account, Language
+from support.models import Setting
+from support.models import Account, Language, Support
+
+
+class SupportAdmin(admin.ModelAdmin):
+    list_display = ('oj_name', 'oj_enable', 'oj_status')
 
 
 class SettingAdmin(admin.ModelAdmin):
@@ -19,3 +23,4 @@ class AccountAdmin(admin.ModelAdmin):
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Setting, SettingAdmin)
+admin.site.register(Support, SupportAdmin)

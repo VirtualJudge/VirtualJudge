@@ -1,6 +1,6 @@
 from django.test import TestCase
-from remote.serializers import AccountSerializer
-from remote.models import Account
+from support.serializers import AccountSerializer
+from support.models import Account
 
 
 # Create your tests here.

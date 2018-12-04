@@ -2,13 +2,25 @@ from VirtualJudgeSpider import control, config
 from celery import shared_task
 from django.db import DatabaseError
 
-from remote.dispatcher import ConfigDispatcher
-from remote.models import Language
+from support.dispatcher import ConfigDispatcher
+from support.models import Language
+from VirtualJudgeSpider import control
+from support.models import Support
+
+
+@shared_task
+def update_oj_status(oj_name):
+    status = control.Controller(oj_name).check_status()
+    oj = Support.objects.get(oj_name=oj_name)
+    if status:
+        oj.oj_status = 'SUCCEED'
+    else:
+        oj.oj_status = 'FAILED'
+    oj.save()
 
 
 @shared_task
 def update_language_task(remote_oj):
-    print(remote_oj)
     if ConfigDispatcher.choose_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'TRUE'):
 
         account = ConfigDispatcher.choose_account(remote_oj)
