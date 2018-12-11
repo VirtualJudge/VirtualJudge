@@ -13,4 +13,4 @@ class ProblemSerializer(serializers.ModelSerializer):
 class ProblemListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
-        fields = ('id', 'remote_id', 'remote_oj', 'update_time', 'title','remote_url')
+        fields = ('id', 'remote_id', 'remote_oj', 'update_time', 'title', 'remote_url')

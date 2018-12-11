@@ -54,9 +54,7 @@ if __name__ == '__main__':
         json_str = {
             'code': """
         #include <iostream>
-        
         using namespace std;
-        
         int main(){
             int a, b;
             while(cin >> a >> b){

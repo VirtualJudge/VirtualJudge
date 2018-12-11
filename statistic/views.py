@@ -1,14 +1,11 @@
-from django.shortcuts import render
-
 # Create your views here.
+from datetime import timedelta, datetime
+
+from django.utils import datetime_safe
 from rest_framework import status
 from rest_framework.views import APIView, Response
 
 from submission.models import Submission
-
-from django.utils import datetime_safe
-from datetime import timedelta, datetime
-
 from utils.response import res_format
 
 

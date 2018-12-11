@@ -38,7 +38,7 @@ class Support(models.Model):
     STATUS_CHOICES = (('PENDING', '等待中'), ('SUCCEED', '成功'), ('FAILED', '失败'))
 
     oj_name = models.CharField(max_length=20, primary_key=True)
-    oj_proxies = models.CharField(max_length=200, default=None,blank=True,null=True)
+    oj_proxies = models.CharField(max_length=200, default=None, blank=True, null=True)
     oj_enable = models.BooleanField(default=False)
     oj_status = models.CharField(choices=STATUS_CHOICES, max_length=20, default='PENDING')
 

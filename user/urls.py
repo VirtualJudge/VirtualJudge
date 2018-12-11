@@ -1,5 +1,5 @@
 from django.urls import path
-from user.views import AuthAPI, RegisterAPI, ProfileAPI, ChangePasswordAPI, RankAPI, HookAPI,PrivilegeAPI
+from user.views import AuthAPI, RegisterAPI, ProfileAPI, ChangePasswordAPI, RankAPI, HookAPI, PrivilegeAPI
 
 urlpatterns = [
     path("auth/", AuthAPI.as_view(), name="auth"),

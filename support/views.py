@@ -1,7 +1,6 @@
 from VirtualJudgeSpider import control
 from django.db import DatabaseError
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView, Response
 
 from support.models import Language, Account, Support

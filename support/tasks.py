@@ -1,10 +1,10 @@
-from VirtualJudgeSpider import control, config
+from VirtualJudgeSpider import config
+from VirtualJudgeSpider import control
 from celery import shared_task
 from django.db import DatabaseError
 
 from support.dispatcher import ConfigDispatcher
 from support.models import Language
-from VirtualJudgeSpider import control
 from support.models import Support
 
 
