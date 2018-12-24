@@ -1,4 +1,4 @@
-from VirtualJudgeSpider import control
+from spider.core import Core
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError, CharField
 
@@ -20,7 +20,7 @@ class AccountSerializer(serializers.Serializer):
 
     @staticmethod
     def validated_remote_oj(value):
-        if control.Controller.is_support(value) is False:
+        if Core.is_support(value) is False:
             raise ValidationError(str(value) + ' is not support')
         return value
 

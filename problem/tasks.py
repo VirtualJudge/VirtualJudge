@@ -1,4 +1,4 @@
-from VirtualJudgeSpider.config import Problem
+from spider.config import Problem
 from celery import shared_task
 
 from problem import models

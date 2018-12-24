@@ -1,11 +1,11 @@
-from VirtualJudgeSpider import control
-from VirtualJudgeSpider.config import Problem as Spider_Problem
+from spider.core import Core
+from spider.config import Problem as Spider_Problem
 from django.core.exceptions import ObjectDoesNotExist
 
 from problem.models import ProblemBuilder, Problem
 from support.dispatcher import ConfigDispatcher
 from utils.tasks import save_files_task
-from VirtualJudgeSpider import config
+from spider import config
 
 
 class ProblemDispatcher(object):
@@ -25,10 +25,9 @@ class ProblemDispatcher(object):
             return False
         remote_account = config.Account(username=account.oj_username, password=account.oj_password,
                                         cookies=account.cookies)
-        controller = control.Controller(self.problem.remote_oj)
-        response = controller.get_problem(self.problem.remote_id, account=remote_account)
-        print(response.__dict__)
-        account.cookies = controller.get_cookies()
+        core = Core(self.problem.remote_oj)
+        response = core.get_problem(self.problem.remote_id, account=remote_account)
+        account.cookies = core.get_cookies()
         account.save()
         ConfigDispatcher.release_account(account.id)
 

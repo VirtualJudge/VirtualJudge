@@ -7,7 +7,8 @@ from .models import Contest, ContestProblem
 from .serializers import ContestSerializer, ContestListSerializer, ContestProblemSerializer
 from django.db import DatabaseError
 from submission.models import Submission
-from VirtualJudgeSpider import config
+
+from spider import config
 
 
 # Create your views here.
@@ -21,7 +22,7 @@ class ContestAPI(APIView):
             remote_oj = item['remote_oj']
             remote_id = item['remote_id']
             if Submission.objects.filter(remote_oj=remote_oj, remote_id=remote_id, user=str(request.user),
-                                         verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value).exists():
+                                         verdict_code=config.Result.VerdictCode.VERDICT_ACCEPTED.value).exists():
                 item['status'] = 0
             elif Submission.objects.filter(remote_oj=remote_oj, user=str(request.user), remote_id=remote_id).exists():
                 item['status'] = 1

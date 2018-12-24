@@ -1,7 +1,7 @@
-from VirtualJudgeSpider import config
-from VirtualJudgeSpider import control
 from celery import shared_task
 from django.db import DatabaseError
+from spider import config
+from spider.core import Core
 
 from support.dispatcher import ConfigDispatcher
 from support.models import Language
@@ -10,7 +10,7 @@ from support.models import Support
 
 @shared_task
 def update_oj_status(oj_name):
-    status = control.Controller(oj_name).check_status()
+    status = Core(oj_name).check_status()
     oj = Support.objects.get(oj_name=oj_name)
     if status:
         oj.oj_status = 'SUCCEED'
@@ -29,10 +29,10 @@ def update_language_task(remote_oj):
             return
         remote_account = config.Account(username=account.oj_username, password=account.oj_password,
                                         cookies=account.cookies)
-        controller = control.Controller(remote_oj)
-        langs = controller.find_language(account=remote_account)
+        core = Core(remote_oj)
+        langs = core.find_language(account=remote_account)
         print(remote_oj, langs)
-        account.cookies = controller.get_cookies()
+        account.cookies = core.get_cookies()
         account.save()
         ConfigDispatcher.release_account(account.id)
 

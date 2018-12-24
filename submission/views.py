@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from VirtualJudgeSpider import config
+from spider import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 from django.db.models import F

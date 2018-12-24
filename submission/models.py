@@ -1,5 +1,5 @@
 from django.db import models
-from VirtualJudgeSpider import config
+from spider import config
 
 
 class Submission(models.Model):

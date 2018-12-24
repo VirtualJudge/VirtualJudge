@@ -1,4 +1,4 @@
-from VirtualJudgeSpider import config
+from spider import config
 from django.db import models
 
 

@@ -6,8 +6,8 @@ from rest_framework.serializers import CharField
 from rest_framework.validators import ValidationError
 
 from problem.models import Problem
-from support.models import Language
 from submission.models import Submission
+from support.models import Language, Support
 
 
 class VerdictSerializer(serializers.ModelSerializer):
@@ -55,7 +55,7 @@ class SubmissionSerializer(serializers.Serializer):
         return value
 
     def validate_remote_oj(self, remote_oj):
-        if Language.objects.filter(oj_name=remote_oj).exists() is False:
+        if remote_oj not in list({item.oj_name for item in Support.objects.filter(oj_enable=True)}):
             raise ValidationError(str(remote_oj) + ' is not supported')
         return remote_oj
 
@@ -74,6 +74,6 @@ class SubmissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = (
-            'id', 'remote_oj', 'user', 'remote_id', 'language', 'language_name', 'verdict_code', 'verdict',
-            'execute_time',
+            'id', 'remote_oj', 'user', 'remote_id', 'language',
+            'language_name', 'verdict_code', 'verdict', 'execute_time',
             'execute_memory', 'create_time', 'status')

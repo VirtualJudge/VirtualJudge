@@ -1,5 +1,5 @@
-from VirtualJudgeSpider.config import Problem as Spider_Problem
-from VirtualJudgeSpider.control import Controller
+from spider.config import Problem as Spider_Problem
+from spider.core import Core
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
@@ -12,6 +12,8 @@ from problem.serializers import ProblemSerializer, ProblemListSerializer
 from problem.tasks import get_problem_task
 from utils.response import res_format, Message
 from datetime import datetime
+
+from support.models import Support
 
 
 class ProblemLocalAPI(APIView):
@@ -32,8 +34,7 @@ class ProblemLocalAPI(APIView):
 
 class ProblemHtmlAPI(APIView):
     def get(self, request, remote_oj, remote_id, **kwargs):
-        remote_oj = Controller.get_real_remote_oj(remote_oj)
-        if not Controller.is_support(remote_oj):
+        if not Core.is_support(remote_oj):
             return Response(
                 res_format('remote_oj not valid', status=Message.ERROR),
                 status=status.HTTP_200_OK)
@@ -61,8 +62,7 @@ class ProblemHtmlAPI(APIView):
 
 class ProblemAPI(APIView):
     def get(self, request, remote_oj, remote_id, **kwargs):
-        remote_oj = Controller.get_real_remote_oj(remote_oj)
-        if not Controller.is_support(remote_oj):
+        if remote_oj not in list({item.oj_name for item in Support.objects.filter(oj_enable=True)}):
             return Response(
                 res_format('remote_oj not valid', status=Message.ERROR),
                 status=status.HTTP_200_OK)
@@ -111,7 +111,7 @@ class ProblemListAPI(APIView):
         problems = Problem.objects.filter(request_status=Spider_Problem.Status.STATUS_CRAWLING_SUCCESS.value).order_by(
             '-update_time')
         if request.GET.get('remote_oj'):
-            remote_oj = Controller.get_real_remote_oj(request.GET.get('remote_oj'))
+            remote_oj = request.GET.get('remote_oj')
             problems = problems.filter(remote_oj=remote_oj)
         if request.GET.get('remote_id'):
             problems = problems.filter(remote_id__contains=request.GET.get('remote_id'))

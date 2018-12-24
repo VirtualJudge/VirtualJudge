@@ -1,7 +1,7 @@
-from VirtualJudgeSpider import control
 from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.views import APIView, Response
+from spider.core import Core
 
 from support.models import Language, Account, Support
 from support.serializers import AccountSerializer
@@ -40,9 +40,8 @@ class AccountAPI(APIView):
 
 class LanguagesAPI(APIView):
 
-    def get(self, request, raw_oj_name, *args, **kwargs):
-        remote_oj = control.Controller.get_real_remote_oj(raw_oj_name)
-        if control.Controller.is_support(remote_oj):
+    def get(self, request, remote_oj, *args, **kwargs):
+        if Core.is_support(remote_oj):
             try:
                 languages = Language.objects.filter(oj_name=remote_oj)
                 return Response(res_format(LanguagesSerializer(languages, many=True).data), status=status.HTTP_200_OK)

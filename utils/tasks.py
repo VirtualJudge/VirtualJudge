@@ -3,7 +3,7 @@ import time
 import traceback
 
 import requests
-from VirtualJudgeSpider import control, config, utils
+from spider import core, config, utils
 from bs4 import BeautifulSoup
 from celery import shared_task
 from django.db import DatabaseError
@@ -67,8 +67,8 @@ def reload_result_task(submission_id):
         submission = Submission.objects.get(id=submission_id)
         sleep_time = 1
         while sleep_time <= 16:
-            result = control.Controller(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.remote_run_id,
-                                                                                        pid=submission.remote_id)
+            result = core.Core(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.remote_run_id,
+                                                                               pid=submission.remote_id)
             if result.status == config.Result.Status.STATUS_RESULT:
                 submission.verdict = result.verdict
                 submission.verdict_code = result.verdict_code.value
