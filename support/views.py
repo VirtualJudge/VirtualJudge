@@ -84,6 +84,7 @@ class AccountAPI(APIView):
         serializer = AccountSerializer(data=request.data)
         if serializer.is_valid():
             if serializer.save():
+                update_language_task.delay(serializer.validated_data['oj_name'])
                 return Response(res_format('success'), status=status.HTTP_200_OK)
             else:
                 return Response(res_format('error', status=Message.ERROR),

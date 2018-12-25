@@ -14,6 +14,9 @@ class SubmissionAPI(APIView):
         today = datetime.fromisoformat(datetime_safe.datetime.today().strftime("%Y-%m-%d"))
         counts = []
         for offset in range(6, -1, -1):
-            counts.append(Submission.objects.filter(create_time__gte=today - timedelta(days=offset),
-                                                    create_time__lt=today - timedelta(days=offset - 1)).count())
+            try:
+                counts.append(Submission.objects.filter(create_time__gte=today - timedelta(days=offset),
+                                                        create_time__lt=today - timedelta(days=offset - 1)).count())
+            except:
+                counts.append(0)
         return Response(res_format(counts), status=status.HTTP_200_OK)
