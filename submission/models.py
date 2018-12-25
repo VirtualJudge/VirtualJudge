@@ -31,7 +31,7 @@ class Submission(models.Model):
     # 返回的结果
     verdict = models.CharField(max_length=40, null=True, default='Waiting')
     # 返回结果是那种类型
-    verdict_code = models.IntegerField(default=0)
+    verdict_code = models.CharField(default=config.Result.Status.STATUS_IN_QUEUE.value, max_length=50)
     # 程序运行时间
     execute_time = models.CharField(max_length=20, null=True)
     # 程序运行内存
@@ -44,7 +44,7 @@ class Submission(models.Model):
 
     # 当前爬虫状态
     sha256 = models.CharField(max_length=200, null=True)
-    status = models.IntegerField(default=config.Result.Status.STATUS_PENDING.value)
+    status = models.CharField(max_length=50, default=config.Result.Status.STATUS_PENDING.value)
 
     hook = models.BooleanField(default=False)
 

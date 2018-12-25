@@ -11,4 +11,4 @@ class Command(BaseCommand):
         for item in Core.get_supports():
             if not Support.objects.filter(oj_name=item):
                 Support.objects.create(oj_name=item).save()
-                update_oj_status.delay(item)
+            update_oj_status.delay(item)

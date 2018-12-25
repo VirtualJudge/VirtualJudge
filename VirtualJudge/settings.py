@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     'submission.apps.SubmissionConfig',
     'user.apps.AccountConfig',
     'utils',
-    'contest.apps.ContestConfig',
     'statistic.apps.StatisticConfig'
 ]
 

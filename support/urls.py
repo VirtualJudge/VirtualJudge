@@ -1,10 +1,10 @@
 from django.urls import path
 
-from support.views import AccountAPI, LanguagesAPI, FreshLanguageAPI, SupportAPI
+from support.views import AccountAPI, LanguageAPI, SupportAPI, SupportAdminAPI
 
 urlpatterns = [
-    path("languages/<str:raw_oj_name>/", LanguagesAPI.as_view(), name="languages"),
-    path("language/", FreshLanguageAPI.as_view(), name="language"),
-    path("support/", SupportAPI.as_view(), name="support"),
-    path("account/", AccountAPI.as_view(), name="account"),
+    path("language", LanguageAPI.as_view(), name="language"),
+    path("support", SupportAPI.as_view(), name="support"),
+    path("admin/support", SupportAdminAPI.as_view(), name="admin_support"),
+    path("admin/spider", AccountAPI.as_view(), name="admin_spider")
 ]

@@ -32,6 +32,7 @@ class UserProfile(AbstractBaseUser):
     submitted = models.IntegerField(default=0)
 
     hook = models.URLField(max_length=200, null=True, blank=True)
+    hook_times = models.BigIntegerField(default=0, null=True, blank=True)
 
     nickname = models.CharField(max_length=20, null=True)
     USERNAME_FIELD = 'username'

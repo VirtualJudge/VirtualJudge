@@ -10,13 +10,13 @@ from support.models import Support
 
 @shared_task
 def update_oj_status(oj_name):
-    status = Core(oj_name).check_status()
-    oj = Support.objects.get(oj_name=oj_name)
-    if status:
-        oj.oj_status = 'SUCCEED'
-    else:
-        oj.oj_status = 'FAILED'
-    oj.save()
+    try:
+        oj = Support.objects.get(oj_name=oj_name)
+        print(oj_name, Core(oj_name=oj_name, proxies=oj.oj_proxies).check_status())
+        oj.oj_status = 'SUCCESS' if Core(oj_name=oj_name, proxies=oj.oj_proxies).check_status() else 'FAILED'
+        oj.save()
+    except:
+        pass
 
 
 @shared_task

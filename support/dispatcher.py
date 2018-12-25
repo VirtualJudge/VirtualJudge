@@ -36,10 +36,10 @@ class ConfigDispatcher(object):
     def choose_account(remote_oj):
         with transaction.atomic():
             remote_accounts = Account.objects.filter(oj_name=remote_oj,
-                                                     oj_account_status=True).order_by('update_time')
+                                                     status=True).order_by('update_time')
             if remote_accounts and (timezone.now() - remote_accounts[0].update_time).seconds >= 5:
                 remote_account = remote_accounts[0]
-                remote_account.oj_account_status = False
+                remote_account.status = False
                 remote_account.save()
                 print(remote_account.oj_username)
                 return remote_account
@@ -49,5 +49,5 @@ class ConfigDispatcher(object):
     def release_account(remote_account_id):
         with transaction.atomic():
             remote_account = Account.objects.get(id=remote_account_id)
-            remote_account.oj_account_status = True
+            remote_account.status = True
             remote_account.save()

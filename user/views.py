@@ -13,6 +13,15 @@ import hashlib
 
 
 class ChangePasswordAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        if request.user and request.user.is_authenticated:
+            try:
+                user = UserProfile.objects.get(username=request.user)
+                return Response(res_format(UserProfileSerializer(user).data, status=Message.SUCCESS))
+            except:
+                return Response(res_format('System Error', Message.ERROR))
+        return Response(res_format('Login required', Message.ERROR))
+
     # 修改密码
     def post(self, request, *args, **kwargs):
         if request.user and request.user.is_authenticated:
@@ -89,17 +98,10 @@ class HookAPI(APIView):
         if request.user is None or request.user.is_authenticated is False:
             return Response(res_format('Login required', status=Message.ERROR))
         try:
-            user = UserProfile.objects.get(username=str(request.user))
-            return Response(res_format(user.hook))
+            serializer = HookSerializer(UserProfile.objects.get(username=request.user))
+            return Response(res_format(serializer.data))
         except DatabaseError:
             return Response(res_format('System error', status=Message.ERROR))
-
-    # 删除 hook url
-    def delete(self, request, **kwargs):
-        if request.user is None or request.user.is_authenticated is False:
-            return Response(res_format('Login required', status=Message.ERROR))
-        UserProfile.objects.filter(username=str(request.user)).update(hook=None)
-        return Response(res_format('Delete hook url success'))
 
     # 修改 hook url
     def post(self, request, **kwargs):
@@ -107,8 +109,12 @@ class HookAPI(APIView):
             return Response(res_format('Login required', status=Message.ERROR))
         serializer = HookSerializer(data=request.data)
         if serializer.is_valid():
-            if serializer.save(str(request.user)):
-                return Response(res_format('Update hook url success'))
+            try:
+                url = serializer.validated_data['hook']
+                UserProfile.objects.filter(username=request.user).update(hook=url)
+                return Response(res_format('success'))
+            except:
+                pass
             return Response(res_format('System error', status=Message.ERROR))
         return Response(res_format('Post data not valid', status=Message.ERROR))
 

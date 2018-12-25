@@ -9,44 +9,31 @@ from rest_framework.serializers import CharField, ValidationError, EmailField
 from user.models import UserProfile
 
 
-class HookSerializer(serializers.Serializer):
-    url = serializers.URLField()
-
-    def validate_url(self, value):
-        if len(value) > 200:
-            raise ValidationError('url should not len > 200')
-        return value
-
-    def save(self, user):
-        try:
-            return UserProfile.objects.filter(username=user).update(hook=self.validated_data['url'])
-        except DatabaseError:
-            return None
+class HookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('hook', 'hook_times')
 
 
 class ChangePasswordSerializer(serializers.Serializer):
     username = CharField()
     old_password = CharField()
     new_password = CharField()
+    email = EmailField()
 
     @staticmethod
     def validate_new_password(value):
         if re.match(r'^[a-zA-Z0-9\-_.]{8,30}$', value) is None:
             raise ValidationError(
-                'New password can only contain letters, numbers, -, _ and no shorter than 8 and no longer than 30')
+                'Password can only contain letters, numbers, -, _ and no shorter than 8 and no longer than 30')
         return value
-
-    def validate(self, values):
-        if auth.authenticate(username=values['username'],
-                             password=values['old_password']) is None:
-            raise ValidationError('username or password not correct')
-        return values
 
     def save(self):
         try:
             if len(UserProfile.objects.filter(username=self.validated_data['username'])) == 1:
                 user = UserProfile.objects.get(username=self.validated_data['username'])
                 user.set_password(self.validated_data['new_password'])
+                user.email = self.validated_data['email']
                 user.save()
                 return user
             return None
@@ -57,7 +44,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('username', 'nickname', 'submitted', 'accepted', 'email')
+        fields = ('username', 'nickname', 'email')
 
 
 class RankSerializer(serializers.ModelSerializer):

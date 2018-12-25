@@ -29,30 +29,6 @@ class VerdictAPI(APIView):
 
 
 class SubmissionAPI(APIView):
-    def post(self, request, *args, **kwargs):
-        if request.user is None or request.user.is_authenticated is False:
-            return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
-        last_submit_time = request.session.get('last_submit_time', None)
-        if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
-            return Response(res_format("Cannot be resubmitted within five seconds", status=Message.ERROR),
-                            status=status.HTTP_200_OK)
-        request.session['last_submit_time'] = datetime.now().timestamp()
-
-        serializer = SubmissionSerializer(data=request.data)
-        if serializer.is_valid():
-            submission = serializer.save(str(request.user))
-            if submission is not None:
-                UserProfile.objects.filter(username=str(request.user)).update(submitted=F('submitted') + 1)
-                if submission.status != config.Result.Status.STATUS_PENDING.value:
-                    return Response(res_format(submission.id), status=status.HTTP_200_OK)
-                submit_task.delay(submission.id)
-                return Response(res_format(submission.id), status=status.HTTP_200_OK)
-            return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_200_OK)
-        else:
-            return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_200_OK)
-
-
-class SubmissionListAPI(APIView):
     def get(self, request, *args, **kwargs):
         try:
             if request.GET.get('user'):
@@ -66,8 +42,29 @@ class SubmissionListAPI(APIView):
             return Response(res_format('System error', status=Message.ERROR),
                             status=status.HTTP_200_OK)
 
+    def post(self, request, *args, **kwargs):
+        if request.user is None or request.user.is_authenticated is False:
+            return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
+        last_submit_time = request.session.get('last_submit_time', None)
+        if last_submit_time and (datetime.now() - datetime.fromtimestamp(last_submit_time)).seconds < 5:
+            return Response(res_format("Cannot be resubmitted within five seconds", status=Message.ERROR),
+                            status=status.HTTP_200_OK)
+        request.session['last_submit_time'] = datetime.now().timestamp()
 
-class ReloadAPI(APIView):
+        serializer = SubmissionSerializer(data=request.data)
+        if serializer.is_valid():
+            submission = serializer.save(str(request.user))
+            if submission is not None:
+                if submission.status != config.Result.Status.STATUS_PENDING.value:
+                    return Response(res_format(submission.id), status=status.HTTP_200_OK)
+                submit_task.delay(submission.id)
+                return Response(res_format(submission.id), status=status.HTTP_200_OK)
+            return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_200_OK)
+        else:
+            return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_200_OK)
+
+
+class RejudgeAPI(APIView):
 
     def post(self, request, submission_id, *args, **kwargs):
         if request.user is None or request.user.is_authenticated is False:

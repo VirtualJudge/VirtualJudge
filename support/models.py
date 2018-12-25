@@ -25,9 +25,9 @@ class Account(models.Model):
     oj_name = models.CharField(max_length=20)
     oj_username = models.CharField(max_length=30)
     oj_password = models.CharField(max_length=100)
-    oj_account_status = models.BooleanField(default=True)
     update_time = models.DateTimeField(auto_now=True)
     cookies = JSONField(null=True, blank=True)
+    status = models.BooleanField(null=True, blank=True, default=True)
 
     class Meta:
         db_table = 'accounts'
@@ -35,7 +35,7 @@ class Account(models.Model):
 
 
 class Support(models.Model):
-    STATUS_CHOICES = (('PENDING', '等待中'), ('SUCCEED', '成功'), ('FAILED', '失败'))
+    STATUS_CHOICES = (('PENDING', '等待中'), ('SUCCESS', '成功'), ('FAILED', '失败'))
 
     oj_name = models.CharField(max_length=20, primary_key=True)
     oj_proxies = models.CharField(max_length=200, default=None, blank=True, null=True)

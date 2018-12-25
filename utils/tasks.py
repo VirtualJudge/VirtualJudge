@@ -74,13 +74,13 @@ def reload_result_task(submission_id):
                 submission.verdict_code = result.verdict_code.value
                 submission.execute_time = result.execute_time
                 submission.execute_memory = result.execute_memory
-                if submission.verdict_code != config.Result.VerdictCode.STATUS_RUNNING.value:
+                if submission.verdict_code != config.Result.VerdictCode.VERDICT_RUNNING.value:
                     submission.save()
                     hook_task.delay(submission.id)
-                    if submission.verdict_code == config.Result.VerdictCode.STATUS_ACCEPTED.value and len(
+                    if submission.verdict_code == config.Result.VerdictCode.VERDICT_ACCEPTED.value and len(
                             Submission.objects.filter(user=submission.user, remote_oj=submission.remote_oj,
                                                       remote_id=submission.remote_id,
-                                                      verdict_code=config.Result.VerdictCode.STATUS_ACCEPTED.value
+                                                      verdict_code=config.Result.VerdictCode.VERDICT_ACCEPTED.value
                                                       )) == 1:
                         UserProfile.objects.filter(username=submission.user).update(accepted=F('accepted') + 1)
                     break

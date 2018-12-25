@@ -1,10 +1,8 @@
-from spider.core import Core
+from django.db.models import Q
 from rest_framework import serializers
-from rest_framework.serializers import ValidationError, CharField
+from rest_framework.serializers import ValidationError, CharField, BooleanField
 
 from support.models import Language, Account, Support
-from django.db import DatabaseError
-from support.tasks import update_oj_status
 
 
 class LanguagesSerializer(serializers.ModelSerializer):
@@ -13,41 +11,51 @@ class LanguagesSerializer(serializers.ModelSerializer):
         fields = ('oj_language', 'oj_language_name')
 
 
-class AccountSerializer(serializers.Serializer):
-    remote_oj = CharField()
-    username = CharField()
-    password = CharField()
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('oj_name', 'oj_username', 'oj_password', 'update_time', 'cookies')
 
-    @staticmethod
-    def validated_remote_oj(value):
-        if Core.is_support(value) is False:
+
+class SupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Support
+        fields = ('oj_name', 'oj_proxies', 'oj_enable', 'oj_status')
+
+
+class UpdateProxiesSerializer(serializers.Serializer):
+    platform = CharField()
+    url = CharField(allow_blank=True, allow_null=True)
+
+    def validate_platform(self, value):
+        if Support.objects.filter(oj_name=value):
+            return value
+        else:
             raise ValidationError(str(value) + ' is not support')
-        return value
-
-    def validate(self, value):
-        self.validated_remote_oj(value['remote_oj'])
-        return value
 
     def save(self, **kwargs):
         try:
-            account = Account.objects.filter(oj_name=self.validated_data['remote_oj'],
-                                             oj_username=self.validated_data['username'])
-            if account:
-                account.update(oj_password=self.validated_data['password'])
-            else:
-                Account(oj_name=self.validated_data['remote_oj'], oj_password=self.validated_data['password'],
-                        oj_username=self.validated_data['username']).save()
-            support = Support.objects.filter(oj_name=self.validated_data['remote_oj'])
-            if support.count() == 1:
-                oj = Support.objects.get(oj_name=self.validated_data['remote_oj'])
-                if oj.oj_status == 'PENDING':
-                    update_oj_status.delay(oj.oj_name)
-            elif support.count() == 0:
-                Support.objects.create(oj_name=self.validated_data['remote_oj']).save()
-                oj = Support.objects.get(oj_name=self.validated_data['remote_oj'])
-                if oj.oj_status == 'PENDING':
-                    update_oj_status.delay(oj.oj_name)
-            return True
-        except DatabaseError as e:
-            print(e)
+            Support.objects.filter(oj_name=self.validated_data['platform']).update(
+                oj_proxies=self.validated_data['url'])
+        except:
             return False
+        return True
+
+
+class UpdateEnableSerializer(serializers.Serializer):
+    platform = CharField()
+    enable = BooleanField()
+
+    def validate_platform(self, value):
+        if Support.objects.filter(oj_name=value):
+            return value
+        else:
+            raise ValidationError(str(value) + ' is not support')
+
+    def save(self, **kwargs):
+        try:
+            Support.objects.filter(Q(oj_name=self.validated_data['platform'])).update(
+                oj_enable=self.validated_data['enable'])
+        except:
+            return False
+        return True
