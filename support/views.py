@@ -111,8 +111,14 @@ class LanguageAPI(APIView):
     def get(self, request, *args, **kwargs):
         remote_oj = request.GET.get('platform')
         if remote_oj is None:
-            return Response(res_format('platform required', status=Message.ERROR),
-                            status=status.HTTP_400_BAD_REQUEST)
+            if request.user is None or request.user.is_authenticated is False or request.user.is_admin is False:
+                return Response(res_format('Admin required', status=Message.ERROR), status=status.HTTP_200_OK)
+            try:
+                languages = Language.objects.all()
+                return Response(res_format(LanguagesSerializer(languages, many=True).data), status=status.HTTP_200_OK)
+            except DatabaseError:
+                return Response(res_format('System error', status=Message.ERROR),
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         if Core.is_support(remote_oj):
             try:
                 languages = Language.objects.filter(oj_name=remote_oj)
@@ -129,7 +135,7 @@ class LanguageAPI(APIView):
             accounts = Account.objects.all()
             for remote_oj in {account.oj_name for account in accounts}:
                 update_language_task.delay(remote_oj)
-            return Response(res_format('Freshed successfully'), status=status.HTTP_200_OK)
+            return Response(res_format('Fresh successfully'), status=status.HTTP_200_OK)
         except DatabaseError:
-            return Response(res_format('Freshed error', status=Message.ERROR),
+            return Response(res_format('Fresh error', status=Message.ERROR),
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

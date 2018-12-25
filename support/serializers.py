@@ -8,7 +8,7 @@ from support.models import Language, Account, Support
 class LanguagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Language
-        fields = ('oj_language', 'oj_language_name')
+        fields = ('oj_name', 'oj_language', 'oj_language_name')
 
 
 class AccountSerializer(serializers.ModelSerializer):
