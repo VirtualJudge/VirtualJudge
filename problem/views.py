@@ -98,8 +98,7 @@ class ProblemListAPI(APIView):
     def get(self, request, *args, **kwargs):
         problems = Problem.objects.filter(
             Q(remote_oj__in=[item.oj_name for item in Support.objects.filter(oj_enable=True)]) & Q(
-                request_status=Spider_Problem.Status.STATUS_CRAWLING_SUCCESS.value)).order_by(
-            '-update_time')
+                html__isnull=False)).order_by('-update_time')
         if request.GET.get('remote_oj'):
             remote_oj = request.GET.get('remote_oj')
             problems = problems.filter(remote_oj=remote_oj)

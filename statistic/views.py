@@ -13,7 +13,7 @@ class SubmissionAPI(APIView):
     def get(self, request, *args, **kwargs):
         today = datetime_safe.datetime.today()
         counts = []
-        for offset in range(6, -1, -1):
+        for offset in range(7, 0, -1):
             try:
                 counts.append(Submission.objects.filter(create_time__gte=today - timedelta(days=offset),
                                                         create_time__lt=today - timedelta(days=offset - 1)).count())

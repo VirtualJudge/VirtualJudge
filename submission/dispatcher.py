@@ -30,8 +30,11 @@ class SubmissionDispatcher(object):
                                   self._submission.code,
                                   self._submission.language)
         print(result.__dict__)
-        account.cookies = core.get_cookies()
-        account.save()
+        try:
+            account.cookies = core.get_cookies()
+            account.save()
+        except:
+            pass
 
         if result.status == config.Result.Status.STATUS_RESULT:
             self._submission.status = result.status.value

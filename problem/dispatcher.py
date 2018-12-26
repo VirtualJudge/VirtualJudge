@@ -27,8 +27,11 @@ class ProblemDispatcher(object):
                                         cookies=account.cookies)
         core = Core(self.problem.remote_oj)
         response = core.get_problem(self.problem.remote_id, account=remote_account)
-        account.cookies = core.get_cookies()
-        account.save()
+        try:
+            account.cookies = core.get_cookies()
+            account.save()
+        except Exception as e:
+            print(e)
         ConfigDispatcher.release_account(account.id)
 
         self.problem.request_status = response.status.value

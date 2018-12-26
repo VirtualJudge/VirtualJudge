@@ -32,8 +32,11 @@ def update_language_task(remote_oj):
         core = Core(remote_oj)
         langs = core.find_language(account=remote_account)
         print(remote_oj, langs)
-        account.cookies = core.get_cookies()
-        account.save()
+        try:
+            account.cookies = core.get_cookies()
+            account.save()
+        except Exception as e:
+            print(e)
         ConfigDispatcher.release_account(account.id)
 
         if langs is None:
