@@ -102,5 +102,7 @@ def hook_task(submission_id):
                 req.post(url=user_profile.hook, json=VerdictSerializer(submission).data)
             submission.hook = True
             submission.save()
+            user_profile.hook_times += 1
+            user_profile.save()
     except DatabaseError:
         pass
