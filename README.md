@@ -20,8 +20,7 @@ Virtual Judge Based on Python
 2. Install `Redis` and `Postgres`: Change directory to `dockerfiles` and run `docker-compose -f dev.yml`.  
 3. Initial Database: Run `python3 ./manage.py init_install`, it will initialize databases and add default administrator account `root/rootroot`.  
 4. Run Service: `python3 ./manage.py runserver 127.0.0.1:8000`.  
-5. Add Spider Accounts: Copy `tools/accounts-sample.json` to `tools/accounts.json`,and add your spider accounts.Then copy `tools/config-sample.json` to `tools/config.json`. Finally, run `python3 post_accounts.py`.  
-6. Search Problems: for example,`http://127.0.0.1:8000/api/problem/poj/3223/`. 
+5. Search Problems: for example,`http://127.0.0.1:8000/api/problem/poj/3223/`. 
 
 ### Spider
 [https://github.com/VirtualJudge/spider](https://github.com/VirtualJudge/spider)
