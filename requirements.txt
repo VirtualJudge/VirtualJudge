@@ -13,4 +13,5 @@ lxml
 wheel
 coverage
 Flask
+raven
 git+https://github.com/VirtualJudge/spider

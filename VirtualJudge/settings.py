@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from .utils import get_env
 
-if get_env('VJ_ENV', 'develop') == 'production':
+production_env = get_env('VJ_ENV', 'develop')
+if production_env == 'production':
     DEBUG = False
 
     PUBLIC_URL = '/api/public'
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'raven.contrib.django.raven_compat',
     'problem.apps.ProblemConfig',
     'rest_framework',
     'support.apps.RemoteConfig',
@@ -193,3 +195,47 @@ STATICFILES_FINDERS = (
 LOGIN_URL = '/api/login'
 
 AUTH_USER_MODEL = 'user.UserProfile'
+RAVEN_CONFIG = {
+    'dsn': 'https://9352cc2be708463f8c42cb6b8d353409@sentry.io/1360321',
+}
+
+LOGGING_HANDLERS = ['console', 'sentry'] if production_env else ['console']
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] - [%(levelname)s] - [%(name)s:%(lineno)d]  - %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'formatter': 'standard'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': LOGGING_HANDLERS,
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': LOGGING_HANDLERS,
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        '': {
+            'handlers': LOGGING_HANDLERS,
+            'level': 'WARNING',
+            'propagate': True,
+        }
+    },
+}
