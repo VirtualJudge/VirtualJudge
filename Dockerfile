@@ -15,7 +15,7 @@ VOLUME /public
 ADD . /app
 WORKDIR /app
 
-RUN apk add --update --no-cache build-base nginx curl unzip supervisor postgresql-dev git
+RUN apk add --update --no-cache build-base nginx curl unzip supervisor postgresql-dev git libxml2-dev
 RUN pip3 install --no-cache-dir -r /app/requirements.txt
 RUN apk del build-base --purge
 
