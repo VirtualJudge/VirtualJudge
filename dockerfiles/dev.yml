@@ -2,7 +2,7 @@ version: "3"
 services:
 
   vj-redis-dev:
-    image: redis:4.0
+    image: redis:alpine
     container_name: vj-redis-dev
     restart: always
     volumes:
@@ -11,7 +11,7 @@ services:
       - '127.0.0.1:6379:6379'
 
   vj-postgres-dev:
-    image: postgres:10
+    image: postgres:alpine
     container_name: vj-postgres-dev
     restart: always
     volumes:
