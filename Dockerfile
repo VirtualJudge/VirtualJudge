@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM ubuntu:18.10
 
 MAINTAINER xudian.cn@gmail.com
 
@@ -15,9 +15,9 @@ VOLUME /public
 ADD . /app
 WORKDIR /app
 
-RUN apk add --update --no-cache build-base nginx curl unzip supervisor postgresql-dev git libxml2-dev
+RUN apt-get update
+RUN apt-get nginx curl unzip supervisor
 RUN pip3 install --no-cache-dir -r /app/requirements.txt
-RUN apk del build-base --purge
 
 RUN curl -L  $(curl -s  https://api.github.com/repos/VirtualJudge/VirtualJudgeFE/releases/latest | grep /dist.zip | cut -d '"' -f 4) -o dist.zip && \
     unzip dist.zip && \
