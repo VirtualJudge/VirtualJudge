@@ -25,7 +25,7 @@ install:
   - pip install coveralls
   - sleep 10 && python ./manage.py init_install
 script:
-  - flake8 --exclude=venv,migrations,__pycache__ --max-line-length=120 .
+  - flake8 --ignore=E722 --exclude=venv,migrations,__pycache__ --max-line-length=120 .
   - coverage run --include="$PWD/*" manage.py test unit_test
   - coverage report
 after_success:
