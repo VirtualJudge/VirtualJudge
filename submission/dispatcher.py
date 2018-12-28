@@ -26,8 +26,7 @@ class SubmissionDispatcher(object):
         remote_account = Account(account.oj_username, account.oj_password, account.cookies)
 
         core = Core(self._submission.remote_oj)
-        result = core.submit_code(self._submission.remote_id, remote_account,
-                                  self._submission.code,
+        result = core.submit_code(self._submission.remote_id, remote_account, self._submission.code,
                                   self._submission.language)
         print(result.__dict__)
         try:
