@@ -71,12 +71,13 @@ class Reload(APIView):
                 submission.status = config.Result.Status.STATUS_PENDING.value
                 submission.save()
                 submit_task.delay(submission_id)
-                return Response(res_format('reload submit success'), status=status.HTTP_200_OK)
+                return Response(res_format('rejudge submit success'), status=status.HTTP_200_OK)
             elif submission.status == config.Result.Status.STATUS_RESULT_SUCCESS.value and \
                     submission.verdict == config.Result.Verdict.VERDICT_RUNNING.value:
                 reload_result_task.delay(submission.id)
                 return Response(res_format('reload submit success'), status=status.HTTP_200_OK)
+            return Response(res_format('nothing has done'), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
-            return Response(res_format('System error', status=Message.ERROR), status=status.HTTP_200_OK)
+            return Response(res_format('system error', status=Message.ERROR), status=status.HTTP_200_OK)
         except DatabaseError:
             return Response(res_format('reload failed', status=Message.ERROR), status=status.HTTP_200_OK)
