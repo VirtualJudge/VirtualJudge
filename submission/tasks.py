@@ -1,10 +1,10 @@
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q, F
+from django.db.models import Q
+from spider import config
+
 from submission.dispatcher import SubmissionDispatcher
 from submission.models import Submission
-from spider import config
-from user.models import UserProfile
 
 
 @shared_task
@@ -32,4 +32,3 @@ def submit_task(submission_id):
     except ObjectDoesNotExist:
         import traceback
         traceback.print_exc()
-

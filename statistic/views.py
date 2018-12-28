@@ -19,7 +19,8 @@ class SubmissionAPI(APIView):
                                                          create_time__lt=today - timedelta(days=offset - 1)).count(),
                                Submission.objects.filter(create_time__gte=today - timedelta(days=offset),
                                                          create_time__lt=today - timedelta(days=offset - 1),
-                                                         verdict_code=Result.VerdictCode.VERDICT_ACCEPTED.value).count()))
+                                                         verdict_code=Result.VerdictCode.VERDICT_ACCEPTED.value
+                                                         ).count()))
             except:
                 counts.append((0, 0))
         return Response(res_format(counts), status=status.HTTP_200_OK)

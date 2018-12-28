@@ -2,7 +2,7 @@ from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.views import APIView, Response
 from spider.core import Core
-from django.db.models import F, Q
+
 from support.models import Language, Account, Support
 from support.serializers import AccountSerializer
 from support.serializers import LanguagesSerializer
@@ -10,8 +10,8 @@ from support.serializers import SupportSerializer
 from support.serializers import UpdateEnableSerializer
 from support.serializers import UpdateProxiesSerializer
 from support.tasks import update_language_task
-from utils.response import res_format, Message
 from support.tasks import update_oj_status
+from utils.response import res_format, Message
 
 
 class SupportAdminAPI(APIView):

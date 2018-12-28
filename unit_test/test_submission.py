@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from problem.models import Problem
-from support.models import Language
+from support.models import Language, Support
 from submission.serializers import SubmissionSerializer
 
 
@@ -16,6 +16,8 @@ class SerializerTest(TestCase):
         Language.objects.filter(oj_name='unit_test_oj', oj_language='unit_test_language',
                                 oj_language_name='unit_test_language_name').delete()
         Problem.objects.filter(remote_oj='unit_test_oj', remote_id='unit_test_pid').delete()
+        Support.objects.filter(oj_name='unit_test_oj').delete()
+        Support.objects.create(oj_name='unit_test_oj', oj_enable=True, oj_status='SUCCESS').save()
         Language.objects.create(oj_name='unit_test_oj', oj_language='unit_test_language',
                                 oj_language_name='unit_test_language_name').save()
         Problem.objects.create(remote_oj='unit_test_oj', remote_id='unit_test_pid').save()
@@ -24,6 +26,7 @@ class SerializerTest(TestCase):
         Language.objects.filter(oj_name='unit_test_oj', oj_language='unit_test_language',
                                 oj_language_name='unit_test_language_name').delete()
         Problem.objects.filter(remote_oj='unit_test_oj', remote_id='unit_test_pid').delete()
+        Support.objects.filter(oj_name='unit_test_oj').delete()
 
     def test_submission_1(self):
         request_data = {
@@ -42,7 +45,7 @@ class SerializerTest(TestCase):
         }
 
         serializer = SubmissionSerializer(data=request_data)
-        self.assertTrue(serializer.is_valid(), serializer.errors)
+        self.assertTrue(serializer.is_valid(), serializer.error_messages)
 
     def test_submission_2(self):
         request_data = {

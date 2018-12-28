@@ -75,6 +75,7 @@ class SerializerTests(TestCase):
     def test_change_password_2(self):
         request_data = {'old_password': 'unit_test_password',
                         'new_password': 'unit_test_password1',
+                        'email': 'xxx@xxx.xxx',
                         'username': 'unit_test_user'}
         login_data_1 = {'username': 'unit_test_user', 'password': 'unit_test_password'}
         login_data_2 = {'username': 'unit_test_user', 'password': 'unit_test_password1'}
