@@ -20,7 +20,7 @@ class AccountSerializer(serializers.ModelSerializer):
 class SupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Support
-        fields = ('oj_name', 'oj_proxies', 'oj_enable', 'oj_status')
+        fields = ('oj_name', 'oj_proxies', 'oj_enable', 'oj_status', 'oj_reuse')
 
 
 class UpdateProxiesSerializer(serializers.Serializer):
@@ -37,6 +37,25 @@ class UpdateProxiesSerializer(serializers.Serializer):
         try:
             Support.objects.filter(oj_name=self.validated_data['platform']).update(
                 oj_proxies=self.validated_data['url'])
+        except:
+            return False
+        return True
+
+
+class UpdateReuseSerializer(serializers.Serializer):
+    platform = CharField()
+    reuse = BooleanField()
+
+    def validate_platform(self, value):
+        if Support.objects.filter(oj_name=value):
+            return value
+        else:
+            raise ValidationError(str(value) + ' is not support')
+
+    def save(self, **kwargs):
+        try:
+            Support.objects.filter(Q(oj_name=self.validated_data['platform'])).update(
+                oj_reuse=self.validated_data['reuse'])
         except:
             return False
         return True

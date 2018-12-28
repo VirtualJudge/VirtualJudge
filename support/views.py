@@ -9,6 +9,7 @@ from support.serializers import LanguagesSerializer
 from support.serializers import SupportSerializer
 from support.serializers import UpdateEnableSerializer
 from support.serializers import UpdateProxiesSerializer
+from support.serializers import UpdateReuseSerializer
 from support.tasks import update_language_task
 from support.tasks import update_oj_status
 from utils.response import res_format, Message
@@ -33,6 +34,15 @@ class SupportAdminAPI(APIView):
             else:
                 print(serializer.errors)
                 return Response(res_format('error', Message.ERROR))
+        elif request_type == 'reuse':
+            serializer = UpdateReuseSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(res_format('success'))
+            else:
+                print(serializer.errors)
+                return Response(res_format('error', Message.ERROR))
+
         elif request_type == 'fresh':
             platform = request.GET.get('platform')
             if platform:

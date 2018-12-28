@@ -17,7 +17,7 @@ class Language(models.Model):
     oj_language_name = models.CharField(max_length=40)
 
     class Meta:
-        db_table = 'languages'
+        db_table = 'language'
         unique_together = ('oj_name', 'oj_language')
 
 
@@ -30,7 +30,7 @@ class Account(models.Model):
     status = models.BooleanField(null=True, blank=True, default=True)
 
     class Meta:
-        db_table = 'accounts'
+        db_table = 'account'
         unique_together = ('oj_name', 'oj_username')
 
 
@@ -41,6 +41,7 @@ class Support(models.Model):
     oj_proxies = models.CharField(max_length=200, default=None, blank=True, null=True)
     oj_enable = models.BooleanField(default=False)
     oj_status = models.CharField(choices=STATUS_CHOICES, max_length=20, default='PENDING')
+    oj_reuse = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'support'

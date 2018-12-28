@@ -67,26 +67,24 @@ def reload_result_task(submission_id):
         submission = Submission.objects.get(id=submission_id)
         sleep_time = 1
         while sleep_time <= 16:
-            result = core.Core(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.remote_run_id,
+            result = core.Core(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.unique_key,
                                                                                pid=submission.remote_id)
-            if result.status == config.Result.Status.STATUS_RESULT:
-                submission.verdict = result.verdict
-                submission.verdict_code = result.verdict_code.value
+            if result.status == config.Result.Status.STATUS_RESULT_SUCCESS:
+                submission.verdict = result.verdict.value
+                submission.unique_key = result.unique_key
+                submission.verdict_info = result.verdict_info
                 submission.execute_time = result.execute_time
                 submission.execute_memory = result.execute_memory
-                if submission.verdict_code != config.Result.VerdictCode.VERDICT_RUNNING.value:
+                if submission.verdict != config.Result.Verdict.VERDICT_RUNNING.value:
                     submission.save()
                     hook_task.delay(submission.id)
-                    if submission.verdict_code == config.Result.VerdictCode.VERDICT_ACCEPTED.value and len(
-                            Submission.objects.filter(user=submission.user, remote_oj=submission.remote_oj,
-                                                      remote_id=submission.remote_id,
-                                                      verdict_code=config.Result.VerdictCode.VERDICT_ACCEPTED.value
-                                                      )) == 1:
-                        UserProfile.objects.filter(username=submission.user).update(accepted=F('accepted') + 1)
+                    UserProfile.objects.filter(username=submission.user).update(hook_times=F('hook_times') + 1)
                     break
                 submission.save()
             time.sleep(sleep_time)
             sleep_time *= 2
+        submission.reloadable = True
+        submission.save()
     except DatabaseError:
         pass
 

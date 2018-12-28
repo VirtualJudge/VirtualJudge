@@ -14,8 +14,8 @@ class VerdictSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
         fields = (
-            'id', 'remote_oj', 'remote_id', 'verdict_code', 'verdict', 'execute_time', 'execute_memory', 'status',
-            'user', 'code', 'create_time')
+            'id', 'remote_oj', 'remote_id', 'verdict_info', 'verdict', 'execute_time', 'execute_memory', 'status',
+            'reloadable', 'language_name', 'user', 'code', 'create_time')
 
 
 class SubmissionSerializer(serializers.Serializer):
@@ -26,7 +26,7 @@ class SubmissionSerializer(serializers.Serializer):
 
     def save(self, user):
         """
-        在这里可以统计提交量和正确量，但是目前核心不支持判断verdict是否是正确，所以目前只能统计尝试的题目数量
+        在这里可以统计提交量
         :param user: request.user
         :return: submission object
         """
@@ -75,5 +75,5 @@ class SubmissionListSerializer(serializers.ModelSerializer):
         model = Submission
         fields = (
             'id', 'remote_oj', 'user', 'remote_id', 'language',
-            'language_name', 'verdict_code', 'verdict', 'execute_time',
+            'language_name', 'verdict_info', 'verdict', 'execute_time', 'reloadable',
             'execute_memory', 'create_time', 'status')

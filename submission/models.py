@@ -27,17 +27,17 @@ class Submission(models.Model):
     """
     源oj返回的结果
     """
-    remote_run_id = models.CharField(max_length=20, null=True)
+    unique_key = models.CharField(max_length=20, null=True)
     # 返回的结果
-    verdict = models.CharField(max_length=40, null=True, default='Waiting')
+    verdict_info = models.CharField(max_length=40, null=True, blank=True)
     # 返回结果是那种类型
-    verdict_code = models.CharField(default=config.Result.Status.STATUS_IN_QUEUE.value, max_length=50)
+    verdict = models.CharField(default=config.Result.Status.STATUS_PENDING.value, max_length=50)
     # 程序运行时间
     execute_time = models.CharField(max_length=20, null=True)
     # 程序运行内存
     execute_memory = models.CharField(max_length=20, null=True)
     # 编译信息
-    compile_info = models.TextField(null=True)
+    compile_info = models.TextField(null=True, blank=True)
     """
         即时修改爬虫状态
     """
@@ -47,6 +47,8 @@ class Submission(models.Model):
     status = models.CharField(max_length=50, default=config.Result.Status.STATUS_PENDING.value)
 
     hook = models.BooleanField(default=False)
+
+    reloadable = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'submission'

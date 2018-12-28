@@ -12,8 +12,8 @@ from support.models import Support
 def update_oj_status(oj_name):
     try:
         oj = Support.objects.get(oj_name=oj_name)
-        print(oj_name, Core(oj_name=oj_name, proxies=oj.oj_proxies).check_status())
-        oj.oj_status = 'SUCCESS' if Core(oj_name=oj_name, proxies=oj.oj_proxies).check_status() else 'FAILED'
+        print(oj_name, Core(oj_name=oj_name, proxies=oj.oj_proxies).is_working())
+        oj.oj_status = 'SUCCESS' if Core(oj_name=oj_name, proxies=oj.oj_proxies).is_working() else 'FAILED'
         oj.save()
     except:
         pass

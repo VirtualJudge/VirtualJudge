@@ -10,6 +10,7 @@ from submission.models import Submission
 from submission.serializers import SubmissionListSerializer, VerdictSerializer, SubmissionSerializer
 from submission.tasks import submit_task
 from utils.response import res_format, Message
+from utils.tasks import reload_result_task
 
 
 class VerdictAPI(APIView):
@@ -62,20 +63,20 @@ class SubmissionAPI(APIView):
             return Response(res_format(serializer.errors, status=Message.ERROR), status=status.HTTP_200_OK)
 
 
-class RejudgeAPI(APIView):
-
+class Reload(APIView):
     def post(self, request, submission_id, *args, **kwargs):
-        if request.user is None or request.user.is_authenticated is False:
-            return Response(res_format('Login required', status=Message.ERROR), status=status.HTTP_200_OK)
         try:
             submission = Submission.objects.get(id=submission_id)
-            if submission.status in {config.Result.Status.STATUS_NO_ACCOUNT.value,
-                                     config.Result.Status.STATUS_NETWORK_ERROR.value}:
+            if submission.status == config.Result.Status.STATUS_SPIDER_ERROR.value:
                 submission.status = config.Result.Status.STATUS_PENDING.value
                 submission.save()
                 submit_task.delay(submission_id)
-                return Response(res_format('rejudge submit success'), status=status.HTTP_200_OK)
+                return Response(res_format('reload submit success'), status=status.HTTP_200_OK)
+            elif submission.status == config.Result.Status.STATUS_RESULT_SUCCESS.value and \
+                    submission.verdict == config.Result.Verdict.VERDICT_RUNNING.value:
+                reload_result_task.delay(submission.id)
+                return Response(res_format('reload submit success'), status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             return Response(res_format('System error', status=Message.ERROR), status=status.HTTP_200_OK)
         except DatabaseError:
-            return Response(res_format('rejudge failed', status=Message.ERROR), status=status.HTTP_200_OK)
+            return Response(res_format('reload failed', status=Message.ERROR), status=status.HTTP_200_OK)

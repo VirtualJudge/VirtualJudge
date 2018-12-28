@@ -1,5 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from spider import config
+from spider.config import Account, Result
 from spider.core import Core
 
 from submission.models import Submission
@@ -20,10 +20,10 @@ class SubmissionDispatcher(object):
             return False
         account = ConfigDispatcher.choose_account(self._submission.remote_oj)
         if account is None:
-            self._submission.status = config.Result.Status.STATUS_NO_ACCOUNT.value
+            self._submission.status = Result.Status.STATUS_SPIDER_ERROR.value
             self._submission.save()
             return False
-        remote_account = config.Account(account.oj_username, account.oj_password, account.cookies)
+        remote_account = Account(account.oj_username, account.oj_password, account.cookies)
 
         core = Core(self._submission.remote_oj)
         result = core.submit_code(self._submission.remote_id, remote_account,
@@ -36,23 +36,25 @@ class SubmissionDispatcher(object):
         except:
             pass
 
-        if result.status == config.Result.Status.STATUS_RESULT:
+        if result.status == Result.Status.STATUS_RESULT_SUCCESS:
             self._submission.status = result.status.value
-            self._submission.remote_run_id = result.origin_run_id
+            self._submission.unique_key = result.unique_key
             self._submission.execute_time = result.execute_time
             self._submission.execute_memory = result.execute_memory
-            self._submission.verdict = result.verdict
-            self._submission.verdict_code = result.verdict_code.value
+            self._submission.verdict = result.verdict.value
+            self._submission.verdict_info = result.verdict_info
             self._submission.save()
-            if self._submission.verdict_code == config.Result.VerdictCode.VERDICT_RUNNING.value:
+            if self._submission.verdict == Result.Verdict.VERDICT_RUNNING.value:
                 reload_result_task.delay(self._submission.id)
             else:
+                self._submission.reloadable = True
+                self._submission.save()
                 hook_task.delay(self._submission.id)
             ConfigDispatcher.release_account(account.id)
             return True
         else:
-            self._submission.status = config.Result.Status.STATUS_SUBMIT_FAILED.value
-            self._submission.verdict_code = result.verdict_code.value
+            self._submission.status = Result.Status.STATUS_SUBMIT_ERROR.value
+            self._submission.verdict = result.verdict.value
             self._submission.save()
             ConfigDispatcher.release_account(account.id)
             return False

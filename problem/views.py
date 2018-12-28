@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from spider.config import Problem as Spider_Problem
+from spider import config
 
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
@@ -22,16 +22,13 @@ class ProblemHtmlAPI(APIView):
         try:
             problem = Problem.objects.get(remote_oj=remote_oj,
                                           remote_id=remote_id)
-            if problem.request_status in [Spider_Problem.Status.STATUS_SUBMIT_FAILED.value,
-                                          Spider_Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
-                                          Spider_Problem.Status.STATUS_NO_ACCOUNT.value,
-                                          Spider_Problem.Status.STATUS_PARSE_ERROR.value]:
-                problem.request_status = Spider_Problem.Status.STATUS_PENDING.value
+            if problem.request_status == config.Problem.Status.STATUS_RETRYABLE.value:
+                problem.request_status = config.Problem.Status.STATUS_PENDING.value
                 problem.save()
                 get_problem_task.delay(problem.id)
         except ObjectDoesNotExist:
             problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
-                              request_status=Spider_Problem.Status.STATUS_PENDING.value)
+                              request_status=config.Problem.Status.STATUS_PENDING.value)
             problem.save()
             get_problem_task.delay(problem.id)
         return HttpResponse(problem.html)
@@ -58,7 +55,7 @@ class ProblemAPI(APIView):
             request.session['last_fresh_time'] = datetime.now().timestamp()
             try:
                 problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-                problem.request_status = Spider_Problem.Status.STATUS_PENDING.value
+                problem.request_status = config.Problem.Status.STATUS_PENDING.value
                 problem.save()
                 get_problem_task.delay(problem.id)
                 return Response(res_format(ProblemSerializer(problem).data), status=status.HTTP_200_OK)
@@ -73,15 +70,12 @@ class ProblemAPI(APIView):
                 return Response(res_format('', status=Message.ERROR))
         try:
             problem = Problem.objects.get(remote_oj=remote_oj, remote_id=remote_id)
-            if problem.request_status in [Spider_Problem.Status.STATUS_SUBMIT_FAILED.value,
-                                          Spider_Problem.Status.STATUS_PROBLEM_NOT_EXIST.value,
-                                          Spider_Problem.Status.STATUS_NO_ACCOUNT.value,
-                                          Spider_Problem.Status.STATUS_PARSE_ERROR.value]:
+            if problem.request_status == config.Problem.Status.STATUS_RETRYABLE.value:
                 get_problem_task.delay(problem.id)
         except ObjectDoesNotExist:
             try:
                 problem = Problem(remote_oj=remote_oj, remote_id=remote_id,
-                                  request_status=Spider_Problem.Status.STATUS_PENDING.value)
+                                  request_status=config.Problem.Status.STATUS_PENDING.value)
                 problem.save()
                 get_problem_task.delay(problem.id)
             except IntegrityError:

@@ -7,6 +7,7 @@ from rest_framework.views import APIView, Response
 from spider.config import Result
 from submission.models import Submission
 from utils.response import res_format
+import traceback
 
 
 class SubmissionAPI(APIView):
@@ -19,8 +20,9 @@ class SubmissionAPI(APIView):
                                                          create_time__lt=today - timedelta(days=offset - 1)).count(),
                                Submission.objects.filter(create_time__gte=today - timedelta(days=offset),
                                                          create_time__lt=today - timedelta(days=offset - 1),
-                                                         verdict_code=Result.VerdictCode.VERDICT_ACCEPTED.value
+                                                         verdict=Result.Verdict.VERDICT_AC.value
                                                          ).count()))
             except:
+                traceback.print_exc()
                 counts.append((0, 0))
         return Response(res_format(counts), status=status.HTTP_200_OK)
