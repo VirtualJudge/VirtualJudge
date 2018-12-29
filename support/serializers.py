@@ -47,7 +47,9 @@ class UpdateReuseSerializer(serializers.Serializer):
     reuse = BooleanField()
 
     def validate_platform(self, value):
-        if Support.objects.filter(oj_name=value):
+        if value == 'Codeforces':
+            raise ValidationError(str(value) + ' is not allowed to change')
+        elif Support.objects.filter(oj_name=value):
             return value
         else:
             raise ValidationError(str(value) + ' is not support')
