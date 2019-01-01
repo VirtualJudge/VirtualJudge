@@ -30,8 +30,7 @@ def update_language_task(remote_oj):
         remote_account = config.Account(username=account.oj_username, password=account.oj_password,
                                         cookies=account.cookies)
         core = Core(remote_oj)
-        langs = core.find_language(account=remote_account)
-        print(remote_oj, langs)
+        language = core.find_language(account=remote_account)
         try:
             account.cookies = core.get_cookies()
             account.save()
@@ -39,11 +38,11 @@ def update_language_task(remote_oj):
             print(e)
         ConfigDispatcher.release_account(account.id)
 
-        if langs is None:
+        if language is None:
             ConfigDispatcher.release_config('UPDATE_LANGUAGE_' + str(remote_oj).upper(), 'FALSE')
             return
         Language.objects.filter(oj_name=remote_oj).delete()
-        for lang, lang_name in langs.items():
+        for lang, lang_name in language.items():
             try:
                 language = Language(oj_name=remote_oj, oj_language=lang, oj_language_name=lang_name)
                 language.save()
