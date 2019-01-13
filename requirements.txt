@@ -1,7 +1,6 @@
 Django
 djangorestframework
 psycopg2-binary
-celery
 redis
 gunicorn
 BeautifulSoup4
@@ -14,4 +13,8 @@ wheel
 coverage
 Flask
 raven
+channels
+channels_redis
+websocket-client
 git+https://github.com/VirtualJudge/spider
+git+https://github.com/celery/celery

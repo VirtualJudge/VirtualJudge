@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from spider.config import Account, Result
 from spider.core import Core
-
+from ws.client import SimpleWsClient
 from submission.models import Submission
 from support.dispatcher import ConfigDispatcher
 from utils.tasks import reload_result_task, hook_task
@@ -42,6 +42,11 @@ class SubmissionDispatcher(object):
             self._submission.verdict = result.verdict.value
             self._submission.verdict_info = result.verdict_info
             self._submission.save()
+            SimpleWsClient('submission', str(self._submission.id),
+                           {'verdict': self._submission.verdict,
+                            'execute_memory': self._submission.execute_memory,
+                            'execute_time': self._submission.execute_time,
+                            'verdict_info': self._submission.verdict_info})
             if self._submission.verdict == Result.Verdict.VERDICT_RUNNING.value:
                 reload_result_task.delay(self._submission.id)
             else:

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from celery import shared_task
 from django.db import DatabaseError
 from django.db.models import F
-
+from ws.client import SimpleWsClient
 from VirtualJudge import settings
 from user.models import UserProfile
 from problem.models import Problem
@@ -65,8 +65,9 @@ def save_files_task(problem_id):
 def reload_result_task(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)
-        sleep_time = 1
-        while sleep_time <= 16:
+        sleep_time = 3
+        retry_times = 40
+        while sleep_time > 0:
             result = core.Core(submission.remote_oj).get_result_by_rid_and_pid(rid=submission.unique_key,
                                                                                pid=submission.remote_id)
             if result.status == config.Result.Status.STATUS_RESULT_SUCCESS:
@@ -75,6 +76,11 @@ def reload_result_task(submission_id):
                 submission.verdict_info = result.verdict_info
                 submission.execute_time = result.execute_time
                 submission.execute_memory = result.execute_memory
+                SimpleWsClient('submission', str(submission.id),
+                               {'verdict': submission.verdict,
+                                'execute_memory': submission.execute_memory,
+                                'execute_time': submission.execute_time,
+                                'verdict_info': submission.verdict_info})
                 if submission.verdict != config.Result.Verdict.VERDICT_RUNNING.value:
                     submission.save()
                     hook_task.delay(submission.id)
@@ -82,7 +88,7 @@ def reload_result_task(submission_id):
                     break
                 submission.save()
             time.sleep(sleep_time)
-            sleep_time *= 2
+            retry_times -= 1
         submission.reloadable = True
         submission.save()
     except DatabaseError:

@@ -5,7 +5,7 @@ from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.views import APIView, Response
 from spider import config
-
+from ws.client import SimpleWsClient
 from submission.models import Submission
 from submission.serializers import SubmissionListSerializer, VerdictSerializer, SubmissionSerializer
 from submission.tasks import submit_task
@@ -57,6 +57,7 @@ class SubmissionAPI(APIView):
                 if submission.status != config.Result.Status.STATUS_PENDING.value:
                     return Response(res_format(submission.id), status=status.HTTP_200_OK)
                 submit_task.delay(submission.id)
+
                 return Response(res_format(submission.id), status=status.HTTP_200_OK)
             return Response(res_format('submit error', status=Message.ERROR), status=status.HTTP_200_OK)
         else:

@@ -13,19 +13,17 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from .utils import get_env
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 production_env = get_env('VJ_ENV', 'develop')
 if production_env == 'production':
     DEBUG = False
-
-    PUBLIC_URL = '/api/public'
-    PUBLIC_DIR = '/public'
-
-
+    DATA_DIR = '/data'
 else:
     DEBUG = True
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
 
-    PUBLIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'public')
-    PUBLIC_URL = '/api/public'
+PUBLIC_URL = '/api/public'
+PUBLIC_DIR = os.path.join(DATA_DIR, 'public')
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
@@ -39,13 +37,15 @@ REST_FRAMEWORK = {
 }
 ALLOWED_HOSTS = ['*']
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g&tgox&hue)x^3c$=%m-e*z$e7w_jr^bu^s@qlcoyl7-5rbh0@'
+SECRET_KEY_PATH = os.path.join(DATA_DIR, "secret.key")
+with open(SECRET_KEY_PATH, "r") as f:
+    SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -65,7 +65,9 @@ INSTALLED_APPS = [
     'submission.apps.SubmissionConfig',
     'user.apps.AccountConfig',
     'utils',
-    'statistic.apps.StatisticConfig'
+    'statistic.apps.StatisticConfig',
+    'ws.apps.WsConfig',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -103,6 +105,15 @@ WSGI_APPLICATION = 'VirtualJudge.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+ASGI_APPLICATION = 'VirtualJudge.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(get_env("REDIS_HOST", "127.0.0.1"), get_env("REDIS_PORT", "6379"))],
+        },
+    },
+}
 
 DATABASES = {
     'default': {

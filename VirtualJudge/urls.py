@@ -28,8 +28,7 @@ urlpatterns = [
     path('api/', include('support.urls')),
     path('api/', include('statistic.urls')),
 ]
-if settings.DEBUG:
-    media_root = os.path.join(settings.BASE_DIR, 'public')
-else:
-    media_root = os.path.abspath('/public')
+
+media_root = os.path.join(settings.DATA_DIR, 'public')
+
 urlpatterns += static('api/public/', document_root=media_root)
