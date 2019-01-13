@@ -26,9 +26,8 @@ class SubmissionDispatcher(object):
         remote_account = Account(account.oj_username, account.oj_password, account.cookies)
 
         core = Core(self._submission.remote_oj)
-        result = core.submit_code(self._submission.remote_id, remote_account, self._submission.code,
-                                  self._submission.language)
-        print(result.__dict__)
+        result = core.submit_code(account=remote_account, pid=self._submission.remote_id,
+                                  language=self._submission.language, code=self._submission.code)
         try:
             account.cookies = core.get_cookies()
             account.save()

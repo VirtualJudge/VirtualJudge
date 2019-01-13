@@ -16,7 +16,7 @@ class LanguageAdmin(admin.ModelAdmin):
 
 
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('oj_name', 'oj_username', 'oj_password', 'update_time')
+    list_display = ('oj_name', 'oj_username', 'oj_password', 'update_time', 'status')
 
 
 admin.site.register(Language, LanguageAdmin)
