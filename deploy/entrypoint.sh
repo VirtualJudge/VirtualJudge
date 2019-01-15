@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 APP=/app
-DATA=data
+DATA=/data
 if [ ! -d "$DATA" ]; then
   mkdir $DATA
 fi

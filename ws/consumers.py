@@ -7,10 +7,9 @@ from VirtualJudge import settings
 
 class ChatAdminConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.number = self.scope['url_route']['kwargs']['number']
         self.chat_type = self.scope['url_route']['kwargs']['chat_type']
         self.secret_key = self.scope['url_route']['kwargs']['secret_key']
-        self.room_group_name = 'chat_%s_%s' % (self.chat_type, self.number)
+        self.room_group_name = 'chat_%s' % self.chat_type
 
         # Join room group
         if str(self.secret_key) == str(settings.SECRET_KEY):
@@ -53,9 +52,8 @@ class ChatAdminConsumer(AsyncWebsocketConsumer):
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.number = self.scope['url_route']['kwargs']['number']
         self.chat_type = self.scope['url_route']['kwargs']['chat_type']
-        self.room_group_name = 'chat_%s_%s' % (self.chat_type, self.number)
+        self.room_group_name = 'chat_%s' % self.chat_type
 
         # Join room group
         await self.channel_layer.group_add(
