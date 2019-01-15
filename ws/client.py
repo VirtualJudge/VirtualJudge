@@ -17,12 +17,12 @@ class WebsocketClient:
 
 
 class SimpleWsClient:
-    def __init__(self, chat_type, number, message):
-        url = f'ws://127.0.0.1:8000/api/ws/{chat_type}/{number}/{settings.SECRET_KEY}'
+    def __init__(self, chat_type, message):
+        url = f'ws://127.0.0.1:8000/api/ws/{chat_type}/{settings.SECRET_KEY}'
         self._ws = create_connection(url)
         self._ws.send(json.dumps({'message': message}))
         self._ws.close()
 
 
 if __name__ == "__main__":
-    SimpleWsClient('submission', 'default', 'testset')
+    SimpleWsClient('submission', 'testset')

@@ -42,8 +42,9 @@ class SubmissionDispatcher(object):
             self._submission.verdict = result.verdict.value
             self._submission.verdict_info = result.verdict_info
             self._submission.save()
-            SimpleWsClient('submission', str(self._submission.id),
+            SimpleWsClient('submission',
                            {'verdict': self._submission.verdict,
+                            'id': self._submission.id,
                             'execute_memory': self._submission.execute_memory,
                             'execute_time': self._submission.execute_time,
                             'verdict_info': self._submission.verdict_info})
@@ -57,7 +58,6 @@ class SubmissionDispatcher(object):
             return True
         else:
             self._submission.status = Result.Status.STATUS_SUBMIT_ERROR.value
-            self._submission.verdict = result.verdict.value
             self._submission.save()
             ConfigDispatcher.release_account(account.id)
             return False

@@ -76,8 +76,9 @@ def reload_result_task(submission_id):
                 submission.verdict_info = result.verdict_info
                 submission.execute_time = result.execute_time
                 submission.execute_memory = result.execute_memory
-                SimpleWsClient('submission', str(submission.id),
+                SimpleWsClient('submission',
                                {'verdict': submission.verdict,
+                                'id': submission.id,
                                 'execute_memory': submission.execute_memory,
                                 'execute_time': submission.execute_time,
                                 'verdict_info': submission.verdict_info})
