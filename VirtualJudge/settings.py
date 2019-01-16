@@ -52,6 +52,15 @@ with open(SECRET_KEY_PATH, "r") as f:
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'statistic.apps.StatisticConfig',
+
+    'support.apps.SupportConfig',
+    'submission.apps.SubmissionConfig',
+    'ws.apps.WsConfig',
+    'user.apps.UserConfig',
+    'utils',
+    'problem.apps.ProblemConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,15 +68,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
-    'problem.apps.ProblemConfig',
     'rest_framework',
-    'support.apps.RemoteConfig',
-    'submission.apps.SubmissionConfig',
-    'user.apps.AccountConfig',
-    'utils',
-    'statistic.apps.StatisticConfig',
-    'ws.apps.WsConfig',
-    'channels'
+
 ]
 
 MIDDLEWARE = [

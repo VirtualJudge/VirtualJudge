@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class RemoteConfig(AppConfig):
+class SupportConfig(AppConfig):
     name = 'support'
