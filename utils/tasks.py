@@ -81,7 +81,7 @@ def reload_result_task(submission_id):
                                 'id': submission.id,
                                 'execute_memory': submission.execute_memory,
                                 'execute_time': submission.execute_time,
-                                'verdict_info': submission.verdict_info})
+                                'verdict_info': submission.verdict_info}).execute()
                 if submission.verdict != config.Result.Verdict.VERDICT_RUNNING.value:
                     submission.save()
                     hook_task.delay(submission.id)

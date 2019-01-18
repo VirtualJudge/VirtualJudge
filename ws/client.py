@@ -1,29 +1,16 @@
-from websocket import create_connection
+from channels.layers import get_channel_layer
 
-from VirtualJudge import settings
-import json
-
-if settings.production_env == 'production':
-    PORT = '9876'
-else:
-    PORT = '8000'
-
-
-class WebsocketClient:
-    def __init__(self, chat_type, number):
-        url = f'ws://127.0.0.1:{PORT}/api/ws_{chat_type}/{settings.SECRET_KEY}'
-        self._ws = create_connection(url)
-
-    def send(self, message):
-        self._ws.send(json.dumps({'message': message}))
-
-    def close(self):
-        self._ws.close()
-
+from asgiref.sync import async_to_sync
 
 class SimpleWsClient:
     def __init__(self, chat_type, message):
-        url = f'ws://127.0.0.1:{PORT}/api/ws_{chat_type}/{settings.SECRET_KEY}'
-        self._ws = create_connection(url)
-        self._ws.send(json.dumps({'message': message}))
-        self._ws.close()
+        self._chat_type = chat_type
+        self._message = message
+        self._channel_layer = get_channel_layer()
+
+    def execute(self):
+        async_to_sync(self._channel_layer.group_send)(f'chat_{self._chat_type}',
+            {
+                'type': 'chat_message',
+                'message': self._message
+            })
