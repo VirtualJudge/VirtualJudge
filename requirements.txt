@@ -6,12 +6,10 @@ gunicorn
 BeautifulSoup4
 flake8
 requests
-colorama
 requests[socks]
 lxml
 wheel
 coverage
-Flask
 raven
 channels
 channels_redis

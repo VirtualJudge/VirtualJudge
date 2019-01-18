@@ -4,5 +4,4 @@ from ws import consumers
 
 websocket_urlpatterns = [
     path('api/ws_<str:chat_type>', consumers.ChatConsumer),
-    path('api/ws_<str:chat_type>/<str:secret_key>', consumers.ChatAdminConsumer),
 ]

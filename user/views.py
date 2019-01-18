@@ -36,8 +36,6 @@ class ChangePasswordAPI(APIView):
 
 
 class ProfileAPI(APIView):
-    permission_classes = [IsAuthenticated]
-
     # 获取个人信息
     def get(self, request, **kwargs):
         if request.user and request.user.is_authenticated:
@@ -46,7 +44,7 @@ class ProfileAPI(APIView):
             res_data = serializer.data
             res_data['email'] = hashlib.md5(str(res_data['email']).encode('utf-8')).hexdigest()
             return Response(res_format(res_data, status=Message.SUCCESS))
-        return Response(res_format('Login required', status=Message.ERROR))
+        return Response(res_format('not login', status=Message.ERROR))
 
 
 class PrivilegeAPI(APIView):

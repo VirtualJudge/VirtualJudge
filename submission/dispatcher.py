@@ -47,7 +47,7 @@ class SubmissionDispatcher(object):
                             'id': self._submission.id,
                             'execute_memory': self._submission.execute_memory,
                             'execute_time': self._submission.execute_time,
-                            'verdict_info': self._submission.verdict_info})
+                            'verdict_info': self._submission.verdict_info}).execute()
             if self._submission.verdict == Result.Verdict.VERDICT_RUNNING.value:
                 reload_result_task.delay(self._submission.id)
             else:
