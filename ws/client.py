@@ -1,6 +1,5 @@
 from channels.layers import get_channel_layer
 
-from asgiref.sync import async_to_sync
 
 class SimpleWsClient:
     def __init__(self, chat_type, message):
