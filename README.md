@@ -7,6 +7,8 @@
 
 Virtual Judge Based on Python
 
+在2019年12月中旬之前暂停开发维护
+
 ### Test Deploy
 #### Test Enviroment
  
