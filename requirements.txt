@@ -12,7 +12,7 @@ coverage
 channels
 channels_redis
 websocket-client
-git+https://github.com/VirtualJudge/spider
+https://github.com/VirtualJudge/spider/releases/download/fix/spider-1.0-py3-none-any.whl
 celery
 daphne
 sentry-sdk
