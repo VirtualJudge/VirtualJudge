@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
+import os
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+
+from .utils import get_env
 
 sentry_sdk.init(
     dsn="https://6f7b7d5b859148a686f4766d6cd6fd4f@sentry.io/2326406",
@@ -20,9 +24,7 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
-import os
-from .utils import get_env
-import daphne.server
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 production_env = get_env('VJ_ENV', 'develop')
 if production_env == 'production':
@@ -216,7 +218,6 @@ STATICFILES_FINDERS = (
 LOGIN_URL = '/api/login'
 
 AUTH_USER_MODEL = 'user.UserProfile'
-
 
 LOGGING_HANDLERS = ['console']
 LOGGING = {
