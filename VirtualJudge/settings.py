@@ -9,10 +9,20 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 import os
 from .utils import get_env
 
+sentry_sdk.init(
+    dsn="https://6f7b7d5b859148a686f4766d6cd6fd4f@sentry.io/2326406",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 production_env = get_env('VJ_ENV', 'develop')
 if production_env == 'production':
@@ -54,7 +64,6 @@ with open(SECRET_KEY_PATH, "r") as f:
 INSTALLED_APPS = [
     'channels',
     'statistic.apps.StatisticConfig',
-
     'support.apps.SupportConfig',
     'submission.apps.SubmissionConfig',
     'ws.apps.WsConfig',
@@ -67,7 +76,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'raven.contrib.django.raven_compat',
     'rest_framework',
 
 ]
@@ -208,11 +216,8 @@ STATICFILES_FINDERS = (
 LOGIN_URL = '/api/login'
 
 AUTH_USER_MODEL = 'user.UserProfile'
-RAVEN_CONFIG = {
-    'dsn': 'https://9352cc2be708463f8c42cb6b8d353409@sentry.io/1360321',
-}
 
-LOGGING_HANDLERS = ['console', 'sentry'] if production_env else ['console']
+LOGGING_HANDLERS = ['console']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -228,11 +233,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-            'formatter': 'standard'
-        }
     },
     'loggers': {
         'django.request': {
