@@ -1,9 +1,9 @@
 # VirtualJudge
 [![Build Status](https://travis-ci.org/VirtualJudge/VirtualJudge.svg?branch=master)](https://travis-ci.org/VirtualJudge/VirtualJudge)
 [![Coverage Status](https://coveralls.io/repos/github/VirtualJudge/VirtualJudge/badge.svg?branch=master)](https://coveralls.io/github/VirtualJudge/VirtualJudge?branch=master)
-[![Python](https://img.shields.io/badge/Python-3.7-blue.svg)](https://img.shields.io/badge/Python-3.7-blue.svg)
-[![Django](https://img.shields.io/badge/Django-2.0.4-blue.svg)](https://img.shields.io/badge/Django-2.0.4-blue.svg)
-[![djangorestframework](https://img.shields.io/badge/djangorestframework-3.8.2-blue.svg)](https://img.shields.io/badge/djangorestframework-3.8.2-blue.svg)  
+[![Python](https://img.shields.io/badge/Python-3.8-blue.svg)](https://img.shields.io/badge/Python-3.8-blue.svg)
+[![Django](https://img.shields.io/badge/Django-3.0.3-blue.svg)](https://img.shields.io/badge/Django-3.0.3-blue.svg)
+[![djangorestframework](https://img.shields.io/badge/djangorestframework-3.11.0-blue.svg)](https://img.shields.io/badge/djangorestframework-3.11.0-blue.svg)  
 
 Virtual Judge Based on Python
 
@@ -11,7 +11,7 @@ Virtual Judge Based on Python
 ### Test Deploy
 #### Test Enviroment
  
- - Python3.7
+ - Python3.8
  - docker latest
  - docker-compose latest
  - Git
