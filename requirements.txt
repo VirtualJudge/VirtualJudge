@@ -2,7 +2,6 @@ Django
 djangorestframework
 psycopg2-binary
 redis
-gunicorn
 BeautifulSoup4
 flake8
 requests
@@ -10,9 +9,10 @@ requests[socks]
 lxml
 wheel
 coverage
-raven
 channels
 channels_redis
 websocket-client
 git+https://github.com/VirtualJudge/spider
-git+https://github.com/celery/celery
+celery
+daphne
+sentry-sdk
