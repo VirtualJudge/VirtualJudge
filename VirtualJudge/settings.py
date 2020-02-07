@@ -9,10 +9,11 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
+import os
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-import os
 from .utils import get_env
 
 sentry_sdk.init(
@@ -23,6 +24,7 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 production_env = get_env('VJ_ENV', 'develop')
 if production_env == 'production':
