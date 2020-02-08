@@ -20,4 +20,4 @@ do
     echo "Failed to migrate, going to retry..."
     sleep 8
 done
-exec supervisord -c /app/deploy/supervisord.conf
+exec daphne -b 0.0.0.0 -p 9876 VirtualJudge.asgi:application

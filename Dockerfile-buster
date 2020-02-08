@@ -16,4 +16,4 @@ WORKDIR /app
 
 RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
-CMD daphne -b 0.0.0.0 -p 9876 VirtualJudge.asgi:application
+CMD bash /app/deploy/entrypoint.sh
