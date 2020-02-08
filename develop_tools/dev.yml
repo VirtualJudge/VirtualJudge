@@ -1,0 +1,15 @@
+version: "3"
+services:
+  vj-postgres-dev:
+    image: postgres:alpine
+    container_name: vj-postgres-dev
+    restart: always
+    volumes:
+      - ~/data/postgres-dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=vj_database
+      - POSTGRES_USER=vj_username
+      - POSTGRES_PASSWORD=vj_password
+    ports:
+      - '127.0.0.1:5432:5432'
+

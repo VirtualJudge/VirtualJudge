@@ -1,0 +1,5 @@
+Django
+daphne
+sentry-sdk
+DjangoRestFramework
+psycopg2-binary
