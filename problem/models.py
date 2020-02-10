@@ -1,9 +1,10 @@
 from django.db import models
+from destination.models import Platform
 
 
 class Problem(models.Model):
     # 平台名称
-    platform = models.CharField(max_length=20)
+    platform = models.ForeignKey(Platform, on_delete=models.PROTECT)
     # 平台题目编号
     index = models.CharField(max_length=20)
     # 平台题目路径
@@ -23,6 +24,9 @@ class Problem(models.Model):
     # 状态
     status = models.CharField(max_length=50, default='')
 
+    def __str__(self):
+        return self.platform.name + '|' + self.index + '|' + self.title
+
     class Meta:
         ordering = ('update_time',)
         unique_together = ('platform', 'index')
@@ -31,7 +35,7 @@ class Problem(models.Model):
 
 class Request(models.Model):
     # 平台名称
-    platform = models.IntegerField(null=False)
+    platform = models.ForeignKey(Platform, on_delete=models.PROTECT)
     # 平台题目编号
     index = models.CharField(max_length=20)
     #
@@ -40,6 +44,9 @@ class Request(models.Model):
     submit_time = models.DateTimeField(auto_now_add=True)
 
     status = models.CharField(max_length=50, default='')
+
+    def __str__(self):
+        return self.platform.name + '|' + self.index + '|' + self.index
 
     class Meta:
         db_table = 'request'

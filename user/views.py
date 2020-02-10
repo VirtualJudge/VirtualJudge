@@ -14,17 +14,17 @@ class UserAPI(GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = Profile.objects.all()
     lookup_field = 'pk'
     lookup_value_regex = '[0-9]+'
-
-    def retrieve(self, request, pk=None, *args, **kwargs):
-        queryset = self.get_queryset()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = UserProfileSerializer(user)
-        return Response(Message.success(data=serializer.data))
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = UserProfileSerializer(queryset, many=True)
-        return Response(Message.success(data=serializer.data))
+    serializer_class = UserProfileSerializer
+    # def retrieve(self, request, pk=None, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     user = get_object_or_404(queryset, pk=pk)
+    #     serializer = UserProfileSerializer(user)
+    #     return Response(Message.success(data=serializer.data))
+    #
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     serializer = UserProfileSerializer(queryset, many=True)
+    #     return Response(Message.success(data=serializer.data))
 
 
 class PasswordAPI(APIView):

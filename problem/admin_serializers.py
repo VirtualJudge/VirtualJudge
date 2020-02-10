@@ -6,4 +6,4 @@ class AdminProblemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
         fields = '__all__'
-        read_only_fields = ['id', 'index', 'update_time', 'platform']
+        read_only_fields = ['update_time']

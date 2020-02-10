@@ -6,11 +6,10 @@ dist: bionic
 services:
   - postgresql
 before_script:
-  - psql -c 'CREATE USER vj_username WITH PASSWORD vj_password;' -U postgres
+  - psql -c 'CREATE USER vj_username WITH PASSWORD "vj_password";' -U postgres
   - psql -c 'CREATE DATABASE vj_database OWNER vj_username;' -U postgres
   - psql -c 'GRANT ALL PRIVILEGES ON DATABASE vj_database TO vj_username;' -U postgres
   - pip install -r requirements.txt
 script:
-  - flake8 --ignore=E722,W504 --exclude=venv,migrations,__pycache__ --max-line-length=120 .
   - ./manage.py makemigrations & ./manage.py migrate
   - ./manage.py check
