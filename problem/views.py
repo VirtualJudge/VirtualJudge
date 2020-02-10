@@ -21,4 +21,3 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet):
         problem = self.get_object()
         serializer = ProblemSerializer(problem)
         return Response(Message.success(data=serializer.data))
-
