@@ -17,7 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('api/admin', admin.site.urls),
-    path('api/', include('user.urls')),
-    path('api/', include('problem.urls')),
+    path('api/django/', admin.site.urls),
+
+    path('api/admin/', include('VirtualJudge.admin_urls')),
+
+    path('api/user/', include('user.urls')),
+    path('api/problem/', include('problem.urls')),
+
 ]

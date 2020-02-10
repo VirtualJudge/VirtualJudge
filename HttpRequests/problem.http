@@ -1,8 +1,0 @@
-DELETE http://127.0.0.1:8000/api/problem/4/
-Content-Type: application/json
-
-{
-  "html": "123321"
-}
-
-###

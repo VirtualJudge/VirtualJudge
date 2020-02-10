@@ -13,7 +13,6 @@ class PasswordSerializer(serializers.Serializer):
     username = CharField()
     old_password = CharField()
     new_password = CharField()
-    email = EmailField()
 
     @staticmethod
     def validate_new_password(value):
@@ -24,21 +23,24 @@ class PasswordSerializer(serializers.Serializer):
 
     def save(self):
         try:
-            if len(Profile.objects.filter(username=self.validated_data['username'])) == 1:
-                user = Profile.objects.get(username=self.validated_data['username'])
+            user = auth.authenticate(username=self.validated_data['username'],
+                                     password=self.validated_data['old_password'])
+            if user:
                 user.set_password(self.validated_data['new_password'])
-                user.email = self.validated_data['email']
                 user.save()
-                return user
-            return None
-        except DatabaseError:
-            return None
+                return True, "Password update success"
+            else:
+                return False, "Authenticate user error"
+        except DatabaseError as e:
+            print(e)
+            return False, 'Database error'
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('id', 'username', 'nickname', 'email', 'is_admin')
+        fields = ['id', 'username', 'nickname', 'email', 'is_admin', 'hook', 'hook_times']
+        read_only_fields = ['id', 'is_admin', 'hook_times']
 
 
 class LoginSerializer(serializers.Serializer):
@@ -66,6 +68,7 @@ class LoginSerializer(serializers.Serializer):
             if request:
                 auth.login(request, user)
             return user
+        return None
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -77,14 +80,9 @@ class RegisterSerializer(serializers.Serializer):
         email = self.validated_data['email']
         password = self.validated_data['password']
         username = self.validated_data['username']
-        try:
-            user = Profile.objects.create_user(username=username,
-                                               password=password,
-                                               email=email)
-            user.save()
-            return True
-        except DatabaseError:
-            return False
+        user = Profile.objects.create_user(username=username, password=password, email=email)
+        user.save()
+        return True, 'Register success'
 
     @staticmethod
     def validate_username(value):
@@ -111,7 +109,7 @@ class RegisterSerializer(serializers.Serializer):
             raise ValidationError('Email address is too long')
         try:
             Profile.objects.get(email=value)
-            raise ValidationError('Email address has been registered')
+            raise ValidationError('Email address occupied')
         except ObjectDoesNotExist:
             pass
         return value

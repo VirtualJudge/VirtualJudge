@@ -12,6 +12,18 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://6f7b7d5b859148a686f4766d6cd6fd4f@sentry.io/2326406",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
+
 
 def get_env(key, value=''):
     return os.environ.get(key, value)
