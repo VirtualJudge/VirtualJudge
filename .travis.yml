@@ -9,6 +9,7 @@ env:
   global:
     - DOCKER_COMPOSE_VERSION=1.25.4
     - POSTGRES_PORT=5433
+    - POSTGRES_HOST=127.0.0.1
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
