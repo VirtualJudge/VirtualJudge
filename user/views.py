@@ -4,10 +4,9 @@ from rest_framework import mixins
 from rest_framework.views import APIView
 from rest_framework.views import Response
 from rest_framework.viewsets import GenericViewSet
-
+from rest_framework import status
 from user.models import Profile
 from user.serializers import (LoginSerializer, RegisterSerializer, PasswordSerializer, UserProfileSerializer)
-from util.message import Message
 
 
 class UserAPI(GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -34,11 +33,11 @@ class PasswordAPI(APIView):
             result, message = serializer.save()
             if result:
                 auth.logout(request)
-                return Response(Message.success(msg=message))
+                return Response(message)
             else:
-                return Response(Message.error(msg=message))
+                return Response(message, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         else:
-            return Response(Message.error(msg=serializer.errors))
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileAPI(APIView):
@@ -47,23 +46,23 @@ class ProfileAPI(APIView):
         if request.user and request.user.is_authenticated:
             profile = Profile.objects.get(username=request.user)
             serializer = UserProfileSerializer(profile)
-            return Response(Message.success(data=serializer.data))
-        return Response(Message.error(msg='Unauthorized'))
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request, *args, **kwargs):
         serializer = UserProfileSerializer(instance=request.user, data=request.data, partial=True)
         if serializer.is_valid():
-            return Response(Message.success(data=serializer.data))
+            return Response(serializer.data)
         else:
-            return Response(Message.error(msg=serializer.errors))
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AuthAPI(APIView):
     # 检查登录状态
     def get(self, request, *args, **kwargs):
         if request.user and request.user.is_authenticated:
-            return Response(Message.success(data=UserProfileSerializer(request.user).data))
-        return Response(Message.error(msg='Unauthorized'))
+            return Response(UserProfileSerializer(request.user).data)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     # 提交登录
     def post(self, request, *args, **kwargs):
@@ -71,15 +70,16 @@ class AuthAPI(APIView):
         if serializer.is_valid():
             user = serializer.login(request)
             if user:
-                return Response(Message.success(data=UserProfileSerializer(user).data))
+                return Response(UserProfileSerializer(user).data)
             else:
-                return Response(Message.error(msg='Incorrect username or password'))
-        return Response(Message.error(msg=serializer.errors))
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # 退出登录
     def delete(self, request, **kwargs):
         auth.logout(request)
-        return Response(Message.success(msg='Logout success'))
+        return Response(data='OK')
 
 
 class RegisterAPI(APIView):
@@ -88,7 +88,7 @@ class RegisterAPI(APIView):
         if register.is_valid():
             result, message = register.save()
             if result:
-                return Response(Message.success(msg=message))
+                return Response(message)
             else:
-                return Response(Message.error(msg=message))
-        return Response(Message.error(msg=register.errors))
+                return Response(message, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(register.errors, status=status.HTTP_400_BAD_REQUEST)

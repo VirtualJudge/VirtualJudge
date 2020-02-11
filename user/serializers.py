@@ -68,7 +68,8 @@ class LoginSerializer(serializers.Serializer):
             if request:
                 auth.login(request, user)
             return user
-        return None
+        raise ValidationError(
+            'Username or password wrong')
 
 
 class RegisterSerializer(serializers.Serializer):
