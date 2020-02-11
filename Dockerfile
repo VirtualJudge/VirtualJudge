@@ -13,7 +13,8 @@ VOLUME /public
 
 ADD . /app
 WORKDIR /app
-
+RUN pip3 install --no-cache-dir virtualenv
+RUN source /app/venv/bin/activate
 RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
 CMD bash /app/deploy/entrypoint.sh

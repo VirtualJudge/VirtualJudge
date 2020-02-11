@@ -14,4 +14,5 @@ do
     echo "Failed to migrate, going to retry..."
     sleep 8
 done
+source venv/bin/activate
 exec ./manage.py runserver 0.0.0.0:8000
