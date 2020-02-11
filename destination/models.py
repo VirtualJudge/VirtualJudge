@@ -26,3 +26,4 @@ class Language(models.Model):
 
     class Meta:
         db_table = 'language'
+        unique_together = ('platform', 'key')

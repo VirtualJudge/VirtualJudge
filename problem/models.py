@@ -50,3 +50,4 @@ class Request(models.Model):
 
     class Meta:
         db_table = 'request'
+        unique_together = ('platform', 'index')

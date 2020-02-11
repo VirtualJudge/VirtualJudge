@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'user.apps.UserConfig',
     'destination.apps.DestinationConfig',
     'problem.apps.ProblemConfig',
@@ -97,7 +98,7 @@ WSGI_APPLICATION = 'VirtualJudge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': get_env("POSTGRES_HOST", "127.0.0.1"),
+        'HOST': get_env("POSTGRES_HOST", "dianhsu.top"),
         'PORT': get_env("POSTGRES_PORT", "5432"),
         'NAME': get_env("POSTGRES_DB", "vj_database"),
         'USER': get_env("POSTGRES_USER", "vj_username"),
@@ -157,6 +158,7 @@ REST_FRAMEWORK = {
     ], 'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
     ], 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 20
 }
