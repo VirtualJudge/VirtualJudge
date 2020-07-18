@@ -23,5 +23,5 @@ urlpatterns = [
 
     path('api/user/', include('user.urls')),
     path('api/problem/', include('problem.urls')),
-
+    path('api/submission/', include('submission.urls'))
 ]

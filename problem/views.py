@@ -11,13 +11,3 @@ class ProblemViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_value_regex = '[0-9]+'
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
-
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     serializer = ProblemSerializer(queryset, many=True)
-    #     return Response(Message.success(data=serializer.data))
-    #
-    # def retrieve(self, request, pk=None, *args, **kwargs):
-    #     problem = self.get_object()
-    #     serializer = ProblemSerializer(problem)
-    #     return Response(Message.success(data=serializer.data))

@@ -2,12 +2,17 @@ from rest_framework import status
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
+from django.http import JsonResponse
 from submission.models import Submission
 from submission.serializers import SubmissionAuthorizedSerializer, SubmissionSerializer, SubmissionCreateSerializer
+from submission import tasks
 
 
 # Create your views here.
+
+def sample(request):
+    res = tasks.add.delay(1, 3)
+    return JsonResponse({'status': 'successful', 'task_id': res.task_id})
 
 
 class SubmissionViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, RetrieveModelMixin):

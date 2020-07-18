@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'destination.apps.DestinationConfig',
     'problem.apps.ProblemConfig',
+    'submission.apps.SubmissionConfig'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -98,11 +99,11 @@ WSGI_APPLICATION = 'VirtualJudge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': get_env("POSTGRES_HOST", "dianhsu.top"),
+        'HOST': get_env("POSTGRES_HOST", "192.168.50.2"),
         'PORT': get_env("POSTGRES_PORT", "5432"),
-        'NAME': get_env("POSTGRES_DB", "vj_database"),
-        'USER': get_env("POSTGRES_USER", "vj_username"),
-        'PASSWORD': get_env("POSTGRES_PASSWORD", "vj_password")
+        'NAME': get_env("POSTGRES_DB", "db"),
+        'USER': get_env("POSTGRES_USER", "root"),
+        'PASSWORD': get_env("POSTGRES_PASSWORD", "123456")
     }
 }
 
@@ -162,3 +163,9 @@ REST_FRAMEWORK = {
     ], 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20
 }
+
+CELERY_BROKER_URL = 'redis://192.168.50.2:6379/0'  # Broker配置，使用Redis作为消息中间件
+
+CELERY_RESULT_BACKEND = 'redis://192.168.50.2:6379/0'  # BACKEND配置，这里使用redis
+
+CELERY_RESULT_SERIALIZER = 'json'  # 结果序列化方案

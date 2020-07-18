@@ -14,16 +14,6 @@ class UserAPI(GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     lookup_field = 'pk'
     lookup_value_regex = '[0-9]+'
     serializer_class = UserProfileSerializer
-    # def retrieve(self, request, pk=None, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     user = get_object_or_404(queryset, pk=pk)
-    #     serializer = UserProfileSerializer(user)
-    #     return Response(Message.success(data=serializer.data))
-    #
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     serializer = UserProfileSerializer(queryset, many=True)
-    #     return Response(Message.success(data=serializer.data))
 
 
 class PasswordAPI(APIView):
@@ -46,6 +36,7 @@ class ProfileAPI(APIView):
         if request.user and request.user.is_authenticated:
             profile = Profile.objects.get(username=request.user)
             serializer = UserProfileSerializer(profile)
+
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
