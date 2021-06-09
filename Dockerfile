@@ -1,4 +1,4 @@
-FROM ubuntu:18.10
+FROM ubuntu
 
 MAINTAINER xudian.cn@gmail.com
 
