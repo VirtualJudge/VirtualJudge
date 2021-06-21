@@ -1,4 +1,4 @@
-module vj-go
+module VirtualJudge
 
 go 1.16
 
