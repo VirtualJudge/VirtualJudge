@@ -1,6 +1,9 @@
 package main
 
-import "github.com/kataras/iris/v12"
+import (
+	"VirtualJudge/interfaces"
+	"github.com/kataras/iris/v12"
+)
 
 func main() {
 	app := iris.New()
@@ -8,7 +11,7 @@ func main() {
 	{
 		v1 := api.Party("/v1")
 		{
-			v1.PartyFunc("/problem", problemRouter)
+			v1.PartyFunc("/problem", interfaces.ProblemRouter)
 		}
 	}
 	err := app.Run(iris.Addr(":8080"))
