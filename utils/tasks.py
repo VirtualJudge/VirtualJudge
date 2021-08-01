@@ -9,7 +9,7 @@ from celery import shared_task
 from django.db import DatabaseError
 from django.db.models import F
 from ws.client import SimpleWsClient
-from VirtualJudge import settings
+from vj import settings
 from user.models import UserProfile
 from problem.models import Problem
 from submission.models import Submission

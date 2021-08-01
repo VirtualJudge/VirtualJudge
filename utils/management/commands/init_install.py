@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.utils import OperationalError
 
-from VirtualJudge.utils import get_env
+from vj.utils import get_env
 
 
 class Command(BaseCommand):

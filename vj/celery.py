@@ -4,7 +4,7 @@ from celery import Celery
 from django.conf import settings
 
 # set the default Django settings module for the "celery" program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "VirtualJudge.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vj.settings")
 
 app = Celery("oj")
 
