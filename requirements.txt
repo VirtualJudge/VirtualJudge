@@ -1,0 +1,6 @@
+Django
+psycopg2-binary
+redis
+djangorestframework
+celery
+daphne
