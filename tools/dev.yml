@@ -1,0 +1,36 @@
+version: "3"
+services:
+  vj-redis-dev:
+    image: redis:alpine
+    container_name: vj-redis-dev
+    restart: always
+    volumes:
+      - ~/data/redis-dev:/data
+    ports:
+      - '127.0.0.1:6379:6379'
+
+  vj-postgres-dev:
+    image: postgres:alpine
+    container_name: vj-postgres-dev
+    restart: always
+    volumes:
+      - ~/data/postgres-dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=vj_db
+      - POSTGRES_USER=vj_user
+      - POSTGRES_PASSWORD=vj_pass
+    ports:
+      - '127.0.0.1:5432:5432'
+
+  vj-rabbitmq-dev:
+    image: rabbitmq:management
+    container_name: vj-rabbitmq-dev
+    restart: always
+    ports:
+      - '127.0.0.1:5672:5672'
+      - '127.0.0.1:15672:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=vj_user
+      - RABBITMQ_DEFAULT_PASS=vj_pass
+    volumes:
+      - ~/data/vj-rabbitmq-dev:/var/lib/rabbitmq

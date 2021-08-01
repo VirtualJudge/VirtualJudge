@@ -9,12 +9,13 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+
+from vj import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -25,8 +26,7 @@ SECRET_KEY = 'django-insecure-!mm-r&tcaovn$nrkz^*zk#swjyriqf0yz@cgqo7ju=4-0!kzg)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_filters',
+    'utils.app.UtilsConfig',
+    'user.apps.UserConfig'
 ]
 
 MIDDLEWARE = [
@@ -70,17 +74,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vj.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config.PG_DB,
+        'USER': config.PG_USER,
+        'PASSWORD': config.PG_PASS,
+        'HOST': config.PG_HOST,
+        'PORT': config.PG_PORT,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -100,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -108,12 +113,11 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -124,3 +128,65 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 验证码的有效时间（秒）
+CAPTCHA_AGE = 60 * 5
+# 缓存页面的时间
+PAGE_CACHE_AGE = 10
+# 验证邮箱的有效时间
+ACTIVATE_CODE_AGE = 10 * 60
+
+AUTH_USER_MODEL = 'user.User'
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "page": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "session"
+SESSION_COOKIE_AGE = 60 * 60 * 12
+
+# SMTP相关设置
+if os.getenv('EMAIL_ENABLE', 'False') == 'True':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config.SMTP_HOST
+    EMAIL_PORT = config.SMTP_PORT
+    EMAIL_HOST_USER = config.SMTP_USER
+    EMAIL_HOST_PASSWORD = config.SMTP_PASS
+    EMAIL_USE_SSL = config.SMTP_USE_SSL
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# celery 配置
+CELERY_BROKER_URL = config.BROKER_URL
+
+CELERY_BROKER_SERIALIZER = 'json'
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'utils.exception.custom_exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'utils.pagination.CustomPagination',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+    ]
+}

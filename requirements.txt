@@ -4,3 +4,6 @@ redis
 djangorestframework
 celery
 daphne
+captcha
+django-redis
+django-filter
