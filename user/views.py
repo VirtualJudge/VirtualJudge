@@ -142,7 +142,7 @@ class UserViewSet(viewsets.GenericViewSet, ListModelMixin):
     # User Rank List
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        queryset = sorted(queryset, key=lambda x: (-x.total_passed, x.total_submitted, x.id))
+        #        queryset = sorted(queryset, key=lambda x: (-x.total_passed, x.total_submitted, x.id))
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -156,7 +156,7 @@ class UserViewSet(viewsets.GenericViewSet, ListModelMixin):
     def following(self, request, *args, **kwargs):
         if request.method == 'GET':
             queryset = self.filter_queryset(request.user.following.all())
-            queryset = sorted(queryset, key=lambda x: (-x.total_passed, x.total_submitted, x.id))
+   #         queryset = sorted(queryset, key=lambda x: (-x.total_passed, x.total_submitted, x.id))
             page = self.paginate_queryset(queryset)
             if page is not None:
                 serializer = self.get_serializer(page, many=True)

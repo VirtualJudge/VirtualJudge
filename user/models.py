@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-
+from submission.config import Verdict
 
 
 # Create your models here.
@@ -45,19 +45,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     # 通过的题目数量
-    # @property
-    # def total_passed(self):
-    #     return self.submissions.filter(verdict=Verdict.ACCEPTED).values('problem_id').distinct().count()
-    #
+    @property
+    def total_passed(self):
+        return self.submissions.filter(verdict=Verdict.ACCEPTED).values('problem_id').distinct().count()
+
     # 提交的AC的结果的数量
-    # @property
-    # def total_accepted(self):
-    #     return self.submissions.filter(verdict=Verdict.ACCEPTED).count()
+    @property
+    def total_accepted(self):
+        return self.submissions.filter(verdict=Verdict.ACCEPTED).count()
 
     # 提交的数量
-    # @property
-    # def total_submitted(self):
-    #     return self.submissions.count()
+    @property
+    def total_submitted(self):
+        return self.submissions.count()
 
     @property
     def is_staff(self):

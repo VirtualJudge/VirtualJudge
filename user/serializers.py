@@ -48,9 +48,9 @@ class AdvancedUserInfoSerializer(serializers.ModelSerializer):
             'username',
             'email',
             'is_superuser',
-            'total_passed',
-            'total_accepted',
-            'total_submitted',
+            # 'total_passed',
+            # 'total_accepted',
+            # 'total_submitted',
             'activated',
             'ban',
             'user_permissions']

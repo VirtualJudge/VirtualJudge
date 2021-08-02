@@ -25,12 +25,11 @@ services:
   vj-rabbitmq-dev:
     image: rabbitmq:management
     container_name: vj-rabbitmq-dev
+    hostname: vj-rabbitmq-dev
     restart: always
     ports:
       - '127.0.0.1:5672:5672'
       - '127.0.0.1:15672:15672'
-    environment:
-      - RABBITMQ_DEFAULT_USER=vj_user
-      - RABBITMQ_DEFAULT_PASS=vj_pass
     volumes:
       - ~/data/vj-rabbitmq-dev:/var/lib/rabbitmq
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf

@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'utils.app.UtilsConfig',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'problem.apps.ProblemConfig',
+    'submission.apps.SubmissionConfig'
 ]
 
 MIDDLEWARE = [
