@@ -3,8 +3,6 @@ from django.db import models
 from submission.config import Verdict
 
 
-
-
 # Create your models here.
 
 class Problem(models.Model):

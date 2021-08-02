@@ -3,6 +3,7 @@ from django.db import models
 from problem.models import Problem
 from submission.config import Verdict
 from user.models import User
+from contest.models import Contest
 
 
 # Create your models here.
@@ -10,6 +11,8 @@ from user.models import User
 class Submission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions')
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='submissions')
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name='submissions', null=True)
+
     code = models.TextField()
     verdict = models.CharField(max_length=10, default=Verdict.PENDING, choices=Verdict.VERDICT_CHOICES)
     remote_verdict = models.CharField(max_length=100, default="", null=True, blank=True)
