@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'problem.apps.ProblemConfig',
     'submission.apps.SubmissionConfig',
-    'contest.apps.ContestConfig'
+    'contest.apps.ContestConfig',
+    'post.apps.PostConfig',
 ]
 
 MIDDLEWARE = [
