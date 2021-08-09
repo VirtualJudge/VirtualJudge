@@ -26,6 +26,7 @@ class ProblemCreateSerializer(serializers.ModelSerializer):
                   'memory_limit',
                   'remote_oj',
                   'remote_url',
+                  'spj',
                   'remote_id']
 
     def save(self):
@@ -37,6 +38,7 @@ class ProblemCreateSerializer(serializers.ModelSerializer):
                 time_limit=self.validated_data['time_limit'],
                 memory_limit=self.validated_data['memory_limit'],
                 remote_oj=self.validated_data['remote_oj'],
+                spj=self.validated_data['spj'],
                 remote_url=self.validated_data['remote_url'],
                 remote_id=self.validated_data['remote_id']).save()
         return True
@@ -53,6 +55,7 @@ class ProblemSerializer(serializers.ModelSerializer):
                   'total_accepted',
                   'total_submitted',
                   'last_update',
+                  'spj',
                   'remote_oj',
                   'remote_url',
                   'remote_id']

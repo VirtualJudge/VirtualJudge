@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    # 'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'submission.apps.SubmissionConfig',
     'contest.apps.ContestConfig',
     'post.apps.PostConfig',
-    'ws.apps.WsConfig'
+    # 'ws.apps.WsConfig'
 ]
 
 MIDDLEWARE = [
@@ -60,7 +60,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'vj.urls'
-
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -80,14 +80,6 @@ TEMPLATES = [
 
 # WSGI_APPLICATION = 'vj.wsgi.application'
 ASGI_APPLICATION = 'vj.asgi.application'
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [(config.REDIS_HOST, config.REDIS_PORT)],
-        },
-    },
-}
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -172,6 +164,13 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
+    },
+    "spider": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -191,8 +190,9 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # celery 配置
-CELERY_BROKER_URL = config.BROKER_URL
-
+CELERY_BROKER_URL = f'amqp://{config.MQ_USER}:{config.MQ_PASS}@{config.MQ_HOST}:{config.MQ_PORT}/'
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_ENABLE_UTC = False
 CELERY_BROKER_SERIALIZER = 'json'
 
 REST_FRAMEWORK = {

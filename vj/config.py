@@ -16,8 +16,7 @@ MQ_PORT = os.getenv('MQ_PORT', 5672)
 
 # Celery
 
-BROKER_URL = os.getenv(
-    'BROKER_URL', f'amqp://{MQ_USER}:{MQ_PASS}@{MQ_HOST}:{MQ_PORT}/')
+BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASS}@{MQ_HOST}:{MQ_PORT}/'
 
 # Env
 

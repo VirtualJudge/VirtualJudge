@@ -1,10 +1,15 @@
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
-from rest_framework.views import Response
-
+from rest_framework.decorators import action
+from rest_framework.views import Response, Http404
+from django.shortcuts import get_object_or_404, HttpResponse
+import json
+from django_redis import get_redis_connection
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
 from utils.response import msg
+
+from problem.tasks import retrieve_problem_task
 
 
 # Create your views here.
@@ -35,7 +40,7 @@ class ProblemViewSet(viewsets.GenericViewSet):
         :param kwargs:
         :return: Response
         """
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().reverse()
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
@@ -45,6 +50,33 @@ class ProblemViewSet(viewsets.GenericViewSet):
         serializer = ProblemSerializer(problem)
         return Response(msg(serializer.data))
 
+    @action(methods=['GET'], detail=True)
+    def html(self, request, pk=None, *args, **kwargs):
+        queryset = Problem.objects.all()
+        problem = get_object_or_404(queryset, pk=pk)
+
+        if problem.content.get('html'):
+            return HttpResponse(problem.content['html'])
+        return Http404()
+
+    @action(methods=['GET'], detail=True)
+    def refresh(self, request, pk=None, *args, **kwargs):
+        queryset = Problem.objects.all()
+        problem = get_object_or_404(queryset, pk=pk)
+
+        retrieve_problem_task(problem.remote_oj, problem.remote_id, problem.id)
+        retrieve_problem_task.apply_async(
+            args=[problem.remote_oj, problem.remote_id, problem.id],
+            queue='requests'
+        )
+        return HttpResponse()
+
+    # @action(methods=['GET'], detail=True)
+    # def languages(self, request, pk=None, *args, **kwargs):
+    #     queryset = Problem.objects.all()
+    #     problem = get_object_or_404(queryset, pk=pk)
+    #     con = get_redis_connection('spider')
+    #     con.
     def get_serializer_class(self):
         if self.action == 'list':
             return ProblemListSerializer
