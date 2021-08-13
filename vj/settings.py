@@ -167,7 +167,7 @@ CACHES = {
     },
     "spider": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}/3",
+        "LOCATION": f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}/4",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }

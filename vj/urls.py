@@ -24,6 +24,8 @@ urlpatterns = [
 
 urlpatterns += [
     path('api/captcha/', utils_views.CaptchaAPI.as_view()),
+    path('api/platform/', utils_views.PlatformAPI.as_view()),
+    path('api/language/<str:remote_oj>/', utils_views.LanguageAPI.as_view()),
     path('api/user/', include('user.urls')),
     path('api/problem/', include('problem.urls')),
     path('api/submission/', include('submission.urls')),

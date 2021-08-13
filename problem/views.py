@@ -1,15 +1,13 @@
+from django.shortcuts import get_object_or_404, HttpResponse
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.views import Response, Http404
-from django.shortcuts import get_object_or_404, HttpResponse
-import json
-from django_redis import get_redis_connection
+
 from problem.models import Problem
 from problem.serializers import ProblemSerializer, ProblemListSerializer
-from utils.response import msg
-
 from problem.tasks import retrieve_problem_task
+from utils.response import msg
 
 
 # Create your views here.
@@ -71,12 +69,6 @@ class ProblemViewSet(viewsets.GenericViewSet):
         )
         return HttpResponse()
 
-    # @action(methods=['GET'], detail=True)
-    # def languages(self, request, pk=None, *args, **kwargs):
-    #     queryset = Problem.objects.all()
-    #     problem = get_object_or_404(queryset, pk=pk)
-    #     con = get_redis_connection('spider')
-    #     con.
     def get_serializer_class(self):
         if self.action == 'list':
             return ProblemListSerializer

@@ -38,3 +38,5 @@ SMTP_USER = os.getenv('SMTP_USER', '')
 SMTP_PASS = os.getenv('SMTP_PASS', '')
 SMTP_USE_SSL = (SMTP_PORT == 465)
 DEFAULT_FROM_EMAIL = SMTP_USER
+
+remote_ojs = ['Codeforces', 'HDU']
